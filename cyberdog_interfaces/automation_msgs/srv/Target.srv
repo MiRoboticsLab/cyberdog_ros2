@@ -1,0 +1,9 @@
+# move to the target on map
+#
+std_msgs/Header header
+# MetaData for the map （coordinate trans/resolution/width/height/etc.）
+nav_msgs/MapMetaData info
+int32 target_x
+int32 target_y 
+---
+bool success

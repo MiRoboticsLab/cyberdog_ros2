@@ -1,0 +1,26 @@
+##############
+# Messages
+##############
+uint8 ASK_XIAOAI_OFF                         = 1
+uint8 ASK_XIAOAI_ONLINE_ON                   = 2
+uint8 ASK_XIAOAI_OFFLINE_ON                  = 3
+uint8 ASK_XIAOAI_STATUS                      = 4
+
+uint8 ask
+---
+##############
+# RESULT
+##############
+
+# status
+uint8 XIAOAI_OFF_SUCCEED                     = 1
+uint8 XIAOAI_OFF_FAILED                      = 2
+uint8 XIAOAI_ONLINE_ON_SUCCEED               = 3
+uint8 XIAOAI_ONLINE_ON_FAILED                = 4
+uint8 XIAOAI_OFFLINE_ON_SUCCEED              = 5
+uint8 XIAOAI_OFFLINE_ON_FAILED               = 6
+uint8 XIAOAI_OFF                             = 7
+uint8 XIAOAI_ONLINE_ON                       = 8
+uint8 XIAOAI_OFFLINE_ON                      = 9
+
+uint8 flag

@@ -1,0 +1,18 @@
+bool is_cancel            #cancel before task, if true will cancel
+
+#int8 mode
+#int8 NAVI_MODE=1          #constant value for mode variable
+#int8 TRACK_MODE=2
+
+geometry_msgs/PoseStamped goal
+
+string planner_id         #for global_planner id
+string controller_id      #for local_planner id
+
+---
+int8 result                #whether or not recept this request
+string description
+
+
+int8 SUCCESS=1             #for result
+int8 FAILTURE=0            #for result

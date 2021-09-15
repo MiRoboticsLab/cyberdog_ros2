@@ -1,0 +1,14 @@
+struct spi_data_t
+{
+    float q_abad[4];
+    float q_hip[4];
+    float q_knee[4];
+    float qd_abad[4];
+    float qd_hip[4];
+    float qd_knee[4];
+    int32_t flags[12];
+    int32_t spi_driver_status;
+    float tau_abad[4];
+    float tau_hip[4];
+    float tau_knee[4];
+}

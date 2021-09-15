@@ -1,0 +1,106 @@
+
+[[step]]
+type     = "transition"
+height   = [0.3]
+duration = [400.0]
+
+[[step]]
+type         = "pose"
+foot_support = [1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.35, 0.0, -0.05, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, 0.0]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [250.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.1, 0.0, 0.0, -0.05, 0.06, 0.0]
+foot_cmd     = [0.0, 0.0, 0.0]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [300.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, 0.05]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [250.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.36, 0.0, 0.32]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [400.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, -0.1]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [400.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, 0.1]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [400.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, -0.1]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [400.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, 0.1]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [400.0]
+
+[[step]]
+type         = "swingleg"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [-0.0, 0.0, 0.0]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [3500.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [-0.36, -0.05, -0.32]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [600.0]
+
+[[step]]
+type         = "pose"
+foot_support = [-1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [-0.0, 0.0, -0.04]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [300.0]
+
+[[step]]
+type         = "pose"
+foot_support = [1.0, 1.0, 1.0, 1.0]
+body_cmd     = [0.0, 0.0, 0.0, -0.0, -0.0, 0.0]
+foot_cmd     = [0.0, 0.0, 0.0]
+ctrl_point   = [0.0, 0.0, 0.0]
+duration     = [200.0]
+
+[[step]]
+type     = "transition"
+height   = [0.3]
+duration = [800.0]

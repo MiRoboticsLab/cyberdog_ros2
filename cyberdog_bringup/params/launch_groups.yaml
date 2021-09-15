@@ -1,0 +1,20 @@
+launch_groups:
+  target_launch_group: default
+  groups:
+    # example_group_whitlist:
+    #   launch:   #only launch:
+    #     - example_node_def_name1
+    #     - example_node_def_name2
+    # example_group_blacklist:
+    #   except:   #dont launch:
+    #     - example_node_def_name1
+    #     - example_node_def_name2
+    default:
+      except:
+        - cyberdog_motion_test_cmd
+        - joy
+        - teleop_twist_joy
+        - light_detection_cmd
+    motion_test:
+      except:
+        - decision_cmd

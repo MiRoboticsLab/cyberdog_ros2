@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>cascade_lifecycle_msgs</name>
+  <version>0.0.5</version>
+  
+  <description>Messages for rclcpp_cascade_lifecycle package</description>
+
+  <maintainer email="fmrico@gmail.com">Francisco Martin Rico</maintainer>
+ 
+  <license>Apache License, Version 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>builtin_interfaces</depend>
+  <depend>lifecycle_msgs</depend>
+  <depend>rosidl_default_generators</depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

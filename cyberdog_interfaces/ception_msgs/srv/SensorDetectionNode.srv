@@ -1,0 +1,50 @@
+uint8 ENABLE_FROUNT = 0
+uint8 DISABLE_FROUNT = 1
+uint8 ENABLE_BACK = 2
+uint8 DISABLE_BACK = 3
+uint8 ENABLE_ALL = 4
+uint8 DISABLE_ALL = 5
+uint8 REAR_LED_OFF = 6
+uint8 REAR_LED_RED_ON = 7
+uint8 REAR_LED_RED_BREATH = 8
+uint8 REAR_LED_RED_BLINK = 9
+uint8 REAR_LED_GREEN_ON = 10
+uint8 REAR_LED_GREEN_BREATH = 11
+uint8 REAR_LED_GREEN_BLINK = 12
+
+uint8 HEAD_LED_OFF = 17
+uint8 HEAD_LED_POWER_ON = 18
+uint8 HEAD_LED_POWER_OFF = 19
+uint8 HEAD_LED_DARKBLUE_ON = 20
+uint8 HEAD_LED_SKYBLUE_ON = 21
+uint8 HEAD_LED_ORANGE_ON = 22
+uint8 HEAD_LED_RED_ON = 23
+uint8 HEAD_LED_DARKBLUE_BREATH = 24
+uint8 HEAD_LED_SKYBLUE_BREATH = 25
+uint8 HEAD_LED_DARKBLUE_BLINK = 26
+uint8 HEAD_LED_ORANGE_BLINK = 27
+uint8 HEAD_LED_RED_BLINK = 28
+
+uint8 ENABLE_ROTATION_VECTOR = 50
+uint8 DISABLE_ROTATION_VECTOR = 51
+uint8 ENABLE_SPEED_VECTOR = 52
+uint8 DISABLE_SPEED_VECTOR = 53
+
+uint8 command
+
+# clientID: BMS,1;BLUETOOTH,2;AUDIO,3; ..., used to decide response priority, smaller means higher.
+uint8  clientid
+uint8  priority
+# timeout uint in nanoseconds, 0 stands for disable, 0xFFFFFFFFFFFFFFFF stands for always on
+uint64 timeout
+
+uint8 TYPE_EFFECTS = 1
+uint8 TYPE_FUNCTION = 2
+uint8 TYPE_ALARM = 3
+
+uint64 COMMAND_OFF = 0
+uint64 COMMAND_ALWAYSON = 0xFFFFFFFFFFFFFFFF
+
+---
+bool success
+uint8 clientcount

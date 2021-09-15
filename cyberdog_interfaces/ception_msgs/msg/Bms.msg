@@ -1,0 +1,13 @@
+uint16 batt_volt
+int16 batt_curr
+uint8 batt_soc
+int16 batt_temp
+uint8 batt_st
+uint8 key_val
+uint8 disable_charge
+uint8 power_supply
+uint8 buzze
+uint8 status
+int8  batt_health
+int16 batt_loop_number
+int8  powerboard_status

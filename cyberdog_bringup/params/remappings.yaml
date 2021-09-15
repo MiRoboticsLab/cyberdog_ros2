@@ -1,0 +1,4 @@
+remappings:
+  # example_node_def_name:
+  #   - ['/topic_before1','/topic_after1']
+  #   - ['/topic_before2','/topic_after2']

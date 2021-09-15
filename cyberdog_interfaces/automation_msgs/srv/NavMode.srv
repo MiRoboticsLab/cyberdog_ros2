@@ -1,0 +1,14 @@
+# CONSTANT
+#
+uint8 NULL_SUBMODE     =  0
+uint8 EXPLR_MAP_UPDATE =  1
+uint8 EXPLR_MAP_NEW    =  2 
+uint8 EXPLR_NAV_AB     =  3
+uint8 TRACK_F          =  4
+uint8 TRACK_S          =  5
+uint8 MODE_STOP        =  6 
+#
+#
+uint8 sub_mode
+---
+bool success

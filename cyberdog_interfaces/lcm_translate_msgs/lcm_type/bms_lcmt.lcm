@@ -1,0 +1,19 @@
+struct bms_response_lcmt
+{
+    int16_t batt_volt;              //voltage --mv
+    int16_t batt_curr;              //Current --ma
+    int16_t batt_temp;              //temperature --C
+    int8_t  batt_soc;               //percentage --%
+    int8_t  status;                 //power state --specific parameter control agreement
+    int8_t  key;                    //power off signal  -- 1: power off；0: normal（not power off）
+    int8_t  batt_health;            //battery health percentage --%
+    int16_t batt_loop_number;       //battery cycle number
+    int8_t  powerBoard_status;      //powerBoard_status bit0: serial-com error(1: has error;0: no error)
+}
+
+struct bms_request_lcmt
+{
+    int8_t  charge_enable; // 0: disable charge, 1: enable charge
+    int8_t  power_supply;  // bit0: motor(0 off power, 1 on power), bit1: app board(0 off power, 1 on power), bit2: battery power off(1:power off, 0:keep power on);
+    int8_t  buzz;
+}

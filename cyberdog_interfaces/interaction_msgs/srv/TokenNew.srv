@@ -1,0 +1,13 @@
+##############
+# Messages
+##############
+
+uint8 NEW_TOKEN   = 1
+uint8 ask
+---
+##############
+# RESULT
+##############
+
+# status
+bool app_on

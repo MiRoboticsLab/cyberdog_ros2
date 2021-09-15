@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>toml11_vendor</name>
+  <version>3.0.0</version>
+  <description>Vendor library for toml11.</description>
+  <maintainer email="xuhaiwang@iaomi.com">Homalozoa</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>toml11</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

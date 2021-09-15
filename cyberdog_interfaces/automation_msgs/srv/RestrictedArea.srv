@@ -1,0 +1,13 @@
+# area restrict robot to move in
+#
+# MetaData for the map
+nav_msgs/MapMetaData info
+# true for add, false for delete 
+# bool add_or_del 
+uint32 id
+uint32 length
+#
+# series of pixel coordinates for vertex, size should be even
+int32[] data
+---
+bool success

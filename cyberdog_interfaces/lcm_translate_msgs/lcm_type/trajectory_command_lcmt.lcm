@@ -1,0 +1,16 @@
+struct trajectory_command_lcmt {
+    string motionType;
+    float pose_body_cmd[6];
+    float pose_foot_cmd[3];
+    float pose_ctrl_point[3];
+    float pose_foot_support[4];
+    float stateEstate_foot_support[4];
+    float locomotion_vel[3];
+    int32_t locomotion_omni;
+    int32_t locomotion_gait;
+    float jump_x_acc[3];
+    float jump_w_acc[3];
+    float jump_contact[4];
+    float  trans_height;
+    int32_t duration;
+}

@@ -1,0 +1,25 @@
+# goal definition
+MonOrder orderstamped
+---
+# result definition
+uint8 NORMAL        = 0
+uint8 FAILED        = 1
+uint8 REJECT        = 2
+uint8 CANCELED      = 3
+uint8 BAD_TIMESTAMP = 4
+uint8 UNKNOWN       = 5
+uint8 TIME_OUT      = 6
+uint8 UNAVAILABLE   = 7
+uint8 AVOID_PREEMPT = 8
+uint8 INTERRUPTED   = 9
+uint8 FILE_MISSED   = 10
+uint8 RECOV_FAILED  = 11
+uint8 STUCK         = 12
+
+uint8 err_code
+bool succeed
+---
+# feedback
+MonOrder order_executing
+float64 process_rate
+SE3Pose current_pose

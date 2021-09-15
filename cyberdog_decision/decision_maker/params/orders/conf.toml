@@ -1,0 +1,66 @@
+###
+## order configuration
+#
+###
+## order step examples
+#
+# type     = "locomotion"
+# vel      = [0.0, 0.0, 0.0]
+# omni     = [0.0]
+# gait     = [0.0]
+# duration = [0.0]
+# 
+# type          = "pose"
+# foot_support = [0.0, 0.0, 0.0, 0.0]
+# body_cmd      = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+# foot_cmd      = [0.0, 0.0, 0.0]
+# ctrl_point    = [0.0, 0.0, 0.0]
+# duration      = [0.0]
+# 
+# type         = "jump"
+# contact_state = [0.0, 0.0, 0.0, 0.0]
+# x_acc_cmd    = [0.0, 0.0, 0.0]
+# w_acc_cmd    = [0.0, 0.0, 0.0]
+# duration     = [0.0]
+# 
+# type     = "transition"
+# height   = [0.0]
+# duration = [0.0]
+#
+# type          = "swingleg"
+# foot_support = [0.0, 0.0, 0.0, 0.0]
+# body_cmd      = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+# foot_cmd      = [0.0, 0.0, 0.0]
+# ctrl_point    = [0.0, 0.0, 0.0]
+# duration      = [0.0]
+#
+# type          = "torctrlposture"
+# contact_state = [0.0, 0.0, 0.0, 0.0]
+# body_cmd      = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+# foot_cmd      = [0.0, 0.0, 0.0]
+# duration      = [0.0]
+#
+locomotion = ["vel", "omni", "gait", "duration"]
+#
+pose = ["foot_support", "body_cmd", "foot_cmd", "ctrl_point", "duration"]
+swingleg = ["foot_support", "body_cmd", "foot_cmd", "ctrl_point", "duration"]
+#
+jump = ["contact_state", "x_acc_cmd", "w_acc_cmd", "duration"]
+#
+torctrlposture = ["foot_support", "body_cmd", "foot_cmd", "duration"]
+#
+transition = ["height", "duration"]
+#
+#
+body_cmd = 6
+contact_state = 4
+ctrl_point = 3
+duration = 1
+foot_cmd = 3
+foot_support = 4
+gait = 1
+height = 1
+omni = 1
+vel = 3
+w_acc_cmd = 3
+x_acc_cmd = 3

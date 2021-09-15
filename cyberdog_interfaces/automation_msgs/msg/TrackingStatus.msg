@@ -1,0 +1,11 @@
+# FAR:3.0 NEAR:0.8
+
+uint8 OBJECT_FAR = 0
+uint8 OBJECT_NEAR = 1
+uint8 OBJECT_LOST = 2
+uint8 OBJECT_EDGE = 3
+uint8 START_SUCCESS = 4
+uint8 START_FAIL = 5
+uint8 OBJECT_INVISIBLE = 6
+
+uint8 status

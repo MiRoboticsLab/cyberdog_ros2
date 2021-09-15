@@ -1,0 +1,45 @@
+##############
+# Messages
+##############
+uint8 ASK_TOKEN                              = 1
+uint8 ASK_DEVICE_ID                          = 2
+uint8 ASK_XIAOAI_OFF                         = 3
+uint8 ASK_XIAOAI_ON                          = 4
+uint8 ASK_XIAOAI_ONLINE_OFF                  = 5
+uint8 ASK_XIAOAI_ONLINE_ON                   = 6
+uint8 ASK_SET_VOLUME                         = 7
+uint8 ASK_GET_VOLUME                         = 8
+uint8 ASK_XIAOAI_SWITCH_STATUS               = 9
+
+uint8 ask
+uint8 vol
+Token info
+---
+##############
+# RESULT
+##############
+
+# status
+uint8 TOKEN_SUCCEED                          = 1
+uint8 TOKEN_FAILED                           = 2
+uint8 DID_SUCCEED                            = 3
+uint8 DID_FAILED                             = 4
+uint8 XIAOAI_OFF_SUCCEED                     = 5
+uint8 XIAOAI_OFF_FAILED                      = 6
+uint8 XIAOAI_ON_SUCCEED                      = 7
+uint8 XIAOAI_ON_FAILED                       = 8
+uint8 XIAOAI_ONLINE_OFF_SUCCEED              = 9
+uint8 XIAOAI_ONLINE_OFF_FAILED               = 10
+uint8 XIAOAI_ONLINE_ON_SUCCEED               = 11
+uint8 XIAOAI_ONLINE_ON_FAILED                = 12
+uint8 SET_VOLUME_SUCCEED                     = 13
+uint8 SET_VOLUME_FAILED                      = 14
+uint8 GET_VOLUME_SUCCEED                     = 15
+uint8 GET_VOLUME_FAILED                      = 16
+uint8 XIAOAI_OFF                             = 17
+uint8 XIAOAI_ONLINE_ON                       = 18
+uint8 XIAOAI_OFFLINE_ON                      = 19
+
+uint8 flage
+uint8 vol
+string divice_id

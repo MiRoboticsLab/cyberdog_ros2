@@ -1,0 +1,26 @@
+# goal definition
+Mode modestamped
+---
+# result definition
+uint8 NORMAL        = 0
+uint8 FAILED        = 1
+uint8 REJECT        = 2
+uint8 CANCELED      = 3
+uint8 BAD_TIMESTAMP = 4
+uint8 UNKNOWN       = 5
+uint8 TIME_OUT      = 6
+uint8 UNAVAILABLE   = 7
+uint8 AVOID_PREEMPT = 8
+
+uint8 err_code
+uint8 err_state
+bool succeed
+---
+# feedback
+uint8 NORMAL_STATE     = 0
+uint8 CHECKING_GAIT    = 1
+uint8 WAITING_NODES    = 2
+uint8 CHECKING_SUBMODE = 3
+
+builtin_interfaces/Time timestamp
+uint8 current_state

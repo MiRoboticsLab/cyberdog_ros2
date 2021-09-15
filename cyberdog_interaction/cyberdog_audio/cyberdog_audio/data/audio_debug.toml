@@ -1,0 +1,9 @@
+title = "audio_debug_config"
+config_audio_force_enable = 0
+config_audio_dump_raw = 0
+config_audio_dump_asr = 0
+config_audio_silence = 0
+config_audio_testtoken = 0
+testtoken_access = "V3_bRpZNNFXjMRGJmZQs0e2RpsMLNsTGkEibj3r5Cz9cpAqNj1-TBgF_amu1OE3n7GR_7jTklh35lmM2jaftemvVmr1Oq-2i9VFZutjLWzBz8puP07C3snqj7bJ-3-7GtxgwG9-ZNvjvm3x2utfwkG_BRE-rCitQtr33o5fdo3KnFnhSjq0KZxlokeTIClH9pqv"
+testtoken_refresh = "R3_t8dtX_7q6sejgzZ-9j_m71RKUfvEXeia0CbnQEr82veqPbq8rsVS4htE-TWgFE9V6vqbcVJ3GOIkbommSZBUaK-jXZYBq939MDRod15TmXgFn2NiHSK1WyOxcVO-AFqhpGYfl4iqBxITXnea6YN5DsKo4q34AciQCcwVq3YD5AjbZRtRkX19vd406OmV2eE4m4aaBGJLBofRZMokcIT2-Q"
+testtoken_deviceid = "a79b77ec139fca326affc7cfbc419e07"

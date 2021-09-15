@@ -1,0 +1,735 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.cyberdogapp";
+option java_outer_classname = "CyberdogAppProto";
+option objc_class_prefix = "RTG";
+
+package cyberdogapp;
+
+service CyberdogApp {
+    // app work as client 
+    rpc setMode(CheckoutMode_request) returns (stream CheckoutMode_respond) {}
+    rpc setPattern(CheckoutPattern_request) returns (stream CheckoutPattern_respond) {}
+    rpc setFollowRegion(BodyRegion_Request) returns (stream BodyRegion_Respond) {}
+    rpc requestCamera(CameraService_request) returns (stream CameraService_respond) {}
+    rpc requestVoice(Voiceprint_Request) returns (stream Voiceprint_Response) {}
+    rpc requestFaceManager(FaceManager_Request) returns (stream FaceManager_Response) {}
+    rpc sendAppDecision(Decissage) returns (Result) {}
+    rpc sendAiToken(TokenPass_Request) returns (stream TokenPass_Response) {}
+    rpc setNavPosition(Target_Request) returns (stream Target_Response) {}
+    rpc setExtmonOrder(ExtMonOrder_Request) returns (stream ExtMonOrder_Respond){}
+    rpc disconnect(Disconnect) returns (stream Result){}
+    rpc setBtRemoteCmd(BtRemoteCommand_Request) returns (stream BtRemoteCommand_Respond){}
+    rpc setBodyPara(Parameters) returns (Result) {}
+
+    //for motion test
+    rpc sendMotionTestRequest(MotionCommand) returns(Result) {}
+
+    //for offset calibration
+    rpc getOffsetData(OffsetRequest) returns(stream OffsetCalibationData){}
+    rpc setOffsetData(OffsetCalibationData) returns(stream OffsetRequest_result){}
+
+    // app work as server
+    rpc subscribeBms(Bms) returns(Result) {}
+    rpc subscribeWifiRssi (WifiRssi) returns(Result) {}
+    rpc subscribeStatus(StatusStamped) returns(Result) {}
+    rpc subscribeTrackingStatus(TrackingStatus) returns(Result) {}
+    rpc subscribeBodySelect(BodyInfo) returns(Result) {} //body
+    rpc subscribeTracking(BodyInfo) returns(Result) {} //tracking_result
+    rpc subscribeMap(OccupancyGrid) returns(Result) {}
+    rpc subscribePosition(DecisionStamped) returns(Result) {}
+    rpc subscribeVoiceprintResult(VoiceprintResult) returns(Result) {}
+    rpc subscribeFaceResult(FaceResult) returns(Result) {}
+    rpc heartbeat(Ticks) returns(Result) {}
+    rpc subscribeNavStatus(Caution) returns(Result) {}
+    rpc subscribeOdomOut(Odometry) returns(Result) {}
+    rpc subscribeObstacleDetection(Around) returns(Result) {}
+    rpc subscribeDogPose(DogPose) returns(Result) {}
+    rpc subscribeGpsScene(Scene) returns(Result) {}
+    rpc subscribeRemoteEvent(RemoteEvent) returns(Result) {}
+    rpc subscribePath(Path) returns(Result) {}
+}
+
+message Path{
+    Header header = 1;
+    repeated PoseStamped posestamped = 2;
+}
+
+message PoseStamped{
+    Header header = 1;
+    Pose pose = 2;
+}
+
+message RemoteEvent{
+    fixed32 scan_status = 1;
+    fixed32 remote_status = 2;
+    string address = 3;
+    string scan_device_info = 4;
+    string error = 5;
+}
+
+message BtRemoteCommand_Request{
+    enum COMMAND {
+        GET_STATUS = 0;
+        SCAN_DEVICE = 1;
+        CONNECT_DEVICE = 2;
+        DISCONNECT_DEVICE = 3;
+        REMOTE_RECONNECT_DEVICE = 4;
+    }
+    fixed32 command = 1;
+    string address = 2;
+}
+
+message BtRemoteCommand_Respond{
+    bool success = 1;
+}
+
+message Disconnect{
+    fixed32 reason = 1;
+}
+message ExtMonOrder_Request{
+    MonOrder order = 1;
+    fixed32 timeout = 2;
+}
+
+message ExtMonOrder_Respond{
+    enum ERR_CODE {
+         NORMAL          = 0;
+         EXE_FAILED      = 1;
+         REJECT          = 2;
+         CANCELED        = 4;
+         BAD_TIMESTAMP   = 8;
+    }
+    MonOrder order = 1;
+    fixed32 err_code = 2;
+    bool succeed = 3;
+    bool is_feedback = 4;
+    fixed32 request_id = 5;
+}
+message Freameid{
+    fixed32 id = 1;
+    enum FRAMEID{
+        DEFAULT_FRAME = 0;
+        BODY_FRAME    = 1;
+        ODOM_FRAME    = 2;
+        VISION_FRAME  = 3;
+        NAVI_FRAME    = 4;
+    }
+}
+message DogPose{
+    Freameid frameid = 1;
+    Timestamp timestamp = 2;
+    double position_x = 3;
+    double position_y = 4;
+    double position_z = 5;
+
+    double rotation_w = 6;
+    double rotation_x = 7;
+    double rotation_y = 8;
+    double rotation_z = 9;
+}
+message OffsetRequest_result{
+    fixed32 gait = 1;
+    fixed32 result = 2; 
+    enum Result {
+        SUCCESS  = 0;
+        FAILED = 1;
+    }
+}
+
+message OffsetRequest{
+    fixed32 gait = 1;
+    enum Gait{
+        WALK = 0;
+        TROT = 1;
+        FLY_TROT = 2;
+        SLOW_TROT = 3;
+    }
+}
+
+message OffsetCalibationData{
+    fixed32 gait = 1;
+    double x_offset = 2;
+    double y_offset = 3;
+    double yaw_offset = 4;
+    fixed32 result = 5;
+    enum Result {
+        SUCCESS  = 0;
+        FAILED = 1;
+    }
+}
+
+message MotionCommand{
+    fixed32 command = 1;
+    enum Command{
+        DEFAULT = 0;
+        TEST_INIT = 1;
+        TEST_DEINIT = 2;
+        TEST_START = 3;
+        TEST_STOP = 4;
+        TURN_LEFT = 5;
+        TURN_RIGHT = 6;
+        GO_AHEAD = 7;
+        GO_BACK = 8;
+        GO_LEFT = 9;
+        GO_RIGHT = 10;
+    }
+}
+
+message Around{
+    Ultrasonic front_distance = 1;
+    Ultrasonic back_distance = 2;
+    Ultrasonic left_distance = 3;
+    Ultrasonic right_distance = 4;
+}
+
+message Ultrasonic{
+    Range range_info = 1;
+}
+
+message Range{
+    Header header = 1;
+    fixed32 radiation_type = 2;
+    float field_of_view = 3;
+    float min_range = 4;
+    float max_range = 5;
+    float range = 6;
+    enum Radiation {
+        ULTRASOUND = 0;
+        INFRARED = 1;
+    }
+}
+
+message Caution
+{
+    fixed32 error_type = 1;
+    fixed32 robot_mode = 2;
+}
+message Ticks{
+    string ip = 1;
+}
+message WifiRssi {
+    string rssi = 1;
+}
+
+message Mode {
+    fixed32 control_mode = 1;
+    fixed32 mode_type = 2;
+}
+
+message Pattern {
+    fixed32 gait_pattern = 1;
+     enum GAIT {
+        GAIT_TRANS     = 0;
+        GAIT_PASSIVE   = 1;
+        GAIT_KNEEL     = 2;
+        GAIT_STAND_R   = 3;
+        GAIT_STAND_B   = 4;
+        GAIT_AMBLE     = 5;
+        GAIT_WALK      = 6;
+        GAIT_SLOW_TROT = 7;
+        GAIT_TROT      = 8;
+        GAIT_FLYTROT   = 9;
+        GAIT_BOUND     = 10;
+        GAIT_PRONK     = 11;
+        GAIT_DEFAULT   = 99;
+    }
+}
+
+message Result {
+    string result = 1;
+}
+
+message Decissage {
+    Twist twist = 1;
+    Pose pose = 2;
+    Safety safety = 3;
+}
+
+message Safety {
+    int32 status = 1;
+}
+
+message Parameters {
+    double body_height = 1;
+    double gait_height = 2;
+}
+
+message Twist {
+    Vector3 linear = 1;
+    Vector3 angular = 2;
+}
+
+message Pose {
+    Point position = 1;
+    Quaternion orientation = 2;
+}
+
+message Vector3 {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message Point {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message Quaternion {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+    double w = 4;
+}
+
+message Bms {
+    sfixed32 batt_volt = 1;
+    sfixed32 batt_curr = 2;
+    fixed32 batt_soc = 3;
+    sfixed32 batt_temp = 4;
+    fixed32 batt_st = 5;
+    fixed32 key_val = 6;
+    fixed32 disable_charge = 7;
+    fixed32 power_supply = 8;
+    fixed32 buzze = 9;
+    fixed32 status = 10;
+}
+
+message StatusStamped {
+    Header header = 1;
+    string child_frame_id = 2;
+    RawStatus status = 3;
+}
+message ErrorFlag {
+    sfixed32            exist_error = 1;
+    sfixed32            ori_error = 2;
+    sfixed32            footpos_error = 3;
+    repeated fixed32    motor_error = 4;
+}
+message RawStatus {
+    Mode                                mode = 1;
+    Pattern                             pattern = 3;
+    TwistWithCovariance   twist = 4;
+    PoseWithCovariance    pose = 5;
+    Parameters                          para = 6;
+    Safety                              safety = 7;
+    Scene                               scene = 8;
+    ErrorFlag                            error_flag = 9;
+    sfixed32                            foot_contact = 10;
+    Pattern                             cached_pattern = 11;
+    MonOrder                            order = 12;
+}
+
+message States {
+    fixed32 motion_state = 1;
+}
+
+message Header {
+    Timestamp stamp = 1;
+    string frame_id = 2;
+}
+
+message Timestamp {
+    //The seconds component, valid over all int32 values.
+    sfixed32 sec = 1;
+
+    //The nanoseconds component, valid in the range [0, 10e9).
+    sfixed32 nanosec = 2;
+}
+
+message TwistWithCovariance {
+    Twist twist = 1;
+    repeated double covariance = 2;
+}
+
+message PoseWithCovariance {
+    Pose pose = 1;
+    repeated double covariance = 2;
+}
+
+message Scene {
+    fixed32 type = 1;
+    float lat = 2;
+    float lon = 3;
+    fixed32 if_danger = 4;
+    enum TYPE{
+        UNSET = 0;
+        INDOOR = 1;
+        OUTDOOR = 2;
+    }
+}
+
+message DecisionStamped {
+    Header header = 1;
+    Source id = 2;
+    Decissage  decissage = 3;
+}
+
+message Source {
+    fixed32 source_id = 1;
+}
+
+message ModeStamped {
+    Header header = 1;
+    Mode mode = 2;
+}
+
+message CheckoutMode_request {
+    ModeStamped next_mode = 1;
+    fixed32 timeout = 2;
+    enum Command {
+        DEFAULT = 0;
+        LOCK = 1;
+        CONFIG = 2;
+        MANUAL = 3;
+        SEMI = 13;
+        EXPLOR = 14;
+        TRACK = 15;
+    }
+    enum Type {
+        DEFAULT_TYPE = 0;
+        TRACK_F = 1;
+        TRACK_S = 2;
+        EXPLOR_NAV_AB = 3;
+        EXPLOR_MAP_U = 4;
+        EXPLOR_MAP_N = 5;
+    }
+}
+
+message CheckoutMode_respond {
+    // respond type
+    bool is_feedback =  1;
+
+    // action_feedback
+    Header header = 2;
+    fixed32 current_state = 3;
+
+    // action_result
+    fixed32 err_code = 4;
+    fixed32 err_state = 5;
+    bool succeed = 6;
+    Mode next_mode = 7;
+    fixed32 request_id = 8;
+}
+
+message PatternStamped {
+    Header header = 1;
+    Pattern pattern = 2;
+}
+
+message CheckoutPattern_request {
+    PatternStamped patternstamped = 1;
+    fixed32 timeout = 2;
+}
+
+message CheckoutPattern_respond {
+    // type
+    bool is_feedback = 1;
+
+    // feedback_field
+    Header header     =  2;
+    Pattern current_checking  = 3;
+    bool last_pattern = 4;
+
+    // result
+    fixed32  err_code = 5;
+    Pattern err_pattern = 6;
+    bool succeed = 7;
+    PatternStamped patternstamped = 8;
+    fixed32 request_id = 9;
+}
+
+message TrackingStatus {
+    fixed32 status = 1;
+    enum Status{
+        OBJECT_FAR = 0;
+        OBJECT_NEAR = 1;
+        OBJECT_LOST = 2;
+        OBJECT_EDGE = 3;
+    }
+}
+
+message BodyInfo {
+    Header header = 1;
+    fixed32 count = 2;
+    repeated Body infos = 3;
+}
+
+message Body {
+    RegionOfInterest roi = 1;
+}
+
+message BodyRegion_Request {
+    RegionOfInterest roi = 1;
+}
+
+message BodyRegion_Respond {
+    bool success = 1;
+}
+
+message RegionOfInterest {
+    fixed32 x_offset = 1;
+    fixed32 y_offset = 2;
+    fixed32 height = 3;
+    fixed32 width = 4;
+    bool do_rectify = 5;
+}
+
+message MonOrder {
+    fixed32 id = 1;
+    double para = 2;
+    enum ID {
+        MONO_ORDER_NULL        =  0;
+        MONO_ORDER_WAKE_STOP   =  1;
+        MONO_ORDER_SHUT_STOP   =  2;
+        MONO_ORDER_STAND_UP    =  9;
+        MONO_ORDER_PROSTRATE   = 10;
+        MONO_ORDER_COME_HERE   = 11;
+        MONO_ORDER_STEP_BACK   = 12;
+        MONO_ORDER_TURN_AROUND = 13;
+        MONO_ORDER_HI_FIVE     = 14;
+        MONO_ORDER_DANCE       = 15;
+        MONO_ORDER_WELCOME     = 16;
+        MONO_ORDER_TURN_OVER   = 17;
+        MONO_ORDER_SIT         = 18;
+        MONO_ORDER_BOW         = 19;
+        MONO_ORDER_MAX         = 20;
+    }
+}
+
+message CameraService_request {
+    fixed32 command = 1;
+    string args = 2;
+    enum Command {
+        SET_PARAMETERS = 0;
+        TAKE_PICTURE = 1;
+        START_RECORDING = 2;
+        STOP_RECORDING = 3;
+        GET_STATE = 4;
+        DELETE_FILE = 5;
+        GET_ALL_FILES = 6;
+        START_LIVE_STREAM = 7;
+        STOP_LIVE_STREAM = 8;
+    }
+}
+
+message CameraService_respond {
+    fixed32 command = 1;
+    fixed32 result = 2;
+    string msg = 3;
+    enum Result {
+        SUCCESS = 0;
+        INVALID_ARGS = 1;
+        UNSUPPORTED = 2;
+        TIMEOUT = 3;
+        BUSY = 4;
+        INVALID_STATE = 5;
+        INNER_ERROR = 6;
+        UNDEFINED_ERROR = -1;
+    }
+}
+
+enum ResultCode {
+    FAILED = 0;
+    SUCCEED = 1;
+}
+
+message FaceManager_Request {
+    fixed32 command = 1;
+    string args = 2;
+    enum Command {
+        ADD_FACE = 0;
+        CANCLE_ADD_FACE = 1;
+        CONFIRM_LAST_FACE = 2;
+        UPDATE_FACE_ID = 3;
+        DELETE_FACE = 4;
+        GET_ALL_FACES = 5;
+    }
+}
+
+message FaceManager_Response {
+    fixed32 command = 1;
+    fixed32 result = 2;
+    string msg = 3;
+    repeated CompressedImage face_images = 4 ;
+    enum FaceResult {
+        RESULT_SUCCESS = 0;
+        RESULT_INVALID_ARGS = 1;
+        RESULT_UNSUPPORTED = 2;
+        RESULT_TIMEOUT = 3;
+        RESULT_BUSY = 4;
+        RESULT_INVALID_STATE = 5;
+        RESULT_INNER_ERROR = 6;
+        RESULT_UNDEFINED_ERROR = -1;
+    }
+}
+
+message CompressedImage {
+    Header header = 1;
+    string format = 2;
+    repeated fixed32 data = 3;
+}
+
+message Target_Request {
+    Header header = 1;
+    MapMetaData info = 2;
+    fixed32 target_x = 3;
+    fixed32 target_y = 4;
+}
+
+message MapMetaData {
+    Timestamp map_load_time = 1;
+    float resolution = 2;
+    fixed32 width = 3;
+    fixed32 height = 4;
+    Pose origin = 5;
+}
+
+message Target_Response {
+    MapMetaData info = 1;
+    bool success = 2;
+}
+
+message Odometry {
+    Header header = 1;
+    string child_frame_id = 2;
+    PoseWithCovariance pose = 3;
+    TwistWithCovariance twist = 4;
+}
+
+message OccupancyGrid {
+    Header header = 1;
+    MapMetaData info = 2;
+    repeated fixed32 data = 3;
+}
+
+message FaceResult {
+    fixed32 result = 1;
+    string msg = 2;
+    repeated CompressedImage face_images = 3;
+}
+
+message VoiceprintResult {
+    Header header = 1;
+    fixed32 type = 2;
+    bool succeed = 3;
+    fixed32 error = 4;
+    enum ErrorCode {
+        NORMAL = 0;
+        UNKNOWN_ERROR = 1;
+        RECORD_FAILED = 2;
+        PLAY_FAILED = 4;
+        TOO_NOISY_BACKGROUND = 8;
+        TIMEOUT = 16;
+    }
+}
+
+message Voiceprint_Request {
+    VoiceprintEntry info = 1;
+}
+
+message VoiceprintEntry {
+    Header header = 1;
+    AudioUser user = 2;
+    fixed32 ask = 3;
+    enum VoiceCommand {
+        DEFAULT = 0;
+        START = 1;
+        STOP = 2;
+        HAS_DATA = 3;
+        DELETE_DATA = 4;
+    }
+}
+
+message AudioUser {
+    fixed32 id = 1;
+    enum AudioCommand {
+        DEFAULT   = 0;
+        STARTER   = 1;
+        POWER     = 2;
+        TOUCH     = 3;
+        CAMERA    = 4;
+        APP       = 5;
+        BLUETOOTH = 6;
+        WIFI      = 7;
+        XIAOAI    = 8;
+    }
+}
+
+message Voiceprint_Response {
+    fixed32 ask = 1;
+    bool accept = 2;
+}
+
+message TokenPass_Request {
+    fixed32 ask   = 1;
+    Token info    = 2;
+    fixed32 vol   = 3;
+    enum Code {
+        DEFAULT                         = 0;
+        ASK_TOKEN                       = 1;
+        ASK_DEVICE_ID                   = 2;
+        ASK_XIAOAI_OFF                  = 3;
+        ASK_XIAOAI_ON                   = 4;
+        ASK_XIAOAI_ONLINE_OFF           = 5;
+        ASK_XIAOAI_ONLINE_ON            = 6;
+        ASK_SET_VOLUME                  = 7;
+        ASK_GET_VOLUME                  = 8;
+        ASK_XIAOAI_SWITCH_STATUS        = 9;
+    }
+
+}
+
+message Token {
+    Header header            = 1;
+    string token             = 2;
+    string token_refresh     = 3;
+    string token_md5         = 4;
+    string token_refresh_md5 = 5;
+    fixed32 expire_in        = 6;
+}
+
+message TokenPass_Response {
+    fixed32 flage      = 1;
+    string divice_id   = 2;
+    fixed32 vol        = 3;
+    enum Code {
+            DEFAULT                   = 0;
+            TOKEN_SUCCEED             = 1;
+            TOKEN_FAILED              = 2;
+            DID_SUCCEED               = 3;
+            DID_FAILED                = 4;
+            XIAOAI_OFF_SUCCEED        = 5;
+            XIAOAI_OFF_FAILED         = 6;
+            XIAOAI_ON_SUCCEED         = 7;
+            XIAOAI_ON_FAILED          = 8;
+            XIAOAI_ONLINE_OFF_SUCCEED = 9;
+            XIAOAI_ONLINE_OFF_FAILED  = 10;
+            XIAOAI_ONLINE_ON_SUCCEED  = 11;
+            XIAOAI_ONLINE_ON_FAILED   = 12;
+            SET_VOLUME_SUCCEED        = 13;
+            SET_VOLUME_FAILED         = 14;
+            GET_VOLUME_SUCCEED        = 15;
+            GET_VOLUME_FAILED         = 16;
+            XIAOAI_OFF                = 17;
+            XIAOAI_ONLINE_ON          = 18;
+            XIAOAI_OFFLINE_ON         = 19;
+        }
+}

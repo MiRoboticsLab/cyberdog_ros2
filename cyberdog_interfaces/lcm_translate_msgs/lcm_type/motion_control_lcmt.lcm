@@ -1,0 +1,36 @@
+struct motion_control_request_lcmt {
+	int8_t pattern;        // as the pdf
+	double linear[3];      // linear velocity
+	double angular[3];     // in qp_stand: rpy; in locomotion: angular[0-1] row, pitch, angular[2] z velocity
+	double point[3];       // reserved
+	double quaternion[4];  // reserved
+	double body_height;    // in qp_stand: body height; donot used in locomotion
+	double gait_height;    // in locomotion: gait height
+	int8_t order;          // voice command, as the pdf, project to 2 variable
+}
+
+struct error_flag_lcmt {
+    int8_t exist_error;
+    int8_t ori_error;
+    int32_t footpos_error;
+    int32_t motor_error[12];
+}
+
+struct motion_control_response_lcmt {
+	int8_t pattern;
+	int8_t order;
+	int8_t order_process_bar; // order process, 1 == 1 %
+	int8_t foot_contact;
+	error_flag_lcmt error_flag;
+}
+
+// used to publish the real command motion control program used
+struct motion_control_command_lcmt {
+	int32_t mode;
+	int32_t gait_id;
+	float   x_vel_des, y_vel_des, yaw_vel_des;
+	float   rpy_des[3];
+	float   body_height;
+	float   step_height;
+	int32_t order;
+}

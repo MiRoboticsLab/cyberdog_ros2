@@ -1,0 +1,25 @@
+# goal definition
+# motivation is made for identifying priority
+uint8 motivation
+#
+Gait gaitstamped
+---
+# result definition
+uint8 NORMAL        = 0
+uint8 FAILED        = 1
+uint8 REJECT        = 2
+uint8 CANCELED      = 3
+uint8 BAD_TIMESTAMP = 4
+uint8 UNKNOWN       = 5
+uint8 TIME_OUT      = 6
+uint8 UNAVAILABLE   = 7
+uint8 AVOID_PREEMPT = 8
+uint8 STUCK         = 9
+uint8 INTERRUPTED   = 10
+
+uint8  err_code
+Gait err_gait
+bool succeed
+---
+# feedback
+Gait current_checking

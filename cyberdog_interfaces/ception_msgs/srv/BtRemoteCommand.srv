@@ -1,0 +1,10 @@
+uint8 GET_STATUS = 0
+uint8 SCAN_DEVICE = 1
+uint8 CONNECT_DEVICE = 2
+uint8 DISCONNECT_DEVICE = 3
+uint8 REMOTE_RECONNECT_DEVICE = 4
+
+uint8 command
+string address
+---
+bool success

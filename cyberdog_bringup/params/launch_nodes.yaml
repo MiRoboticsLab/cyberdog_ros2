@@ -1,0 +1,100 @@
+launch_nodes:
+  debug_param: "lxterminal -e gdb -ex run --args"
+
+  # Must launch, if package or executable error, launcher will stop and throw error
+  base_nodes:
+    # - example_node_def_name:
+    #       package: "example_pkg"              (string)
+    #       executable: "example_exe"           (string)
+    #       #[optional] output_screen: false    (true/false)
+    #       #[optional] name: 'example_name'    (string)
+    #       #[optional] load_nodes_param: false (true/false)
+    #       #[optional] enable_debug: false     (true/false)
+
+    - decision_cmd:
+        package: "cyberdog_decisionmaker"
+        executable: "decisionmaker"
+        load_nodes_param: true
+        # enable_debug: true
+
+    - cyberdog_grpc_cmd:
+        package: "cyberdog_grpc"
+        executable: "app_server"
+        name: "cyberdog_grpc"
+
+    - cyberdog_cyberdog_action_client_cmd:
+        package: "cyberdog_grpc"
+        executable: "app_action_client"
+        name: "app_action_client"
+
+    - bms_recv_cmd:
+        package: "cyberdog_bms"
+        executable: "bms_recv"
+        output_screen: true
+
+    - bms_ctrl_cmd:
+        package: "cyberdog_bms"
+        executable: "bms_ctrl"
+        output_screen: true
+
+  # Try to launch, if package or executable error, launcher will notice but skip that node
+  other_nodes:
+    - wifirssi_cmd:
+        package: "wifirssi"
+        executable: "talker"
+        name: "wifirssi"
+
+    - audio_cmd:
+        package: "cyberdog_audio"
+        executable: "cyberdog_audio"
+        output_screen: true
+
+    - camera_live_cmd:
+        package: "cyberdog_camera"
+        executable: "maincamera"
+        name: "camera_server"
+
+    - obstacle_detection_cmd:
+        package: "cyberdog_obstacle_detection"
+        executable: "service_obstacle_detection"
+        name: "obstacle_detection"
+
+    - light_detection_cmd:
+        package: "cyberdog_lightsensor"
+        executable: "service_light_detection"
+        name: "light_detection"
+
+    - scene_detection_cmd:
+        package: "cyberdog_scene_detection"
+        executable: "service_scene_detection"
+        name: "scene_detection"
+
+    - cyberdog_body_state_cmd:
+        package: "cyberdog_body_state"
+        executable: "service_cyberdog_body_state"
+        name: "bodystate_detection"
+
+    - cyberdog_led_cmd:
+        package: "cyberdog_led"
+        executable: "service_cyberdog_led"
+        name: "led_server"
+
+    - cyberdog_touch_cmd:
+        package: "cyberdog_touch"
+        executable: "service_cyberdog_touch"
+        name: "touch_publisher"
+
+    - cyberdog_motion_test_cmd:
+        package: "cyberdog_motion_test"
+        executable: "motion_test_server"
+        name: "cyberdog_motion_test"
+
+    - joy:
+        package: "joy"
+        executable: "joy_node"
+        name: "joy_node"
+    
+    - teleop_twist_joy:
+        package: "teleop_twist_joy"
+        executable: "teleop_node"
+        name: "teleop_twist_joy_node"

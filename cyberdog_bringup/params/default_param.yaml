@@ -1,0 +1,73 @@
+automation_manager:
+  ros__parameters:
+    explor_map_nodes_l:
+      - 'interactive'
+      - 'rtabmap'
+      - 'move_base_node'
+      - 'ov_msckf'
+    explor_nav_nodes_l:
+      - 'interactive'
+      - 'rtabmap'
+      - 'move_base_node'
+    tracking_nodes_l:
+      - 'interactive'
+      - 'rtabmap'
+      - 'move_base_node'
+      - 'tracking'
+    timeout_manager_s: 30
+ception_manager:
+  ros__parameters:
+    ception_nodes_l:
+      - 'bodystate_detection'
+      - 'light_detection'
+      - 'obstacle_detection'
+      - 'scene_detection'
+    rate_tik_hz: 2
+    soc_limit_perc: 10
+    timeout_manager_s: 10
+interaction_manager:
+  ros__parameters:
+    interaction_nodes_l:
+      - 'camera_server'
+      - 'led_server'
+      - 'touch_publisher'
+      - 'voice_cmd'
+      - 'audio_assistant'
+    timeout_manager_s: 30
+motion_manager:
+  ros__parameters:
+    topic_name_rc: 'body_cmd'
+    rate_common_hz: 30
+    rate_control_hz: 30
+    rate_output_hz: 5
+    rate_wait_loop_hz: 2
+    rate_odom_hz: 50
+    rate_lcm_const_hz: 500
+    timeout_motion_ms: 333
+    timeout_manager_s: 30
+    timeout_gait_s: 13
+    timeout_order_ms: 500
+    timeout_lcm_ms: 200
+    cons_abs_lin_x_mps: 1.6
+    cons_abs_lin_y_mps: 0.8
+    cons_abs_ang_r_rps: 0.5
+    cons_abs_ang_p_rps: 0.5
+    cons_abs_ang_y_rps: 1.0
+    cons_abs_aang_y_rps2: 1.0
+    cons_max_body_m: 0.5
+    cons_max_gait_m: 0.2
+    cons_default_body_m: 0.3
+    cons_default_gait_m: 0.08
+    cons_speed_a_normal_rps: 1.0
+    cons_speed_l_normal_mps: 0.3
+    scale_low_btr_r: 0.2
+    ttl_recv_from_motion: 1
+    ttl_send_to_motion: 2
+    ttl_from_odom: 255
+    port_recv_from_motion: 7670
+    port_send_to_motion: 7671
+    port_from_odom: 7669
+voice_cmd:
+  ros__parameters:
+    back_distance: -1.0
+    turn_angle: 6.2831853072

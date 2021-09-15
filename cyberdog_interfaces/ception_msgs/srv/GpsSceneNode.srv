@@ -1,0 +1,9 @@
+uint8 GPS_START = 0
+uint8 GPS_STOP = 1
+uint8 GPS_FACTORY_L1 = 2
+uint8 GPS_FACTORY_L5 = 3
+
+
+uint8 command
+---
+bool success

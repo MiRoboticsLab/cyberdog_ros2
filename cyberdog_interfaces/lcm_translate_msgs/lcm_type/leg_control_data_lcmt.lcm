@@ -1,0 +1,12 @@
+struct leg_control_data_lcmt {
+    float q[12];
+    float qd[12];
+    float p[12];
+    float v[12];
+    float tau_est[12];
+    float force_est[12];
+    float force_desired[12];
+    int32_t q_abad_limit[4];
+    int32_t q_hip_limit[4];
+    int32_t q_knee_limit[4];
+}
