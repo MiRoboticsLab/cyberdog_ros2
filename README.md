@@ -25,41 +25,7 @@ This project contains the main ROS 2 packages of Xiaomi CyberDog®.
 
 Most of the robot applications are implemented based on ROS -As shown in the framework diagram, it includes functions such as multi-device connection, multi-modal perception, multi-modal human-computer interaction, autonomous decision-making, localization, navigation, and target tracking. Currently, the DDS middleware in use is `Cyclone DDS`, and the ROS 2 Package is implemented at `Foxy`.
 
-```mermaid
-graph LR
-	AndroidAPP---|Bluetooth|ROS2_Bluetooth_Bridge
-	AndroidAPP---|WiFi&GRPC|ROS2_GRPC_Bridge
-	AndroidAPP---|WiFi&RTSP|ROS2_Live_Stream
-	
-	ROS2_GRPC_Bridge---DDS
-	ROS2_Live_Stream---|SHM|ROS2_Camera
-	ROS2_Camera---|SHM|ROS2_Vision
-	ROS2_Camera---DDS
-	ROS2_Vision---DDS
-	MCU_Driver_LED---|CAN|ROS2_LEDServer---DDS
-	MCU_Driver_Ultrasonic---|CAN|ROS2_ObstacleDetection---DDS
-	MCU_Driver_TOF---|CAN|ROS2_BodyStateDetection
-	MCU_Driver_Mag_AK---|CAN|ROS2_BodyStateDetection
-	MCU_Driver_Gyro&Acc_LSM---|CAN|ROS2_BodyStateDetection---DDS
-	MCU_Driver_OpticalFlow---|CAN|ROS2_BodyStateDetection
-	MCU_Driver_LightSensor---|CAN|ROS2_LightSensor---DDS
-	ROS2_AudioAssitant---DDS
-	ROS2_TouchDetection---DDS
-	ROS2_Realsense---DDS
-	
-	DDS---ROS2_BatteryManager
-	DDS---ROS2_VoiceCMD
-	DDS---ROS2_RemoteCMD
-	DDS---ROS2_DecisionMaker
-	DDS---ROS2_Localization
-	DDS---ROS2_Mapping
-	DDS---ROS2_Navigation
-	DDS---ROS2_Tracking
-	
-	ROS2_DecisionMaker---|Ethernet&LCM|MIT_Ctrl
-	ROS2_BatteryManager---|Ethernet&LCM|Manager
-
-```
+![SoftwareArchitecture](tools/docs/soft_arch.svg)
 
 由于NVIDIA对Jetson系列截至目前（202109）只提供了Ubuntu 18.04的支持, 故我们对Ubuntu 18.04进行了ROS 2的适配和修改. 具体的修改内容可以通过[mini.repos](tools/ros2_fork/mini.repos)进行拉取, 我们去除了部分没必要的仓, 并添加了一些需要使用的仓库（文件是Galcatic版本的, 我们会在后续适配到该版本）. 
 
