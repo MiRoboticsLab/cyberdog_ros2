@@ -8,7 +8,7 @@ endif()
 find_package(lcm REQUIRED)
 
 set(LCMTYPE_VERSION master)
-set(EXTPRJ_NAME athena_lcm_type)
+set(EXTPRJ_NAME cyberdog_lcm)
 set(PREFIX_DIR "${CMAKE_BINARY_DIR}/lcm_type")
 set(FILE_DIR "${PREFIX_DIR}/src/${EXTPRJ_NAME}/*.lcm")
 set(OUT_DIR "${CMAKE_BINARY_DIR}/header/${PROJECT_NAME}")

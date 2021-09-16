@@ -6,7 +6,7 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN} Starting LCM type generation...${NC}"
 
-cd ../athena_lcm_type/lcm_translate_msgs/lcm_type
+cd ../cyberdog_lcm/lcm_translate_msgs/lcm_type
 
 # Clean
 rm -rf dreame_dog
