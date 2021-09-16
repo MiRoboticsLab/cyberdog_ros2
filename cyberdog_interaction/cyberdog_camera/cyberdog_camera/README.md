@@ -16,4 +16,4 @@ Camera Application based on Nvidia [Argus](https://docs.nvidia.com/jetson/l4t-mu
 
 This package implement a ros2 application which provides camera functions such as capture, recording and AI detection.
 
-Athena_camera use Argus API to control camera hardware and capture image, use ROS2 API to manager camera node and export service interactions.
+Cyberdog_camera use Argus API to control camera hardware and capture image, use ROS2 API to manager camera node and export service interactions.

@@ -1,10 +1,10 @@
-### Athena_cyberdog_app 机器狗与应用通信模块简介
+### cyberdog_grpc 机器狗与应用通信模块简介
 本模块是一个通信模块，实现了GPRC server，GRPC client以及ROS2 节点的角色，本模块可以
 通过GRPC server接收来自于应用的请求，并将请求转化为ROS2系统的消息发送给相应的ROS2节点完成请求处理。
 通过ROS2 topic订阅者来完成ROS2系统内的信息收集，并通过GRPC client发送给应用。
 通过本模块，运行在手机端的应用可以完成对Cyberdog的控制，并完成对Cyberdog信息的手机以向用户展示。
 
-## Athena_cyberdog_app 功能介绍
+## cyberdog_grpc 功能介绍
 
 * 接收手机端应用的请求并发送到Cyberdog系统中的对应ROS2节点处理
     *  运动控制消息
