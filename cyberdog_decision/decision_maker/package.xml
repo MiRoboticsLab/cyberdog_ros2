@@ -16,6 +16,7 @@
   <depend>behaviortree_cpp_v3</depend>
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
+  <depend>lcm_vendor</depend>
   <depend>lcm_translate_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>

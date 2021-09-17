@@ -15,7 +15,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-include_directories(include)
+option(XIAOMI_XIAOAI "Build with Xiaomi Xiaoai Package" OFF)
+
+if(NOT XIAOMI_XIAOAI)
+  message(WARNING ">>> Skip building Xiaomi Xiaoai Package")
+  return()
+endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -26,8 +31,9 @@ find_package(builtin_interfaces REQUIRED)
 find_package(audio_base REQUIRED)
 find_package(xiaoai_sdk_vendor REQUIRED)
 find_package(toml11_vendor REQUIRED)
-find_package(media_vendor REQUIRED)
-find_package(mpg123 REQUIRED)
+find_package(mpg123_vendor REQUIRED)
+
+include_directories(include)
 
 set(library_name audio_assistant)
 
@@ -38,6 +44,7 @@ set(dependencies
   builtin_interfaces
   xiaoai_sdk_vendor
   toml11_vendor
+  mpg123_vendor
 )
 
 add_library(${library_name} SHARED
@@ -58,10 +65,6 @@ add_library(${library_name} SHARED
 
 ament_target_dependencies(${library_name}
   ${dependencies}
-)
-
-target_link_libraries(${library_name}
-  MPG123::libmpg123
 )
 
 install(TARGETS ${library_name}

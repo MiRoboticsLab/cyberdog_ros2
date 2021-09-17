@@ -264,7 +264,7 @@ int CameraServerNode::deleteFile(const std::string & filename)
 int CameraServerNode::getAllFiles(std::shared_ptr<CameraServiceT::Response> response)
 {
   std::string result;
-  std::vector<std::string> filenames;
+  std::vector<cv::String> filenames;
 
   if (access("/home/mi/Camera/", 0) != 0) {
     CAM_INFO("Path not existed.\n");

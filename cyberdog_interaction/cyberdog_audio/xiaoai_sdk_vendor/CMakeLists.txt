@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 
 project(xiaoai_sdk_vendor)
 
+option(XIAOMI_XIAOAI "Build with Xiaomi Xiaoai Package" OFF)
+
+if(NOT XIAOMI_XIAOAI)
+  message(WARNING ">>> Skip building Xiaomi Xiaoai Package")
+  return()
+endif()
+
 find_package(ament_cmake REQUIRED)
 
 include(ExternalProject)

@@ -1,6 +1,4 @@
-#!/usr/bin/python3
-#
-# Copyright 2021 Beijing Xiaomi Mobile Software Co., Ltd.
+# Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +15,7 @@
 ARG FROM_IMAGE=ubuntu:focal
 FROM $FROM_IMAGE
 
-# replace mirror
+# replace mirror (replace one near you)
 RUN apt-get update && \
   apt-get install -q -y --no-install-recommends ca-certificates && \
   mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
@@ -30,8 +28,7 @@ RUN apt-get update && \
 RUN echo 'Etc/UTC' > /etc/timezone && \
   ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
   apt-get update && \
-  apt-get install -q -y --no-install-recommends tzdata && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get install -q -y --no-install-recommends tzdata
 
 # install packages
 RUN apt-get update && apt-get install -q -y --no-install-recommends \
@@ -39,13 +36,10 @@ RUN apt-get update && apt-get install -q -y --no-install-recommends \
   dirmngr \
   gnupg2 \
   lsb-release \
-  python3-pip \
-  && rm -rf /var/lib/apt/lists/*
+  python3-pip
 
-# setup sources.list
+# setup ros2 sources.list (replace one near you)
 RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/ros2/ubuntu/ focal main" > /etc/apt/sources.list.d/ros2-latest.list
-
-# setup keys
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 # setup environment
@@ -81,18 +75,15 @@ RUN pip3 install -U \
 # install cross compiler
 RUN apt-get update && apt-get install --no-install-recommends -y \
   gcc-aarch64-linux-gnu \
-  gcc-arm-linux-gnueabihf 
-
-# remove apt cache
-RUN rm -rf /var/lib/apt/lists/*
-
-# add tmp dir
-RUN mkdir -p /tmp && chmod 777 /tmp
+  gcc-arm-linux-gnueabihf
 
 # add kernel cross compiler
 RUN mkdir -p /home/builder/build_tools
 RUN wget -q https://cdn.cnbj2m.fds.api.mi-img.com/cyberdog-package/build/l4t_gcc_7.3.1.tgz && \
   tar -xf l4t_gcc_7.3.1.tgz -C /home/builder/build_tools && \
   rm l4t_gcc_7.3.1.tgz
+
+# remove apt cache
+RUN rm -rf /var/lib/apt/lists/*
 
 CMD ["bash"]

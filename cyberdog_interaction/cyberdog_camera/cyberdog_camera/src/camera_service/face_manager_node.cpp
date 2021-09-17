@@ -155,7 +155,7 @@ int FaceManagerNode::deleteFace(std::string & face_name)
 
 int FaceManagerNode::getAllFaces(std::shared_ptr<FaceManagerT::Response> response)
 {
-  std::vector<std::string> filenames;
+  std::vector<cv::String> filenames;
 
   std::string path = FaceManager::getFaceDataPath();
   if (access(path.c_str(), 0) != 0) {

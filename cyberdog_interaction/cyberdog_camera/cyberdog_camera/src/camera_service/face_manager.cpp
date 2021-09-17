@@ -79,7 +79,7 @@ std::map<std::string, std::vector<float>> & FaceManager::getFeatures()
 bool FaceManager::loadFeatures()
 {
   std::lock_guard<std::mutex> lock(m_mutex);
-  std::vector<std::string> filenames;
+  std::vector<cv::String> filenames;
 
   if (access(label_path, 0) != 0) {
     printf("faces path not found.\n");

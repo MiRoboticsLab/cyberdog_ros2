@@ -16,7 +16,7 @@
   <depend>audio_base</depend>
   <depend>xiaoai_sdk_vendor</depend>
   <depend>toml11_vendor</depend>
-  <depend>media_vendor</depend>
+  <depend>mpg123_vendor</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

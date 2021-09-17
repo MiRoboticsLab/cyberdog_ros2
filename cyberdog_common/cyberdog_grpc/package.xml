@@ -25,7 +25,8 @@
   <depend>std_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
-  <depend>lcm</depend>
+  <depend>grpc_vendor</depend>
+  <depend>lcm_vendor</depend>
   <depend>lcm_translate_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>

@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 
 project(vision_sdk_vendor)
 
+option(XIAOMI_VISION "Build with Xiaomi Vision Package" OFF)
+
+if(NOT XIAOMI_VISION)
+  message(WARNING ">>> Skip building Xiaomi Vision Package")
+  return()
+endif()
+
 find_package(ament_cmake REQUIRED)
 
 include(ExternalProject)

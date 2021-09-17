@@ -20,14 +20,15 @@ include_directories(include)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ALSA REQUIRED)
-find_package(media_vendor REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_mixer REQUIRED)
+find_package(sdl2main_vendor REQUIRED)
+find_package(sdl2mixer_vendor REQUIRED)
 
 set(library_name audio_base)
 
 set(dependencies
   ALSA
+  sdl2main_vendor
+  sdl2mixer_vendor
 )
 
 add_library(${library_name} SHARED
@@ -38,12 +39,6 @@ add_library(${library_name} SHARED
 
 ament_target_dependencies(${library_name}
   ${dependencies}
-)
-
-target_link_libraries(${library_name}
-  ${CMAKE_THREAD_LIBS_INIT}
-  SDL2::Main
-  SDL2::Mixer
 )
 
 install(TARGETS ${library_name}

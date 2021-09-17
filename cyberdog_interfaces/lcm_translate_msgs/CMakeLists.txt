@@ -5,7 +5,8 @@ project(lcm_translate_msgs)
 if (NOT MOTION)
   find_package(ament_cmake REQUIRED)
 endif()
-find_package(lcm REQUIRED)
+
+find_package(lcm_vendor REQUIRED)
 
 set(LCMTYPE_VERSION master)
 set(EXTPRJ_NAME cyberdog_lcm)

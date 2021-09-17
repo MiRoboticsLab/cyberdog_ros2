@@ -12,6 +12,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+option(XIAOMI_VISION "Build with Xiaomi Vision Package" OFF)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(live_stream REQUIRED)
@@ -22,10 +24,13 @@ find_package(std_msgs REQUIRED)
 find_package(interaction_msgs REQUIRED)
 find_package(ception_msgs REQUIRED)
 find_package(cyberdog_utils REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.2.0 REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(ARGUS)
-find_package(cyberdog_vision QUIET)
+
+if(XIAOMI_VISION)
+  find_package(cyberdog_vision QUIET)
+endif()
 
 include(ExternalProject)
 set(EXTPRJ_NAME nv_argus)
@@ -134,7 +139,7 @@ add_executable(stereo_camera
 
 add_executable(showimage src/camera_test/showimage.cpp)
 
-if(cyberdog_vision_FOUND)
+if(cyberdog_vision_FOUND AND XIAOMI_VISION)
   add_definitions(-DHAVE_VISION_LIB)
   set(dependencies
     ${dependencies}
@@ -142,7 +147,7 @@ if(cyberdog_vision_FOUND)
   )
   ament_target_dependencies(maincamera cyberdog_vision)
 else()
-    message(WARNING "Project [cyberdog_vision] not found.")
+    message(WARNING ">>> Build camera without Xiaomi Vision.")
 endif()
 
 target_link_libraries(maincamera rt cuda EGL nvargus nvjpeg v4l2 avformat avcodec avutil argussampleutils pthread nvbuf_utils color_convert nvosd)

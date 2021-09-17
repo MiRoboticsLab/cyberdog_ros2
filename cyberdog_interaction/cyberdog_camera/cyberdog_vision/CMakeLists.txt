@@ -15,6 +15,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+option(XIAOMI_VISION "Build with Xiaomi Vision Package" OFF)
+
+if(NOT XIAOMI_VISION)
+  message(WARNING ">>> Skip building Xiaomi Vision Package")
+  return()
+endif()
+
 #dependencies
 find_package(ament_cmake REQUIRED)
 find_package(vision_sdk_vendor REQUIRED)
