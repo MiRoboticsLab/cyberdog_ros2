@@ -15,7 +15,7 @@ This project contains the main ROS 2 packages of Xiaomi CyberDog®.
 ## 基本信息 - Basic Information
 
 - 铁蛋默认用户是`mi`, 密码为`123`
-- The default user of CyberDog is `mi`, dafault password is `123`
+- The default user of CyberDog is `mi`, default password is `123`
 - 使用USB线连接`Download`接口, 可通过`ssh mi@192.168.55.1`连接铁蛋进行内部操作
 - You can use a USB cable to connect to the `Download` interface, and use `ssh mi@192.168.55.1` to connect to CyberDog for internal operations
 
