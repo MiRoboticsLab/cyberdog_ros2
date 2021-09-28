@@ -21,6 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ception_msgs REQUIRED)
+find_package(lcm_vendor REQUIRED)
 find_package(lcm_translate_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(interaction_msgs REQUIRED)
@@ -30,12 +31,12 @@ ${catkin_INCLUDE_DIRS}
 )
 
 add_executable(bms_recv src/bms_logger.cpp src/bms_recv.cpp)
-ament_target_dependencies(bms_recv rclcpp std_msgs ception_msgs lcm_translate_msgs rclcpp_action interaction_msgs)
-target_link_libraries(bms_recv lcm)
+ament_target_dependencies(bms_recv rclcpp std_msgs ception_msgs lcm_vendor rclcpp_action interaction_msgs)
+target_link_libraries(bms_recv)
 
 add_executable(bms_ctrl src/bms_ctrl.cpp)
-ament_target_dependencies(bms_ctrl rclcpp std_msgs ception_msgs lcm_translate_msgs)
-target_link_libraries(bms_ctrl lcm)
+ament_target_dependencies(bms_ctrl rclcpp std_msgs ception_msgs lcm_vendor)
+target_link_libraries(bms_ctrl)
 
 ## Install headers
 

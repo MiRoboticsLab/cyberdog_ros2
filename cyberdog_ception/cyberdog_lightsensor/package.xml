@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>cyberdog_interfaces</depend>
+  <depend>ception_msgs</depend>
   <depend>cyberdog_utils</depend>
 
   <test_depend>ament_lint_auto</test_depend>

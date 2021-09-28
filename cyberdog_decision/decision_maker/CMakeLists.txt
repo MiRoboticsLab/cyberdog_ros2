@@ -26,7 +26,7 @@ find_package(builtin_interfaces REQUIRED)
 find_package(cascade_lifecycle_msgs REQUIRED)
 find_package(ception_msgs REQUIRED)
 find_package(interaction_msgs REQUIRED)
-find_package(lcm REQUIRED)
+find_package(lcm_vendor REQUIRED)
 find_package(lcm_translate_msgs REQUIRED)
 find_package(motion_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -56,6 +56,7 @@ set(dependencies
   cascade_lifecycle_msgs
   ception_msgs
   interaction_msgs
+  lcm_vendor
   motion_msgs
   rclcpp
   rclcpp_action
@@ -103,7 +104,6 @@ ament_target_dependencies(${executable_name}
 
 target_link_libraries(${executable_name}
   ${library_name}
-  lcm
   stdc++fs
 )
 

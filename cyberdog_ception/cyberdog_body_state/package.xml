@@ -10,8 +10,9 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>cyberdog_interfaces</depend>
+  <depend>ception_msgs</depend>
   <depend>cyberdog_utils</depend>
+  <depend>lcm_vendor</depend>
   <depend>geometry_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>

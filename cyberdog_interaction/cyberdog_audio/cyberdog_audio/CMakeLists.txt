@@ -15,7 +15,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-include_directories(include)
+option(XIAOMI_XIAOAI "Build with Xiaomi Xiaoai Package" OFF)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -23,6 +23,8 @@ find_package(rclcpp REQUIRED)
 find_package(audio_base REQUIRED)
 find_package(audio_interaction REQUIRED)
 find_package(audio_assistant QUIET)
+
+include_directories(include)
 
 set(dependencies
   rclcpp
@@ -36,14 +38,14 @@ add_executable(${executable_name}
   src/main.cpp
 )
 
-if(audio_assistant_FOUND)
+if(audio_assistant_FOUND AND XIAOMI_XIAOAI)
   target_compile_definitions(${executable_name} PRIVATE "ENABLE_ASSISTANT")
   set(dependencies
     ${dependencies}
     audio_assistant
   )
 else()
-  message(STATUS "Project [audio_assitant] not found. Audio Assistant will not be support.")
+  message(WARNING ">>> Build audio without Xiaomi Xiaoai.")
 endif()
 
 ament_target_dependencies(${executable_name}

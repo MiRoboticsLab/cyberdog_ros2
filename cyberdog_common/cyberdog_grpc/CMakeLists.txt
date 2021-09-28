@@ -27,10 +27,9 @@ find_package(interaction_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(automation_msgs REQUIRED)
 find_package(cyberdog_utils REQUIRED)
-#find_package(cyberdog_voicecmd REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(builtin_interfaces REQUIRED)
-find_package(lcm REQUIRED)
+find_package(lcm_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
@@ -61,7 +60,6 @@ set(dependencies
   nav_msgs
   automation_msgs
   cyberdog_utils
-  #cyberdog_voicecmd
   behaviortree_cpp_v3
   builtin_interfaces
   rclcpp
@@ -71,7 +69,7 @@ set(dependencies
   std_msgs
   tf2
   tf2_ros
-  lcm_translate_msgs
+  lcm_vendor
 )
 
 add_custom_command(
@@ -136,12 +134,10 @@ ament_target_dependencies(${executable_name}
 
 target_link_libraries(${executable_name}
   ${library_name}
-  lcm
 )
 
 target_link_libraries(${executable_name_action}
   ${library_name}
-  lcm
 )
 
 
