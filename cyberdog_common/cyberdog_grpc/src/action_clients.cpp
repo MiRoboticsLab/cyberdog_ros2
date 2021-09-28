@@ -60,13 +60,13 @@ public:
     dog_sub_ = this->create_subscription<motion_msgs::msg::ActionRequest>(
       "cyberdog_action",
       rclcpp::SystemDefaultsQoS(), callback);
-    result_sub_ = this->create_publisher<motion_msgs::msg::ActionRespond>(
+    result_pub_ = this->create_publisher<motion_msgs::msg::ActionRespond>(
       "cyberdog_action_result",
       rclcpp::SystemDefaultsQoS());
   }
 
   rclcpp::Subscription<motion_msgs::msg::ActionRequest>::SharedPtr dog_sub_;
-  rclcpp::Publisher<motion_msgs::msg::ActionRespond>::SharedPtr result_sub_;
+  rclcpp::Publisher<motion_msgs::msg::ActionRespond>::SharedPtr result_pub_;
   std::shared_ptr<std::thread> dog_thread;
   int Command;
   motion_msgs::msg::Mode mode_;
@@ -107,7 +107,7 @@ private:
       } else {
         RCLCPP_INFO(get_logger(), "Result of mode_checkout: failed unaware");
       }
-      result_sub_->publish(respond);
+      result_pub_->publish(respond);
       RCLCPP_INFO(get_logger(), "mode end");
     } else if (Command == motion_msgs::msg::ActionRequest::CHECKOUT_PATTERN) {
       // checkout pattern
@@ -138,7 +138,7 @@ private:
       } else {
         RCLCPP_INFO(get_logger(), "Result of checkout_pattern: failed unaware");
       }
-      result_sub_->publish(respond);
+      result_pub_->publish(respond);
       RCLCPP_INFO(get_logger(), "pattern end");
     } else if (Command == motion_msgs::msg::ActionRequest::EXTMONORDER) {
       auto order_goal = CheckEXTMONORDER_T::Goal();
@@ -165,7 +165,7 @@ private:
       } else {
         RCLCPP_INFO(get_logger(), "Result of EXTMONORDER: failed unaware");
       }
-      result_sub_->publish(respond);
+      result_pub_->publish(respond);
       RCLCPP_INFO(get_logger(), "EXTMONORDER end");
     }
   }
