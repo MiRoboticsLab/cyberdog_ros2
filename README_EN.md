@@ -4,6 +4,8 @@
 
 ![CyberDogDog](tools/docs/cyberdog_poster.jpg)
 
+> ***[中文](README.md)***
+
 ## Introduction
 
 This project contains the main ROS 2 packages of Xiaomi CyberDog®.
@@ -15,11 +17,9 @@ This project contains the main ROS 2 packages of Xiaomi CyberDog®.
 
 ## Software Architecture 
 
-Most of the robot applications are implemented based on ROS -As shown in the framework diagram, it includes functions such as multi-device connection, multi-modal perception, multi-modal human-computer interaction, autonomous decision-making, localization, navigation, and target tracking. Currently, the DDS middleware in use is `Cyclone DDS`, and the ROS 2 Package is implemented at `Galactic`.
+Most of the robot applications are implemented based on ROS -As shown in the [architecture diagram](tools/docs/soft_arch.svg), it includes functions such as multi-device connection, multi-modal perception, multi-modal human-computer interaction, autonomous decision-making, localization, navigation, and target tracking. Currently, the DDS middleware in use is `Cyclone DDS`, and the ROS 2 Package is implemented at `Galactic`.
 
-![SoftwareArchitecture](tools/docs/soft_arch.svg)
-
-Due to NVIDIA only provides support for Ubuntu 18.04 for the Jetson series (202109) as yet, we have adapted and modified ROS 2 for Ubuntu 18.04. The specific modification content can be pulled through [mini.repos](tools/ros2_fork/mini.repos). We have removed some unnecessary repositories, and added some repositories that need to be used (The file is of the Galactic version, and we will adapt to this version in the future).
+Due to NVIDIA only provides support for Ubuntu 18.04 for the Jetson series (202109) as yet, we have adapted and modified ROS 2 for Ubuntu 18.04. The specific modification content can be pulled through [mini.repos](tools/ros2_fork/mini.repos). We have removed some unnecessary repositories, and added some repositories that need to be used.
 
 The documentation of this project is in the root directory of each submodule. If necessary, read [this page](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/CyberDog-2021---ROS-2-%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84-ROS-2-Software-Architecture).
 
