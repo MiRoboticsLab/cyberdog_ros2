@@ -1,0 +1,66 @@
+axis = [4, 3, 1, 0]
+
+[[button]] #0
+type = "B"
+pos = 3
+down = 0
+[[button]] #1
+type = "B"
+pos = 0
+down = 0
+[[button]] #2
+type = "B"
+pos = 2
+down = 0
+[[button]] #3
+type = "B"
+pos = 1
+down = 0
+[[button]] #4
+type = "A"
+pos = 7
+down = 1
+[[button]] #5
+type = "A"
+pos = 7
+down = -1
+[[button]] #6
+type = "A"
+pos = 6
+down = 1
+[[button]] #7
+type = "A"
+pos = 6
+down = -1
+[[button]] #8
+type = "B"
+pos = 5
+down = 0
+[[button]] #9
+type = "A"
+pos = 5
+down = -1
+[[button]] #10
+type = "B"
+pos = 4
+down = 0
+[[button]] #11
+type = "A"
+pos = 2
+down = -1
+[[button]] #12
+type = "B"
+pos = 7
+down = 0
+[[button]] #13
+type = "B"
+pos = 6
+down = 0
+[[button]] #14
+type = "B"
+pos = 10
+down = 0
+[[button]] #15
+type = "B"
+pos = 9
+down = 0
