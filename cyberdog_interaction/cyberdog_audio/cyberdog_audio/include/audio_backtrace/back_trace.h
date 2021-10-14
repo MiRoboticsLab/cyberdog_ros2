@@ -49,8 +49,8 @@ static void dump(void)
 
 static void signal_handler(int signo)
 {
-  fprintf(stderr, "=========>>>catch signal %d <<<=========", signo);
-  fprintf(stderr, "backtrace start...");
+  fprintf(stderr, "=========>>>catch signal %d <<<=========\n", signo);
+  fprintf(stderr, "backtrace start...\n");
   dump();
   fprintf(stderr, "backtrace end...\n");
 

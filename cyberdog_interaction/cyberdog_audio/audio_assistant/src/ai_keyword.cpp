@@ -19,6 +19,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "xiaoai_sdk/vpm/vpm_sdk.h"
 #include "audio_base/debug/ai_debugger.hpp"
+#include "audio_base/audio_queue.hpp"
 #include "audio_assistant/mp3decoder.hpp"
 
 #define VPM_CONFIG_FILE_PATH "/opt/ros2/cyberdog/ai_conf/xaudio_engine.conf"
@@ -36,10 +37,9 @@ typedef struct
 {
   unsigned char * start;
   unsigned int length;
-  std::mutex mutex;
 } vpm_input_buf_t;
 
-extern vpm_input_buf_t vpm_input_buffer;
+extern athena_audio::MsgQueue<vpm_input_buf_t> vpm_msg_queue;
 extern bool vpm_buf_ready;
 extern void ai_nativeasr_data_handler(asr_msg_type_t msg, unsigned char * buf, int buf_size);
 void ai_vpm_work_loop();
@@ -154,9 +154,9 @@ static void vpm_wakeup_data_handle(
     return;
   }
 
+  // close interrupt while audio playing
   // std::shared_ptr<mp3decoder> mp3decoder_ptr = mp3decoder::GetInstance();
-  // if ( mp3decoder_ptr->tts_player_is_playing() == true )
-  // {
+  // if ( mp3decoder_ptr->tts_player_is_playing() == true ) {
   // aivs_set_interrupt();
   // tts_stream_flush();
   // mp3decoder_ptr->tts_player_stop_now();
@@ -341,6 +341,7 @@ static int setParas(int type, int value)
 
 void ai_vpm_work_loop()
 {
+  fprintf(stdout, "vc: ai vp work loop on call\n");
   for (;; ) {
     if (getAiWakeupRunStatus() == false) {
       printf("vc:vpm: getAiWakeupRunStatus shitch off\n");
@@ -352,12 +353,12 @@ void ai_vpm_work_loop()
     if (vpm_buf_ready == false) {
       continue;
     }
-    // will check here for open/close input to wakeup sdk
-    vpm_input_buffer.mutex.lock();
-    input.raw = reinterpret_cast<void *>(vpm_input_buffer.start);
-    input.size = vpm_input_buffer.length;
+
+    vpm_input_buf_t vpm_data;
+    vpm_msg_queue.DeQueue(vpm_data);
+    input.raw = reinterpret_cast<void *>(vpm_data.start);
+    input.size = vpm_data.length;
     vpm_process(&input);
-    vpm_input_buffer.mutex.unlock();
   }
 
   /*release vpm*/

@@ -38,6 +38,8 @@ add_executable(${executable_name}
   src/main.cpp
 )
 
+target_compile_definitions(${executable_name} PRIVATE "ENABLE_BACKTRACE")
+
 if(audio_assistant_FOUND AND XIAOMI_XIAOAI)
   target_compile_definitions(${executable_name} PRIVATE "ENABLE_ASSISTANT")
   set(dependencies
