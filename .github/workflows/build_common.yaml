@@ -18,12 +18,6 @@ jobs:
         uses: ros-tooling/action-ros-ci@v0.2
         with:
           target-ros2-distro: galactic
-          colcon-defaults: |
-            {
-              "build": {
-                "merge-install": [true]
-              }
-            }
       - name: Codecov
         uses: codecov/codecov-action@v1.2.1
         with:

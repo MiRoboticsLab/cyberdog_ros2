@@ -17,10 +17,13 @@
 
 #include <stdlib.h>
 #include <cstdlib>
+#include <memory>
 
 #include "sys/stat.h"
 #include "sys/types.h"
 
+#include "audio_base/audio_player.hpp"
+#include "audio_base/audio_queue.hpp"
 
 #ifdef __cplusplus
 extern "C"
@@ -30,6 +33,9 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
+
+#define DELAY_TIMES 10
+
 extern bool player_end;
 
 void recorder_work_loop(void);

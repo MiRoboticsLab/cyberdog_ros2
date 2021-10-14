@@ -105,11 +105,8 @@ cyberdog_utils::CallbackReturn VoiceCmd::on_configure(const rclcpp_lifecycle::St
 
 cyberdog_utils::CallbackReturn VoiceCmd::on_activate(const rclcpp_lifecycle::State &)
 {
+  int ai_status, pub_status, volume_value;
   RCLCPP_INFO(get_logger(), "Activating");
-  RCLCPP_INFO(
-    get_logger(), "Activating, (AI_OFFLINE_ON & AI_MASK) & (AI_ONLINE_ON & AI_MASK): %d",
-    (AI_OFFLINE_ON & AI_MASK) & (AI_ONLINE_ON & AI_MASK));
-  RCLCPP_INFO(get_logger(), "Activating, AI_OFFLINE_ON | AI_MASK: %d", AI_OFFLINE_ON | AI_MASK);
   player_init();
   sleep(10);
   play_server_->activate();
@@ -118,7 +115,6 @@ cyberdog_utils::CallbackReturn VoiceCmd::on_activate(const rclcpp_lifecycle::Sta
   token_ready_pub_->on_activate();
   std::string device_id = getDeviceId();
 
-  int ai_status, pub_status;
   const auto token = toml::parse(TOKEN_FILE);
   std::string title_toml = toml::find<std::string>(token, "title");
   RCLCPP_INFO(get_logger(), "toml title: %s", title_toml.c_str());
@@ -143,17 +139,24 @@ cyberdog_utils::CallbackReturn VoiceCmd::on_activate(const rclcpp_lifecycle::Sta
   ai_status = get_ai_require_status();
   if (fac_test_flage(FAC_TEST_FILE)) {
     RCLCPP_INFO(get_logger(), "factory force xiaoai on");
-    pub_status = AI_ONLINE_ON | AI_MASK;
+    pub_status = AI_ONLINE_ON;
   } else {
     if (ai_status == -1) {
-      pub_status = (AI_OFFLINE_ON & AI_MASK) & (AI_ONLINE_ON & AI_MASK);
+      pub_status = AI_OFF;
     } else if (ai_status == AI_OFFLINE_ON) {
-      pub_status = AI_OFFLINE_ON | AI_MASK;
+      pub_status = AI_OFFLINE_ON;
     } else if (ai_status == AI_ONLINE_ON) {
-      pub_status = AI_ONLINE_ON | AI_MASK;
+      pub_status = AI_ONLINE_ON;
     } else {
-      pub_status = AI_MASK;
+      pub_status = AI_OFF;
     }
+  }
+
+  volume_value = volume_check();
+  if (volume_value == -1) {
+    volume_set(7);
+  } else {
+    volume_set(volume_value);
   }
   PublishAiSwitch(pub_status);
   set_ai_require_status(pub_status);
@@ -503,6 +506,8 @@ void VoiceCmd::check_play_request()
   // auto order_user = goal->order.user;
   auto order_name = goal->order.name.id;
   rclcpp::WallRate r(std::chrono::seconds(1));
+  int volume_memory = volume_get();
+  RCLCPP_INFO(get_logger(), "volume_get: %d.", volume_memory);
   bool new_goal(false);
   RCLCPP_INFO(
     get_logger(), "Got order goal %d from %s.", goal->order.name.id,
@@ -516,6 +521,10 @@ void VoiceCmd::check_play_request()
     result->result.error = interaction_msgs::msg::AudioResult::SERVER_INACTIVE;
     play_server_->succeeded_current(result);
     return;
+  }
+
+  if (order_name == 8 || order_name == 9) {
+    volume_set(7);
   }
   new_goal = true;
   RCLCPP_INFO(
@@ -569,6 +578,9 @@ void VoiceCmd::check_play_request()
       /* RCLCPP_INFO(
         get_logger(),
         "Playorder %d executed failed.", order_name); */
+      if (order_name == 8 || order_name == 9) {
+        volume_set(volume_memory);
+      }
       return;
     }
   }
@@ -628,15 +640,15 @@ void VoiceCmd::check_app_order(
     }
     response_->flage = TokenPassT::Response::DID_SUCCEED;
   } else if (request_->ask == TokenPassT::Request::ASK_XIAOAI_OFF) {
-    ai_pub_status = (AI_OFFLINE_ON & AI_MASK) & (AI_ONLINE_ON & AI_MASK);
+    ai_pub_status = AI_OFF;
     RCLCPP_INFO(
       get_logger(), "recive xiaoai off ask from app, the ask will pub to audio assitant: %d.",
       ai_pub_status);
     PublishAiSwitch(ai_pub_status);
-    set_ai_require_status(AI_MASK);
+    set_ai_require_status(AI_OFF);
     response_->flage = TokenPassT::Response::XIAOAI_OFF_SUCCEED;
   } else if (request_->ask == TokenPassT::Request::ASK_XIAOAI_ON) {
-    ai_pub_status = AI_ONLINE_ON | AI_MASK;
+    ai_pub_status = AI_ONLINE_ON;
     RCLCPP_INFO(
       get_logger(), "recive xiaoai on ask from app, the ask will pub to audio assitant: %d.",
       ai_pub_status);
@@ -660,9 +672,9 @@ void VoiceCmd::check_app_order(
     } else if (ai_status_temp == AI_OFFLINE_ON) {
       response_->flage = TokenPassT::Response::XIAOAI_OFFLINE_ON;
       RCLCPP_INFO(get_logger(), "response XIAOAI_OFFLINE_ON to app: %d.", AI_OFFLINE_ON);
-    } else if (ai_status_temp == AI_MASK || ai_status_temp == -1) {
+    } else if (ai_status_temp == AI_OFF || ai_status_temp == -1) {
       response_->flage = TokenPassT::Response::XIAOAI_OFF;
-      RCLCPP_INFO(get_logger(), "response AI_OFFLINE_ON to app: %d.", AI_MASK);
+      RCLCPP_INFO(get_logger(), "response AI_OFFLINE_ON to app: %d.", AI_OFF);
     }
   } else {
     RCLCPP_ERROR(get_logger(), "recive unknow ask from app.");
@@ -1000,6 +1012,14 @@ void VoiceCmd::volume_set(int vol)
     volume = vol;
   }
   player_->SetVolume(vol_value[volume]);
+  const auto volume_toml = toml::parse(VOLUME_FILE);
+  const toml::value toml_t{
+    {"title", "volume status"},
+    {"volume", volume},
+  };
+  std::ofstream ofs(VOLUME_FILE, std::ofstream::out);
+  ofs << toml_t;
+  ofs.close();
 }
 
 int VoiceCmd::volume_get()
@@ -1018,6 +1038,16 @@ int VoiceCmd::volume_get()
     }
   }
   return 0;
+}
+
+int64_t VoiceCmd::volume_check()
+{
+  const auto volume_toml = toml::parse(VOLUME_FILE);
+
+  std::int64_t volume_value = toml::find<std::int64_t>(volume_toml, "volume");
+  RCLCPP_INFO(get_logger(), "volume_value(toml) : %d", volume_value);
+
+  return volume_value;
 }
 
 void VoiceCmd::player_init()

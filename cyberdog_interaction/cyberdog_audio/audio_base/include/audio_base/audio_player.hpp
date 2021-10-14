@@ -41,6 +41,8 @@ namespace cyberdog_audio
 
 #define INDE_VOLUME_GROUP -1
 
+#define MAX_QUEUE_BUFF_NUM 100
+
 using chuck_ptr = std::shared_ptr<Mix_Chunk>;
 using callback = std::function<void (void)>;
 
@@ -56,14 +58,16 @@ public:
   static int GetFreeChannel();
   static bool InitSuccess();
 
-  static bool OpenReference();
+  static bool OpenReference(int buffsize);
   static void CloseReference();
-  static int GetReferenceData(Uint8 * buff, int need_size);
-  static size_t GetReferenceDataSize();
+  static bool GetReferenceData(char * buff);
+  static bool HaveReferenceData();
+  static void ClearReferenceData();
 
   void SetFinishCallBack(callback finish_callback);
+  void SetChuckVolume(int volume);
   int SetVolume(int volume);
-  void SetVolumeGroup(int volume_gp);
+  void SetVolumeGroup(int volume_gp, int default_volume);
   int GetVolume();
 
   void AddPlay(Uint8 * buff, int len);
@@ -77,15 +81,16 @@ private:
   inline static int channelNum_;
   inline static int activeNum_;
   inline static std::vector<int> thread_num_;
-  inline static std::vector<int> volume_;
+  inline static std::vector<int> chuck_volume_;
   inline static std::vector<int> volume_group_;
   inline static std::map<int, std::queue<chuck_ptr>> chucks_;
   inline static std::map<int, std::queue<Uint8 *>> databuff_;
   inline static std::map<int, callback> finish_callbacks_;
 
-  inline static std::queue<Uint8> reference_data_;
+  inline static std::queue<Uint8 *> reference_data_;
   inline static SDL_AudioDeviceID reference_id_;
   inline static SDL_AudioSpec obtained_spec_;
+  inline static int ref_buffsize_;
 
   int self_channel_;
   int init_ready_;

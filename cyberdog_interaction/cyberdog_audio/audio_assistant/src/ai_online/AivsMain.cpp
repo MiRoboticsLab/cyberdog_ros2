@@ -50,6 +50,7 @@
 #include "xiaoai_sdk/aivs/ClientLoggerHooker.h"
 #include "xiaoai_sdk/audio_config/config.h"
 #include "audio_assistant/audio_assitant.hpp"
+#include "audio_base/audio_queue.hpp"
 #include "audio_assistant/mp3decoder.hpp"
 
 #include "xiaoai_sdk/aivs/RobotController.h"
@@ -96,6 +97,13 @@ typedef struct tts_info
   tts_type_t type;
   unsigned char * address;
   unsigned int length;
+  void free_mem()
+  {
+    if (address != nullptr) {
+      fprintf(stdout, "vc: free ttsinfo memory\n");
+      free(address);
+    }
+  }
 } tts_info_t;
 
 typedef struct tts_queue
@@ -104,6 +112,8 @@ typedef struct tts_queue
   std::mutex mutex;
 } tts_queue_t;
 static tts_queue_t mMsgQueueTts;
+
+static athena_audio::MsgQueue<tts_info_t> TTSMsgQueue;
 
 bool getAivsTtsRunStatus(void)
 {
@@ -139,12 +149,7 @@ int tts_player_decode_paly(void);
 
 int tts_stream_flush(void)
 {
-  // will check here
-  std::cout << "vc: befor clear, queue.size " << mMsgQueueTts.queue.size() << std::endl;
-  mMsgQueueTts.mutex.lock();    // queue lock
-  mMsgQueueTts.queue.clear();
-  mMsgQueueTts.mutex.unlock();    // queue unlock
-  std::cout << "vc: befor clear, queue.size " << mMsgQueueTts.queue.size() << std::endl;
+  TTSMsgQueue.Clear();
   return 0;
 }
 
@@ -159,47 +164,38 @@ int aivs_set_interrupt(void)
   return 0;
 }
 
-int ai_push_msg_playback(tts_info_t ttsInfo)
+int ai_push_msg_playback(const tts_info_t & ttsInfo)
 {
-  std::cout << "vc: enter ai_push_msg_playback()" << std::endl;
-  tts_info_t ttsInfoPlayback = {TTS_TYPE_INVALID, NULL, 0};
-  tts_info_t ttsInfoPlayStart = {TTS_TYPE_INVALID, NULL, 0};
-  tts_info_t ttsInfoPlayStop = {TTS_TYPE_INVALID, NULL, 0};
+  std::cout << "vc: enter ai_push_msg_playback(), type: " << ttsInfo.type << std::endl;
+  tts_info_t ttsInfoPlay = {ttsInfo.type, NULL, ttsInfo.length};
 
   switch (ttsInfo.type) {
     case TTS_TYPE_STREAM:
       std::cout << "vc: TTS_TYPE_STREAM Case !!" << std::endl;
 
       if (ttsInfo.address == NULL || ttsInfo.length == 0) {
-        std::cout << "vc: ai_push_msg_playback invalid paramter !!!" << std::endl;
+        std::cout << "vc: ai_push_msg_playback invalid paramter, stream addr is null !!!" <<
+          std::endl;
         return -1;
       } else {
-        mMsgQueueTts.mutex.lock();    // queue lock
-        ttsInfoPlayback.type = ttsInfo.type;
-        ttsInfoPlayback.length = ttsInfo.length;
-        ttsInfoPlayback.address = (unsigned char *)malloc(ttsInfo.length);
-        if (ttsInfoPlayback.address != NULL) {
-          memcpy(ttsInfoPlayback.address, ttsInfo.address, ttsInfoPlayback.length);
-          mMsgQueueTts.queue.push_front(ttsInfoPlayback);
+        ttsInfoPlay.address = (unsigned char *)malloc(ttsInfo.length);
+        if (ttsInfoPlay.address != NULL) {
+          memcpy(ttsInfoPlay.address, ttsInfo.address, ttsInfoPlay.length);
+          TTSMsgQueue.EnQueue(ttsInfoPlay);
+        } else {
+          std::cout << "vc: ai_push_msg_playback failed, cannot allocate memory!" << std::endl;
         }
-        mMsgQueueTts.mutex.unlock();    // queue unlock
       }
       break;
 
     case TTS_TYPE_SYNC_START:
       std::cout << "vc: TTS_TYPE_SYNC_START Case !!" << std::endl;
-      mMsgQueueTts.mutex.lock();  // queue lock
-      ttsInfoPlayStart.type = ttsInfo.type;
-      mMsgQueueTts.queue.push_front(ttsInfoPlayStart);
-      mMsgQueueTts.mutex.unlock();  // queue unlock
+      TTSMsgQueue.EnQueue(ttsInfoPlay);
       break;
 
     case TTS_TYPE_SYNC_STOP:
       std::cout << "vc: TTS_TYPE_SYNC_STOP Case !!" << std::endl;
-      mMsgQueueTts.mutex.lock();  // queue lock
-      ttsInfoPlayStop.type = ttsInfo.type;
-      mMsgQueueTts.queue.push_front(ttsInfoPlayStop);
-      mMsgQueueTts.mutex.unlock();  // queue unlock
+      TTSMsgQueue.EnQueue(ttsInfoPlay);
       break;
 
     default:
@@ -222,51 +218,46 @@ int aivsTtsHandler(void)
       continue;
     }
 
-    mMsgQueueTts.mutex.lock();    // queue lock
-    if (!mMsgQueueTts.queue.empty()) {
-      ttsInfoPlayback = mMsgQueueTts.queue.back();
-      mMsgQueueTts.queue.pop_back();
-      mMsgQueueTts.mutex.unlock();      // queue unlock
-      switch (ttsInfoPlayback.type) {
-        case TTS_TYPE_STREAM:
-          if (ttsInfoPlayback.address == NULL || ttsInfoPlayback.length == 0) {
-            usleep(1000 * 100);
-            continue;
-          } else {
-            std::cout << "vc: Process TTS_TYPE_STREAM " << std::endl;
-            cyberdog_audio::mp3decoder::GetInstance()->tts_player_accumulate(
-              ttsInfoPlayback.address,
-              ttsInfoPlayback.length);
-            free(ttsInfoPlayback.address);
-          }
-          break;
-
-        case TTS_TYPE_SYNC_START:
-          std::cout << "vc: Process TTS_TYPE_SYNC_START " << std::endl;
-          cyberdog_audio::mp3decoder::GetInstance()->tts_player_init();
-          ai_push_msg(101);      /*led control for start-dialog status*/
-          break;
-
-        case TTS_TYPE_SYNC_STOP:
-          std::cout << "vc: Process TTS_TYPE_SYNC_STOP " << std::endl;
-
-          if (cyberdog_audio::mp3decoder::GetInstance() == nullptr) {
-            fprintf(stderr, "Process TTS_TYPE_SYNC_STOP Error with invalid pointer!\n");
-            break;
-          }
-
-          cyberdog_audio::mp3decoder::GetInstance()->tts_player_decode_paly();
-          // ai_push_msg(104);/*led control for end -dialog status*/
-          break;
-
-        default:
-          std::cout << "vc: Process default case !!" << std::endl;
-          break;
-      }
-    } else {
-      mMsgQueueTts.mutex.unlock();      // queue unlock
-      usleep(1000 * 100);
+    if (!TTSMsgQueue.DeQueue(ttsInfoPlayback)) {
+      std::cout << "vc: aivsTtsHandler get msg with empty, skip once!" << std::endl;
       continue;
+    }
+
+    switch (ttsInfoPlayback.type) {
+      case TTS_TYPE_STREAM:
+        if (ttsInfoPlayback.address == NULL || ttsInfoPlayback.length == 0) {
+          usleep(1000 * 100);
+          continue;
+        } else {
+          std::cout << "vc: Process TTS_TYPE_STREAM " << std::endl;
+          cyberdog_audio::mp3decoder::GetInstance()->tts_player_accumulate(
+            ttsInfoPlayback.address,
+            ttsInfoPlayback.length);
+          free(ttsInfoPlayback.address);
+        }
+        break;
+
+      case TTS_TYPE_SYNC_START:
+        std::cout << "vc: Process TTS_TYPE_SYNC_START " << std::endl;
+        cyberdog_audio::mp3decoder::GetInstance()->tts_player_init();
+        ai_push_msg(101);      /*led control for start-dialog status*/
+        break;
+
+      case TTS_TYPE_SYNC_STOP:
+        std::cout << "vc: Process TTS_TYPE_SYNC_STOP " << std::endl;
+
+        if (cyberdog_audio::mp3decoder::GetInstance() == nullptr) {
+          fprintf(stderr, "Process TTS_TYPE_SYNC_STOP Error with invalid pointer!\n");
+          break;
+        }
+
+        cyberdog_audio::mp3decoder::GetInstance()->tts_player_decode_paly();
+        // ai_push_msg(104);/*led control for end -dialog status*/
+        break;
+
+      default:
+        std::cout << "vc: Process default case !!" << std::endl;
+        break;
     }
   }
 }
@@ -778,6 +769,8 @@ void initAivsDeviceOAuth()
   clientInfo->setDeviceId(DEVICE_OAUTH_DEVICE_ID);
 
   auto config = getAudioConfig();
+  config->putBoolean(aivs::AivsConfig::Auth::REQ_TOKEN_HYBRID, true);
+  config->putBoolean(aivs::AivsConfig::Auth::REQ_TOKEN_BY_SDK, true);
   gEngine = aivs::Engine::create(config, clientInfo, aivs::Engine::ENGINE_AUTH_DEVICE_OAUTH);
 }
 
