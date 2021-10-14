@@ -30,7 +30,7 @@ cyberdog_audio::AudioPlayer::AudioPlayer(
     init_success_ = Init();
     channelNum_ = Mix_AllocateChannels(DEFAULT_PLAY_CHANNEL_NUM);
     thread_num_ = std::vector<int>(channelNum_, 0);
-    volume_ = std::vector<int>(channelNum_, volume);
+    chuck_volume_ = std::vector<int>(channelNum_, MIX_MAX_VOLUME);
     volume_group_ = std::vector<int>(channelNum_, INDE_VOLUME_GROUP);
     Mix_ChannelFinished(chuckFinish_callback);
     chucks_ = std::map<int, std::queue<chuck_ptr>>();
@@ -63,14 +63,13 @@ cyberdog_audio::AudioPlayer::AudioPlayer(
       channelNum_ = Mix_AllocateChannels(self_channel_ + 1);
       for (int ch = thread_num_.size(); ch < channelNum_; ch++) {
         thread_num_.push_back(0);
-        volume_.push_back(volume);
+        chuck_volume_.push_back(MIX_MAX_VOLUME);
         volume_group_.push_back(volume_group);
       }
     }
     init_ready_ = true;
     thread_num_[self_channel_] = 0;
-    volume_[self_channel_] = GetGroupVolume(volume_group, volume);
-    volume_group_[self_channel_] = volume_group;
+    SetVolumeGroup(volume_group, volume);
     std::cout << "[AudioPlayer]Open on Channel[" << self_channel_ << "].\n";
   } else {
     std::cout << "[AudioPlayer]Init_Error, Channel[" << self_channel_ << "] be used.\n";
@@ -110,7 +109,7 @@ bool cyberdog_audio::AudioPlayer::InitSuccess()
   return init_success_;
 }
 
-bool cyberdog_audio::AudioPlayer::OpenReference()
+bool cyberdog_audio::AudioPlayer::OpenReference(int buffsize)
 {
   if (init_success_ == false && reference_id_ != 0) {return false;}
   int deviceNum = SDL_GetNumAudioDevices(SDL_TRUE);
@@ -123,7 +122,7 @@ bool cyberdog_audio::AudioPlayer::OpenReference()
     desired_spec.freq = AUDIO_FREQUENCY;
     desired_spec.format = AUDIO_FORMAT;
     desired_spec.channels = AUDIO_CHANNELS;
-    desired_spec.samples = AUDIO_CHUCKSIZE;
+    desired_spec.samples = buffsize * 0.5;
     desired_spec.callback = audioRecording_callback;
     reference_id_ = SDL_OpenAudioDevice(
       SDL_GetAudioDeviceName(0, SDL_TRUE),
@@ -136,7 +135,8 @@ bool cyberdog_audio::AudioPlayer::OpenReference()
       return false;
     } else {
       SDL_PauseAudioDevice(reference_id_, SDL_FALSE);
-      reference_data_ = std::queue<Uint8>();
+      ref_buffsize_ = buffsize;
+      reference_data_ = std::queue<Uint8 *>();
       std::cout << "[AudioPlayer]Success open reference channel\n";
       return true;
     }
@@ -150,33 +150,46 @@ void cyberdog_audio::AudioPlayer::CloseReference()
   SDL_CloseAudioDevice(reference_id_);
   reference_id_ = 0;
   while (reference_data_.empty() == false) {
+    delete[] reference_data_.front();
     reference_data_.pop();
   }
   std::cout << "[AudioPlayer]Close reference channel\n";
 }
 
-int cyberdog_audio::AudioPlayer::GetReferenceData(Uint8 * buff, int need_size)
+bool cyberdog_audio::AudioPlayer::GetReferenceData(char * buff)
 {
-  if (reference_id_ != 0) {
-    int out_size = std::min(need_size, static_cast<int>(reference_data_.size()));
-    for (int a = 0; a < out_size; a++) {
-      buff[a] = reference_data_.front();
-      reference_data_.pop();
-    }
-    return out_size;
+  if (reference_id_ != 0 && reference_data_.empty() == false) {
+    memcpy(buff, reference_data_.front(), ref_buffsize_);
+    delete[] reference_data_.front();
+    reference_data_.pop();
+    return true;
   }
-  return 0;
+  return false;
 }
 
-size_t cyberdog_audio::AudioPlayer::GetReferenceDataSize()
+bool cyberdog_audio::AudioPlayer::HaveReferenceData()
 {
-  return reference_data_.size();
+  return reference_data_.size() != 0;
+}
+
+void cyberdog_audio::AudioPlayer::ClearReferenceData()
+{
+  for (int a = 0; a < static_cast<int>(reference_data_.size()); a++) {
+    delete[] reference_data_.front();
+    reference_data_.pop();
+  }
 }
 
 void cyberdog_audio::AudioPlayer::SetFinishCallBack(callback finish_callback)
 {
   if (init_ready_ == false) {return;}
   finish_callbacks_[self_channel_] = finish_callback;
+}
+
+void cyberdog_audio::AudioPlayer::SetChuckVolume(int volume)
+{
+  if (init_ready_ == false) {return;}
+  chuck_volume_[self_channel_] = volume;
 }
 
 int cyberdog_audio::AudioPlayer::SetVolume(int volume)
@@ -195,29 +208,30 @@ int cyberdog_audio::AudioPlayer::SetVolume(int volume)
   return real_set;
 }
 
-void cyberdog_audio::AudioPlayer::SetVolumeGroup(int volume_gp)
+void cyberdog_audio::AudioPlayer::SetVolumeGroup(int volume_gp, int default_volume)
 {
   if (init_ready_ == false) {return;}
-  volume_[self_channel_] = GetGroupVolume(volume_gp, volume_[self_channel_]);
+  SetSingleVolume(self_channel_, GetGroupVolume(volume_gp, default_volume));
   volume_group_[self_channel_] = volume_gp;
 }
 
 int cyberdog_audio::AudioPlayer::GetVolume()
 {
   if (init_ready_ == false) {return -1;}
-  return volume_[self_channel_];
+  return Mix_Volume(self_channel_, -1);
 }
 
 void cyberdog_audio::AudioPlayer::AddPlay(Uint8 * buff, int len)
 {
   if (self_channel_ >= 0 && init_ready_ && buff != nullptr && len > 0) {
+    std::cout << "[AudioPlayer]Get play request\n";
     auto chuck = std::make_shared<Mix_Chunk>();
     Uint8 * p = new Uint8[len];
     memcpy(p, buff, len);
     databuff_[self_channel_].push(p);
     chuck->abuf = p;
     chuck->alen = len;
-    chuck->volume = volume_[self_channel_];
+    chuck->volume = chuck_volume_[self_channel_];
     chucks_[self_channel_].push(chuck);
     if (chucks_[self_channel_].size() == 1) {
       auto play_thread_ = std::thread(PlayThreadFunc, self_channel_, ++thread_num_[self_channel_]);
@@ -288,9 +302,7 @@ int cyberdog_audio::AudioPlayer::SetSingleVolume(int channel, int volume)
 {
   if (init_ready_ == false) {return -1;}
   volume = volume < 0 ? 0 : (volume > 128 ? 128 : volume);
-  Mix_Volume(channel, volume);
-  volume_[channel] = volume;
-  return volume;
+  return Mix_Volume(channel, volume);
 }
 
 int cyberdog_audio::AudioPlayer::GetGroupVolume(int volume_group, int default_volume)
@@ -298,7 +310,7 @@ int cyberdog_audio::AudioPlayer::GetGroupVolume(int volume_group, int default_vo
   if (volume_group != INDE_VOLUME_GROUP) {
     for (int ch = 0; ch < static_cast<int>(volume_group_.size()); ch++) {
       if (volume_group_[ch] == volume_group) {
-        return volume_[ch];
+        return Mix_Volume(ch, -1);
       }
     }
   }
@@ -317,8 +329,9 @@ bool cyberdog_audio::AudioPlayer::PopEmpty(int channel)
 
 void cyberdog_audio::AudioPlayer::PlayThreadFunc(int channel, int thread_num)
 {
+  std::cout << "[AudioPlayer]Channel[" << channel << "] thread start\n";
   auto p_chucks = *chucks_[channel].front();
-  p_chucks.volume = volume_[channel];
+  p_chucks.volume = chuck_volume_[channel];
   Mix_PlayChannel(channel, &p_chucks, 0);
   while (thread_num_[channel] == thread_num && Mix_Playing(channel)) {
     SDL_Delay(DELAY_CHECK_TIME);
@@ -340,7 +353,15 @@ void cyberdog_audio::AudioPlayer::chuckFinish_callback(int channel)
 
 void cyberdog_audio::AudioPlayer::audioRecording_callback(void *, Uint8 * stream, int len)
 {
-  for (int a = 0; a < len; a++) {
-    reference_data_.push(stream[a]);
+  auto new_buff = new Uint8[len];
+  memcpy(new_buff, stream, len);
+  reference_data_.push(new_buff);
+  int overflow = static_cast<int>(reference_data_.size()) - MAX_QUEUE_BUFF_NUM;
+  if (overflow > 0) {
+    std::cout << "[AudioPlayer]Warning reference channel data overflow\n";
+    for (int a = 0; a < overflow; a++) {
+      delete[] reference_data_.front();
+      reference_data_.pop();
+    }
   }
 }

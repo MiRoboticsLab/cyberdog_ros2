@@ -65,6 +65,7 @@
 
 #define TOKEN_FILE "/opt/ros2/cyberdog/data/token.toml"
 #define AI_STATUS_FILE "/opt/ros2/cyberdog/data/ai_status.toml"
+#define VOLUME_FILE "/opt/ros2/cyberdog/data/volume.toml"
 #define WAV_DIR "/opt/ros2/cyberdog/data/wav/"
 #define FAC_TEST_FILE "/opt/ros2/cyberdog/ai_conf/ai_off"
 #define WAKE_UP_SIGNAL                  100
@@ -124,15 +125,15 @@ protected:
 
   enum ai_switch
   {
-    AI_ONLINE_ON   =  0x0001,  // 1
-    AI_OFFLINE_ON  =  0x0010,  // 16
-    AI_MASK        =  0x0000   // 0
+    AI_OFF =  0,
+    AI_ONLINE_ON,
+    AI_OFFLINE_ON,
   };
 
   enum token_state
   {
     TOKEN_READY = 1,
-    DEVICE_ID_READY,
+    DEVICE_ID_READY
   };
 
   enum order_name
@@ -144,7 +145,7 @@ protected:
     ORDER_STEP_BACK,
     ORDER_TURN_AROUND,
     ORDER_HI_FIVE,
-    ORDER_DANCE,
+    ORDER_DANCE
   };
 
   std::array<int, 11> vol_value = {0, 15, 30, 45, 60, 75, 90, 100, 110, 120, 128};
@@ -202,6 +203,7 @@ protected:
   void play_callback();
   void volume_set(int vol);
   int volume_get();
+  int64_t volume_check();
   int get_ai_status();
   int Detectwifi();
   int ExecuteCMD(const char * cmd, char * result);
@@ -235,6 +237,7 @@ private:
 
   /* Action */
   std::unique_ptr<PlayServer> play_server_;
+  std::shared_ptr<PlayorderT> orderback_;
   int loop_rate_;
 
   rclcpp::Node::SharedPtr play_client_node_;
@@ -242,6 +245,15 @@ private:
 
   rclcpp::Node::SharedPtr ExtMon_client_node_;
   rclcpp_action::Client<MonorderT>::SharedPtr ExtMon_client_;
+
+/* TEMP */
+  rclcpp::TimerBase::SharedPtr timer_temp_;
+  rclcpp::Node::SharedPtr temp_node_;
+
+  /* Thread */
+  std::shared_ptr<std::thread> play_thread_;
+  std::shared_ptr<std::thread> wake_play_thread_;
+  std::shared_ptr<std::thread> order_play_thread_;
 };  // class VoiceCmd
 }  // namespace cyberdog_audio
 

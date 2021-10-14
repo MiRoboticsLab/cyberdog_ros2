@@ -23,11 +23,12 @@
 
 StorageCapabilityImpl::StorageCapabilityImpl()
 {
-#ifndef __NuttX__
+/* #ifndef __NuttX__
   storageFilePath = "data.json";
 #else
   storageFilePath = "/tmp/data.json";
-#endif
+#endif */
+  storageFilePath = "/opt/ros2/cyberdog/data/token.json";
   loadKeyValuesFromFile();
 }
 
