@@ -34,12 +34,6 @@ alsa-lib (v1.1.3)
 - Source: https://github.com/alsa-project/alsa-lib/releases/tag/v1.1.3
 - Usage: as-is, dynamic-linking
 
-angles (1.12.4)
-- License: BSD-3-Clause
-- Project: https://github.com/ros/angles
-- Source: https://github.com/ros/angles/releases/tag/1.12.4
-- Usage: as-is, dynamic-linking
-
 bluepy (v1.3.0)
 - License: public-domain
 - Project: https://github.com/IanHarvey/bluepy

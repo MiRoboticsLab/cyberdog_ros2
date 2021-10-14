@@ -11,8 +11,7 @@
 
   <depend>ALSA</depend>
   <depend>xiaoai_sdk</depend>
-  <depend>sdl2main_vendor</depend>
-  <depend>sdl2mixer_vendor</depend>
+  <depend>sdl2_vendor</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

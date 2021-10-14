@@ -148,7 +148,8 @@ cyberdog_utils::CallbackReturn BodyStatePubNode::on_activate(const rclcpp_lifecy
   return cyberdog_utils::CallbackReturn::SUCCESS;
 }
 
-cyberdog_utils::CallbackReturn BodyStatePubNode::on_deactivate(const rclcpp_lifecycle::State & state)
+cyberdog_utils::CallbackReturn BodyStatePubNode::on_deactivate(
+  const rclcpp_lifecycle::State & state)
 {
   UNUSED_VAR(state);
   RCLCPP_INFO(get_logger(), "Deactiving");

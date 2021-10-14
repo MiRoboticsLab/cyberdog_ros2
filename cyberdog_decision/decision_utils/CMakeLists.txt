@@ -17,8 +17,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(cyberdog_utils REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(cyberdog_utils REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 

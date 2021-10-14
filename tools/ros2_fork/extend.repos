@@ -1,4 +1,16 @@
 repositories:
+  ros/resource_retriever:
+    type: git
+    url: https://github.com/ros/resource_retriever.git
+    version: 2.5.0
+  ros-perception/image_common:
+    type: git
+    url: https://github.com/ros-perception/image_common.git
+    version: 2.3.0
+  ros-perception/laser_geometry:
+    type: git
+    url: https://github.com/ros-perception/laser_geometry.git
+    version: 2.2.1
   ros-perception/pcl_msgs:
     type: git
     url: https://github.com/ros-perception/pcl_msgs.git

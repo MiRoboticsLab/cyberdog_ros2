@@ -12,6 +12,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(PKG_VER "4.2.0")
 option(XIAOMI_VISION "Build with Xiaomi Vision Package" OFF)
 
 # find dependencies
@@ -24,8 +25,8 @@ find_package(std_msgs REQUIRED)
 find_package(interaction_msgs REQUIRED)
 find_package(ception_msgs REQUIRED)
 find_package(cyberdog_utils REQUIRED)
-find_package(OpenCV 4.2.0 REQUIRED)
-find_package(CUDA REQUIRED)
+find_package(OpenCV ${PKG_VER} QUIET)
+find_package(CUDA QUIET)
 find_package(ARGUS)
 
 if(XIAOMI_VISION)

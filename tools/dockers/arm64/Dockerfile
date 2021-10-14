@@ -131,7 +131,7 @@ RUN pip3 install -U \
 
 # upgrade CMake
 RUN mkdir -p /root/cmake_tmp && \
-  wget https://${GITHUB_URL}/Kitware/CMake/releases/download/v${CMAKE_VER}/cmake-${CMAKE_VER}-linux-aarch64.sh -O /root/cmake_tmp/cmake.sh && \
+  wget -q https://${GITHUB_URL}/Kitware/CMake/releases/download/v${CMAKE_VER}/cmake-${CMAKE_VER}-linux-aarch64.sh -O /root/cmake_tmp/cmake.sh && \
   chmod +x /root/cmake_tmp/cmake.sh && \
   /root/cmake_tmp/cmake.sh --skip-license --prefix=/usr && \
   rm -rf /root/cmake_tmp
@@ -139,7 +139,8 @@ RUN mkdir -p /root/cmake_tmp && \
 # get ros 2 repos
 RUN mkdir -p /root/build_ros/src && \
   cd /root/build_ros && \
-  wget https://${GITHUB_RAW}/MiRoboticsLab/cyberdog_ros2/main/tools/ros2_fork/mini.repos
+  wget -q https://${GITHUB_RAW}/MiRoboticsLab/cyberdog_ros2/main/tools/ros2_fork/mini.repos && \
+  wget -q https://${GITHUB_RAW}/MiRoboticsLab/cyberdog_ros2/main/tools/ros2_fork/custom.repos
 
 # speed up github
 RUN cd /root/build_ros && \

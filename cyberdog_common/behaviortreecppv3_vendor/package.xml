@@ -1,15 +1,13 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>cyberdog_vision</name>
+  <name>behaviortreecppv3_vendor</name>
   <version>1.0.0</version>
-  <description>vision ai sdk integration</description>
-  <maintainer email="liangenze1@xiaomi.com">enze liang</maintainer>
-  <license>Apache License, Version 2.0</license>
+  <description>Vendor library for behaviortree_cpp_v3.</description>
+  <maintainer email="xuhaiwang@xiaomi.com">homalozoa</maintainer>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <depend>vision_sdk_vendor</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -1,6 +1,6 @@
 ## Checklist for the Merge Request Author
 
-- [ ] Follow [CONTRIBUTING.MD](https://partner-gitlab.mioffice.cn/cyberdog/cyberdog_cyberdog/-/blob/master/CONTRIBUTING.md)
+- [ ] Follow [CONTRIBUTING.MD](https://github.com/MiRoboticsLab/cyberdog_ros2/blob/main/CONTRIBUTING.md)
   - [ ] Commit messages are signed(`git commit -s`)
   - [ ] Commit author matches [Individual Contributor License Agreement](https://cdn.cnbj2m.fds.api.mi-img.com/cyberdog-package/packages/doc_materials/cla_zh_en.pdf)
 - [ ] Commits messages are according to this [guideline](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
