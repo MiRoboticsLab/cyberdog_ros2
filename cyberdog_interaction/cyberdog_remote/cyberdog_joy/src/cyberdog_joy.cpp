@@ -1,3 +1,4 @@
+// Copyright (c) 2014 Clearpath Robotics, Inc., All rights reserved.
 // Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

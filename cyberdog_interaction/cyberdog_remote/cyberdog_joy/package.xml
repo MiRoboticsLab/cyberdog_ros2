@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>cyberdog_joy</name>
-  <version>2.4.2</version>
-  <description>Generic joystick teleop for twist robots.</description>
-  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
-
-  <license>BSD</license>
-
-  <url type="website">http://wiki.ros.org/cyberdog_joy</url>
-  <author email="mpurvis@clearpathrobotics.com">Mike Purvis</author>
+  <version>1.0.0</version>
+  <description>Gamepad and joystick support for cyberdog</description>
+  <maintainer email="zhengjunyuan1@xiaomi.com">ZhengJunyuan</maintainer>
+  <license>Apache License, Version 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

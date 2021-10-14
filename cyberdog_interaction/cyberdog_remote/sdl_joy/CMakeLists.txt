@@ -15,7 +15,7 @@ set(LIBRARY_NAME ${PROJECT_NAME}_core)
 find_package(ament_cmake_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(sdl2main_vendor REQUIRED)
+find_package(sdl2_vendor REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(toml11_vendor REQUIRED)
 
@@ -32,7 +32,7 @@ ament_target_dependencies(${LIBRARY_NAME}
   rclcpp_components
   rclcpp
   sensor_msgs
-  sdl2main_vendor
+  sdl2_vendor
 )
 
 target_link_libraries(${LIBRARY_NAME}
