@@ -17,7 +17,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(angles REQUIRED)
 find_package(automation_msgs REQUIRED)
 find_package(cyberdog_decisionutils REQUIRED)
 find_package(cyberdog_utils REQUIRED)
@@ -47,7 +46,6 @@ set(debug_motion_file ${CMAKE_SOURCE_DIR}/.debug_motion)
 set(debug_mock_file ${CMAKE_SOURCE_DIR}/.debug_mock)
 
 set(dependencies
-  angles
   automation_msgs
   cyberdog_utils
   cyberdog_decisionutils
@@ -56,6 +54,7 @@ set(dependencies
   cascade_lifecycle_msgs
   ception_msgs
   interaction_msgs
+  lcm_translate_msgs
   lcm_vendor
   motion_msgs
   rclcpp
@@ -65,6 +64,7 @@ set(dependencies
   std_msgs
   tf2
   tf2_ros
+  toml11_vendor
 )
 
 add_library(${library_name} SHARED

@@ -27,7 +27,6 @@ find_package(interaction_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(automation_msgs REQUIRED)
 find_package(cyberdog_utils REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(lcm_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -60,7 +59,7 @@ set(dependencies
   nav_msgs
   automation_msgs
   cyberdog_utils
-  behaviortree_cpp_v3
+  lcm_translate_msgs
   builtin_interfaces
   rclcpp
   rclcpp_action

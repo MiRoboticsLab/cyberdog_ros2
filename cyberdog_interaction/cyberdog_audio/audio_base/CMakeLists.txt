@@ -20,15 +20,13 @@ include_directories(include)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ALSA REQUIRED)
-find_package(sdl2main_vendor REQUIRED)
-find_package(sdl2mixer_vendor REQUIRED)
+find_package(sdl2_vendor REQUIRED)
 
 set(library_name audio_base)
 
 set(dependencies
   ALSA
-  sdl2main_vendor
-  sdl2mixer_vendor
+  sdl2_vendor
 )
 
 add_library(${library_name} SHARED

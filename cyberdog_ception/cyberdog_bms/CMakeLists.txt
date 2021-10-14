@@ -31,11 +31,13 @@ ${catkin_INCLUDE_DIRS}
 )
 
 add_executable(bms_recv src/bms_logger.cpp src/bms_recv.cpp)
-ament_target_dependencies(bms_recv rclcpp std_msgs ception_msgs lcm_vendor rclcpp_action interaction_msgs)
+ament_target_dependencies(bms_recv rclcpp std_msgs ception_msgs lcm_vendor rclcpp_action interaction_msgs
+  lcm_translate_msgs)
 target_link_libraries(bms_recv)
 
 add_executable(bms_ctrl src/bms_ctrl.cpp)
-ament_target_dependencies(bms_ctrl rclcpp std_msgs ception_msgs lcm_vendor)
+ament_target_dependencies(bms_ctrl rclcpp std_msgs ception_msgs lcm_vendor
+  lcm_translate_msgs)
 target_link_libraries(bms_ctrl)
 
 ## Install headers

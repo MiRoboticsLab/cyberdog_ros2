@@ -21,7 +21,7 @@ Most of the robot applications are implemented based on ROS -As shown in the [ar
 
 Due to NVIDIA only provides support for Ubuntu 18.04 for the Jetson series (202109) as yet, we have adapted and modified ROS 2 for Ubuntu 18.04. The specific modification content can be pulled through [mini.repos](tools/ros2_fork/mini.repos). We have removed some unnecessary repositories, and added some repositories that need to be used.
 
-The documentation of this project is in the root directory of each submodule. If necessary, read [this page](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/CyberDog-2021---ROS-2-%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84-ROS-2-Software-Architecture).
+The documentation of this project is in the root directory of each submodule. If necessary, read [this page](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki).
 
 ## Precondition
 
@@ -34,7 +34,7 @@ $ apt-get update
 $ apt-get install nvidia-l4t-jetson-multimedia-api cuda-compiler-10-2
 ```
 
-If the latter, you can consider [using aarch64's Docker](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/%E4%BD%BF%E7%94%A8Docker%E6%9E%84%E5%BB%BA%E9%93%81%E8%9B%8B%E9%A1%B9%E7%9B%AE-%7C-Building-CyberDog-Projects-with-Docker). We will support cross compilation in the future.
+If the latter, you can consider using arm64's Docker. We will support cross compilation in the future.
 
 ## Build & Deploy
 
@@ -56,7 +56,7 @@ $ git clone https://github.com/MiRoboticsLab/cyberdog_ros2.git
 $ cd ..
 ```
 
-- Use `--packages-up-to` to compile([Ensure the ROS 2 environment is sourced](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85ROS-2---Building-ROS-2-from-source))
+- Use `--packages-up-to` to compile(Ensure the ROS 2 environment is sourced)
 
 ```
 $ colcon build --merge-install --packages-up-to cyberdog_bringup
@@ -82,7 +82,7 @@ $ git clone https://github.com/MiRoboticsLab/cyberdog_ros2.git
 $ cd ..
 ```
 
-- Compile all packages ([Ensure the ROS 2 environment is sourced](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/Building-ROS-2-from-source#7-instructions))
+- Compile all packages (Ensure the ROS 2 environment is sourced)
 
 ```
 $ colcon build --merge-install
@@ -95,7 +95,7 @@ $ export OUTPUT_DIR=/opt/ros2/cyberdog
 $ colcon build --merge-install --install-base $OUTPUT_DIR
 ```
 
-In addition, some closed-source function packages provided by Xiaomi: visual recognition and Xiaoai support default `not open`, you need to add `-DXIAOMI_VISION=ON` and `-DXIAOMI_XIAOAI=ON` after `--cmake-args` respectively turn on the building of the two functions.
+In addition, some closed-source function packages provided by Xiaomi: Xiaoai support default `not open`, you need to add `-DXIAOMI_XIAOAI=ON` after `--cmake-args` respectively turn on the building of the two functions.
 
 ### General deployment method
 

@@ -1,0 +1,33 @@
+on:
+  pull_request:
+  push:
+      
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+      fail-fast: false
+    steps:
+      - name: Setup ROS 2
+        uses: ros-tooling/setup-ros@v0.2
+        with:
+          required-ros-distributions: galactic
+      - name: build and test
+        uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          target-ros2-distro: galactic
+          colcon-defaults: |
+            {
+              "build": {
+                "merge-install": [true]
+              }
+            }
+      - name: Codecov
+        uses: codecov/codecov-action@v1.2.1
+        with:
+          file: ros_ws/lcov/total_coverage.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false

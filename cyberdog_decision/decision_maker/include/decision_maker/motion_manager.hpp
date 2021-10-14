@@ -63,7 +63,6 @@
 #include "motion_msgs/action/ext_mon_order.hpp"
 // ROS headers
 #include "ament_index_cpp/get_package_share_directory.hpp"
-#include "angles/angles.h"
 #include "cyberdog_utils/Enums.hpp"
 #include "cyberdog_utils/simple_action_server.hpp"
 #include "decision_maker/automation_manager.hpp"

@@ -21,7 +21,7 @@
 
 由于NVIDIA对Jetson系列截至目前(202109)只提供了Ubuntu 18.04的支持, 故我们对Ubuntu 18.04进行了ROS 2的适配和修改. 具体的修改内容可以通过[mini.repos](tools/ros2_fork/mini.repos)进行拉取, 我们去除了部分没必要的仓, 并添加了一些需要使用的仓库. 
 
-本项目的详细文档都在各个子模块的根目录里, 如有需要可以直接[点击进行了解](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/CyberDog-2021---ROS-2-%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84-ROS-2-Software-Architecture)
+本项目的详细文档都在各个子模块的根目录里, 如有需要可以直接[点击进行了解](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki)
 
 ## 前置条件
 
@@ -34,7 +34,7 @@ $ apt-get update
 $ apt-get install nvidia-l4t-jetson-multimedia-api cuda-compiler-10-2
 ```
 
-如是后者, 可以考虑[使用aarch64的Docker](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/%E4%BD%BF%E7%94%A8Docker%E6%9E%84%E5%BB%BA%E9%93%81%E8%9B%8B%E9%A1%B9%E7%9B%AE-%7C-Building-CyberDog-Projects-with-Docker). 我们在未来会支持交叉编译。
+如是后者, 可以考虑使用arm64的Docker. 我们在未来会支持交叉编译。
 
 ## 大陆地区加速
 
@@ -42,7 +42,7 @@ $ apt-get install nvidia-l4t-jetson-multimedia-api cuda-compiler-10-2
 
 > 构建Docker时, 可使用`docker build -t arm_docker:1.0 . --build-arg gfw=1`进行构建镜像, 以提高速度.
 
-> 使用colcon编译包时, 可在colcon编译的语句最后添加`--cmake-args -DBUILD_INSIDE_GFW=ON`以获取加速, 如`colcon build --merge-install --packages-select sdl2main_vendor sdl2mixer_vendor lcm_vendor mpg123_vendor toml11_vendor --cmake-args -DBUILD_INSIDE_GFW=ON`.
+> 使用colcon编译包时, 可在colcon编译的语句最后添加`--cmake-args -DBUILD_INSIDE_GFW=ON`以获取加速, 如`colcon build --merge-install --packages-select sdl2_vendor lcm_vendor mpg123_vendor toml11_vendor --cmake-args -DBUILD_INSIDE_GFW=ON`.
 
 ## 构建 & 部署
 
@@ -64,7 +64,7 @@ $ git clone https://github.com/MiRoboticsLab/cyberdog_ros2.git
 $ cd ..
 ```
 
-- 使用`--packages-up-to`编译([确保source过ROS 2的环境变量](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85ROS-2#7-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95))
+- 使用`--packages-up-to`编译(确保source过ROS 2的环境变量)
 
 ```
 $ colcon build --merge-install --packages-up-to cyberdog_bringup
@@ -91,7 +91,7 @@ $ git clone https://github.com/MiRoboticsLab/cyberdog_ros2.git
 $ cd ..
 ```
 
-- 直接编译所有的包([确保source过ROS 2的环境变量](https://github.com/MiRoboticsLab/cyberdog_ros2/wiki/%E4%BB%8E%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85ROS-2#7-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95))
+- 直接编译所有的包(确保source过ROS 2的环境变量)
 
 ```
 $ colcon build --merge-install
@@ -104,7 +104,7 @@ $ export OUTPUT_DIR=/opt/ros2/cyberdog
 $ colcon build --merge-install --install-base $OUTPUT_DIR
 ```
 
-此外，小米提供的部分闭源功能包：视觉识别和小爱同学支持默认`不打开`，需要通过在`--cmake-args`后添加`-DXIAOMI_VISION=ON`和`-DXIAOMI_XIAOAI=ON`分别打开两个功能的编译。
+此外，小米提供的部分闭源功能包：小爱同学支持默认`不打开`，需要通过在`--cmake-args`后添加`-DXIAOMI_XIAOAI=ON`分别打开两个功能的编译。
 
 ### 通用的部署方式
 

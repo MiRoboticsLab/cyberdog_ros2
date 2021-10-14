@@ -26,7 +26,7 @@ externalproject_add(
   CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR}
   INSTALL_DIR "${PREFIX_DIR}"
-  TIMEOUT 10
+  TIMEOUT 1200
 )
 
 include_directories(${OUT_DIR}/)

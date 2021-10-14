@@ -21,7 +21,7 @@ externalproject_add(
   CONFIGURE_COMMAND eval ${PREFIX_DIR}/configure --prefix=${OUT_DIR}
   BUILD_COMMAND "make"
   INSTALL_DIR ${OUT_DIR}
-  TIMEOUT 60
+  TIMEOUT 1200
 )
 
 set(mpg123_libs
