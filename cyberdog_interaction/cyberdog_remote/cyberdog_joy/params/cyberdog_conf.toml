@@ -1,0 +1,58 @@
+min_callback_ms = 20
+need_unlock = true
+need_unlock_everytime = true
+require_enable_button = true
+show_joyconfig = true
+show_raw_joydata = false
+show_self_joydata = false
+unlock_max = 0.6
+unlock_min = 0.4
+enable_muilt_page = false
+load_para = "normal_para"
+
+[normal_para]
+scale_linear = [0.5, 0.5, 0.0]  # [x, y, z]
+scale_angular = [0.5, 0.5, 0.0]  # [pitch, yaw, roll]
+
+[speedup_para]
+scale_linear = [1.0, 1.0, 0.0]  # [x, y, z]
+scale_angular = [1.0, 1.0, 0.0]  # [pitch, yaw, roll]
+
+[func_key]
+# Main_U   Main_D   Main_L   Main_R
+# Cross_U  Cross_D  Cross_L  Cross_R
+# Trig_R   Trig_RS  Trig_L   Trig_LS
+# Menu_R   Menu_L   Stick_R  Stick_L
+enable_control = "Trig_LS"
+last_page = "Trig_L"
+next_page = "Trig_R"
+reset_page = "Trig_RS"
+action0 = "Main_U"
+action1 = "Main_D"
+action2 = "Main_L"
+action3 = "Main_R"
+
+[[action_order]]#0  #left
+action0 = "MONO_ORDER_PROSTRATE"
+action1 = "MONO_ORDER_STEP_BACK"
+action2 = "MONO_ORDER_TURN_AROUND"
+action2_para = 6.28
+action3 = "MONO_ORDER_HI_FIVE"
+
+[[action_order]]#1
+action0 = "MONO_ORDER_DANCE"
+action1 = "MONO_ORDER_WELCOME"
+action2 = "MONO_ORDER_TURN_OVER"
+action3 = "MONO_ORDER_SIT"
+
+[[action_order]]#2  #right
+action0 = "MONO_ORDER_SHOW"
+action1 = ""
+action2 = ""
+action3 = ""
+
+[[action_order]]#3
+action0 = ""
+action1 = ""
+action2 = ""
+action3 = ""

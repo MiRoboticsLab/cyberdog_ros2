@@ -12,8 +12,6 @@ launch_groups:
     default:
       except:
         - cyberdog_motion_test_cmd
-        - joy
-        - teleop_twist_joy
         - light_detection_cmd
     motion_test:
       except:

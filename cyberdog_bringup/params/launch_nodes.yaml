@@ -89,12 +89,7 @@ launch_nodes:
         executable: "motion_test_server"
         name: "cyberdog_motion_test"
 
-    - joy:
-        package: "joy"
+    - cyberdog_joy:
+        package: "cyberdog_joy"
         executable: "joy_node"
-        name: "joy_node"
-    
-    - teleop_twist_joy:
-        package: "teleop_twist_joy"
-        executable: "teleop_node"
-        name: "teleop_twist_joy_node"
+        name: "cyberdog_joy"

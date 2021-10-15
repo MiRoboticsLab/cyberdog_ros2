@@ -1,0 +1,6 @@
+device_id = 0
+device_name = ""
+
+deadzone = 0.05
+sticky_buttons = false
+normal_callback_ms = 100

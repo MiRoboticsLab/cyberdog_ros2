@@ -262,6 +262,12 @@ teb_local_planner (ros2)
 - Source: https://github.com/rst-tu-dortmund/teb_local_planner/tree/ros2-master
 - Usage: modified, dynamic-linking
 
+teleop_twist_joy (2.4.3)
+- License: BSD-3-Clause
+- Project: https://github.com/ros2/teleop_twist_joy
+- Source: https://github.com/ros2/teleop_twist_joy/releases/tag/2.4.3
+- Usage: modified
+
 toml11 (v3.7)
 - License: MIT
 - Project: https://github.com/ToruNiina/toml11
