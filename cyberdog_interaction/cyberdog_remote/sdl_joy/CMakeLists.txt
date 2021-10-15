@@ -33,6 +33,7 @@ ament_target_dependencies(${LIBRARY_NAME}
   rclcpp
   sensor_msgs
   sdl2_vendor
+  toml11_vendor
 )
 
 target_link_libraries(${LIBRARY_NAME}
