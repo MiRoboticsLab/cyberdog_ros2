@@ -63,6 +63,7 @@
 #include "motion_msgs/action/ext_mon_order.hpp"
 // ROS headers
 #include "ament_index_cpp/get_package_share_directory.hpp"
+#include "cyberdog_motion_bridge/gait_interface.hpp"
 #include "cyberdog_utils/Enums.hpp"
 #include "cyberdog_utils/simple_action_server.hpp"
 #include "decision_maker/automation_manager.hpp"
@@ -265,11 +266,12 @@ private:
   inline static uint32_t response_count_;
   inline static uint32_t odom_count_;
 
-// Internal variablels
+// Internal variables
 // Gait & locomotion variables
   bool thread_flag_;
   Gait_T gait_cached_;
   Time_T last_motion_time_;
+  std::shared_ptr<cyberdog_motion_bridge::GaitInterface> gait_interface_;
 // Robot state variables
   Around_T obstacle_data_;
   ControlState_T robot_control_state_;
@@ -282,6 +284,7 @@ private:
   int8_t tqdm_multi_;
 // Package directories
   std::string local_params_dir;
+  std::string locomotion_params_dir;
 
 // Node Executors
   rclcpp::executors::SingleThreadedExecutor node_exec_;

@@ -13,6 +13,7 @@
   <depend>builtin_interfaces</depend>
   <depend>cyberdog_decisionutils</depend>
   <depend>cyberdog_interfaces</depend>
+  <depend>cyberdog_motion_bridge</depend>
   <depend>cyberdog_utils</depend>
   <depend>geometry_msgs</depend>
   <depend>lcm_vendor</depend>

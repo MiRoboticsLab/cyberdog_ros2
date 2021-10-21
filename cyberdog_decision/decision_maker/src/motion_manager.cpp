@@ -16,6 +16,7 @@
 #include <condition_variable>
 #include <cmath>
 #include <experimental/filesystem>  // NOLINT
+#include <map>
 #include <memory>
 #include <mutex>
 #include <set>
@@ -25,6 +26,8 @@
 #include <vector>
 
 #include "decision_maker/motion_manager.hpp"
+
+#define LOCOMOTION_BRIDGE_PKG "cyberdog_motion_bridge"
 
 namespace cyberdog_decision
 {
@@ -39,6 +42,8 @@ MotionManager::MotionManager()
   auto local_share_dir = ament_index_cpp::get_package_share_directory(PACKAGE_NAME);
   local_params_dir = local_share_dir + std::string("/params/");
   #endif
+  auto locomotion_share_dir = ament_index_cpp::get_package_share_directory(LOCOMOTION_BRIDGE_PKG);
+  locomotion_params_dir = locomotion_share_dir + std::string("/params/");
 
   // Declare this node's parameters
   this->declare_parameter("topic_name_rc", "body_cmd");
@@ -130,6 +135,10 @@ CallbackReturn_T MotionManager::on_configure(const rclcpp_lifecycle::State &)
   parameter_check(rate_lcm_const_, rate_common_, std::string("rate_common"));
 
   parameter_check(cons_abs_lin_x_, cons_speed_l_normal_, std::string("cons_speed_l_normal_mps"));
+
+  const auto gait_toml = locomotion_params_dir + std::string("map_gait.toml");
+  gait_interface_ = std::make_shared<cyberdog_motion_bridge::GaitInterface>(
+    cyberdog_motion_bridge::GaitInterface(gait_toml, this->get_node_logging_interface()));
 
   callback_group_service =
     this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
@@ -300,6 +309,7 @@ CallbackReturn_T MotionManager::on_cleanup(const rclcpp_lifecycle::State &)
   motion_out_.reset();
   motion_in_.reset();
   state_es_in_.reset();
+  gait_interface_.reset();
 
   automation_manager_node_.reset();
   automation_node_thread_.reset();
@@ -355,6 +365,7 @@ CallbackReturn_T MotionManager::on_error(const rclcpp_lifecycle::State &)
   motion_out_.reset();
   motion_in_.reset();
   state_es_in_.reset();
+  gait_interface_.reset();
   automation_node_thread_.reset();
   lcm_control_res_handle_thread_.reset();
   lcm_statees_res_handle_thread_.reset();
@@ -804,6 +815,16 @@ void MotionManager::checkout_gait()
     std::string("]-[") +
     gait_str +
     std::string("] ");
+
+  auto goal_gait_t = 9;
+  auto current_gait_t = 3;
+  std::vector<cyberdog_motion_bridge::GaitMono> gait_to_run_t;
+
+  gait_interface_->get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
+  while (gait_to_run_t.size() > 0) {
+    message_info(std::string("gait to run is ") + gait_to_run_t.back().get_gait_name());
+    gait_to_run_t.pop_back();
+  }
 
   message_info(
     TAG_GAIT +
@@ -1982,6 +2003,16 @@ void MotionManager::init()
   gait_init.gait = Gait_T::GAIT_PASSIVE;
   gait_init.timestamp = this->get_clock()->now();
   publish_gait(gait_init);
+
+  // auto goal_gait_t = 9;
+  // auto current_gait_t = 3;
+  // std::vector<cyberdog_motion_bridge::GaitMono> gait_to_run_t;
+
+  // gait_interface_->get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
+  // while (gait_to_run_t.size() > 0) {
+  //   message_info(std::string("gait to run is ") + gait_to_run_t.back().get_gait_name());
+  //   gait_to_run_t.pop_back();
+  // }
 }
 
 std_msgs::msg::Header MotionManager::return_custom_header(std::string frame_id)
