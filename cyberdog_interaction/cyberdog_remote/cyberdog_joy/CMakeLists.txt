@@ -11,7 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(cyberdog_locomotion_bridge REQUIRED)
+find_package(cyberdog_motion_bridge REQUIRED)
 find_package(cyberdog_utils REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
@@ -29,14 +29,15 @@ add_library(${PROJECT_NAME} SHARED src/cyberdog_joy.cpp)
 target_compile_definitions(${PROJECT_NAME} PRIVATE "PACKAGE_NAME=\"${PROJECT_NAME}\"")
 
 ament_target_dependencies(${PROJECT_NAME}
-  "cyberdog_utils"
-  "rclcpp"
-  "rclcpp_action"
-  "rclcpp_components"
-  "sensor_msgs"
-  "motion_msgs"
-  "sdl_joy"
-  "toml11_vendor"
+  cyberdog_motion_bridge
+  cyberdog_utils
+  rclcpp
+  rclcpp_action
+  rclcpp_components
+  sensor_msgs
+  motion_msgs
+  sdl_joy
+  toml11_vendor
 )
 
 rclcpp_components_register_nodes(${PROJECT_NAME}

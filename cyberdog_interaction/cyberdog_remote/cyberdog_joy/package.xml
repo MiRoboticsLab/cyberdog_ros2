@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>cyberdog_utils</depend>
-  <depend>cyberdog_locomotion_bridge</depend>
+  <depend>cyberdog_motion_bridge</depend>
   <depend>motion_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>

@@ -46,7 +46,7 @@
 #define BUTTON_NUM 16
 #define AXIS_NUM 4
 
-#define LOCOMOTION_BRIDGE_PKG "cyberdog_locomotion_bridge"
+#define LOCOMOTION_BRIDGE_PKG "cyberdog_motion_bridge"
 #define MONO_ORDER_FILE "mono_order.toml"
 #define MAIN_CONFIG_FILE "cyberdog_conf.toml"
 
