@@ -36,6 +36,7 @@ ament_target_dependencies(${PROJECT_NAME}
   "sensor_msgs"
   "motion_msgs"
   "sdl_joy"
+  "toml11_vendor"
 )
 
 rclcpp_components_register_nodes(${PROJECT_NAME}
