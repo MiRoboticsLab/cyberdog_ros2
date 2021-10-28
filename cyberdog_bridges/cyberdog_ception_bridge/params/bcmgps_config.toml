@@ -1,0 +1,34 @@
+skip_download = false  # need in first line
+onlyfirst_download = false
+tty = "/dev/ttyTHS0"
+patch_path = "/usr/sbin/bream.patch"
+
+#uint8_t infMsgMask[6] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
+#full logging (GLLIO, GLLAPI, RAWDATA, DEVKF, USR2, )
+infMsgMask = [31, 31, 31, 31, 31, 31] 
+
+#1(L1 Best) 2(L1 Auto) 3(L1 ULP), 4(L1L5 Best) 5(L1L5 Auto)
+PowerModePreset = 4
+
+MsgRate = [
+  1,  # Report GPGGA rate
+  1,  # Report GPRMC rate
+  1,  # Report GPGSV rate
+  1,  # Report NAVEOE rate
+  1,  # Report NAVPVT rate
+  1,  # Report PGLOR SPEED rate
+  1,  # Report PGLOR FIX rate
+  1,  # Report PGLOR SAT rate
+  1,  # Report PGLOR LSQ rate
+  1,  # Report PGLOR PWR rate
+  1,  # Report PGLOR STA rate
+  1,  # Report NAVODO rate
+  1,  # Report NAVSAT rate
+  1,  # Report NAVDOP rate
+  1,  # Report CBEE status rate
+  1,  # Report ASC SUBFRAMES rate
+  1,  # Report ASC MEAS rate
+  1   # Report ASC AGC rate
+]
+
+AckAiding = true
