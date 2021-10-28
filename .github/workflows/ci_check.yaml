@@ -1,14 +1,22 @@
+name: "CI"
+
 on:
   pull_request:
+    paths-ignore:
+      - 'tools/**'
+      - '**.md'
   push:
+    paths-ignore:
+      - 'tools/**'
+      - '**.md'
       
 jobs:
-  build-and-test:
+  build-test-cov:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-20.04]
-      fail-fast: false
     steps:
       - name: Setup ROS 2
         uses: ros-tooling/setup-ros@v0.2

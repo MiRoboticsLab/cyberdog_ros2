@@ -5,7 +5,7 @@
   <version>1.0.0</version>
   <description>Behavior engine for CyberDog</description>
   <maintainer email="xuhaiwang@xiaomi.com">homalozoa</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache License, Version 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   
