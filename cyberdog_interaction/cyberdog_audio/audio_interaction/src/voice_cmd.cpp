@@ -66,11 +66,8 @@ cyberdog_utils::CallbackReturn VoiceCmd::on_configure(const rclcpp_lifecycle::St
     rmw_qos_profile_default, callback_group_);
 
   play_server_ = std::make_unique<PlayServer>(
-    get_node_base_interface(),
-    get_node_clock_interface(),
-    get_node_logging_interface(),
-    get_node_waitables_interface(),
-    "audio_play", std::bind(&VoiceCmd::check_play_request, this));
+    this->shared_from_this(), "audio_play",
+    std::bind(&VoiceCmd::check_play_request, this));
 
   auto options0 = rclcpp::NodeOptions().arguments(
     {"--ros-args",
@@ -119,7 +116,7 @@ cyberdog_utils::CallbackReturn VoiceCmd::on_activate(const rclcpp_lifecycle::Sta
   std::string title_toml = toml::find<std::string>(token, "title");
   RCLCPP_INFO(get_logger(), "toml title: %s", title_toml.c_str());
   std::int64_t expireIn_toml = toml::find<std::int64_t>(token, "token_expireIn");
-  RCLCPP_INFO(get_logger(), "toml token_expireIn: %d", expireIn_toml);
+  RCLCPP_INFO(get_logger(), "toml token_expireIn: %ld", expireIn_toml);
   std::string token_a_toml = toml::find<std::string>(token, "token_access");
   RCLCPP_INFO(get_logger(), "toml token_access: %s", token_a_toml.c_str());
   std::string token_r_toml = toml::find<std::string>(token, "token_fresh");
@@ -235,7 +232,7 @@ int VoiceCmd::Detectwifi()
     RCLCPP_INFO(get_logger(), "wifi signal NULL");
     wifi_status = -1;
   } else {
-    RCLCPP_INFO(get_logger(), "length: %d", s.length());
+    RCLCPP_INFO(get_logger(), "length: %ld", s.length());
     s.erase(0, 9);
     s = s.substr(0, s.length() - 5);
     RCLCPP_INFO(get_logger(), "wifi signal: %s", s.c_str());
@@ -353,7 +350,7 @@ void VoiceCmd::PublishAiSwitch(int order)
   }
   ai_switch_pub_->publish(std::move(msg));
   ai_status_temp = order;
-  RCLCPP_INFO(get_logger(), "ai_status_temp: ", ai_status_temp);
+  RCLCPP_INFO(get_logger(), "ai_status_temp: %d", ai_status_temp);
 }
 
 void VoiceCmd::PublishTokenReady(int order)
@@ -662,7 +659,7 @@ void VoiceCmd::check_app_order(
   } else if (request_->ask == TokenPassT::Request::ASK_GET_VOLUME) {
     response_->flage = TokenPassT::Response::GET_VOLUME_SUCCEED;
     response_->vol = volume_get();
-    RCLCPP_INFO(get_logger(), "recive get volume ask from app: %d.");
+    RCLCPP_INFO(get_logger(), "recive get volume ask from app: %d.", response_->vol);
   } else if (request_->ask == TokenPassT::Request::ASK_XIAOAI_SWITCH_STATUS) {
     RCLCPP_INFO(get_logger(), "recive get xiaoai status from app.");
     RCLCPP_INFO(get_logger(), "ai_status_temp: %d.", ai_status_temp);
@@ -998,7 +995,7 @@ int VoiceCmd::get_ai_require_status()
   std::string title_toml = toml::find<std::string>(status_f, "title");
   RCLCPP_INFO(get_logger(), "toml title: %s", title_toml.c_str());
   std::int64_t ai_status_toml = toml::find<std::int64_t>(status_f, "xiaoai_status");
-  RCLCPP_INFO(get_logger(), "toml : %d", ai_status_toml);
+  RCLCPP_INFO(get_logger(), "toml : %ld", ai_status_toml);
 
   return ai_status_toml;
 }
@@ -1045,7 +1042,7 @@ int64_t VoiceCmd::volume_check()
   const auto volume_toml = toml::parse(VOLUME_FILE);
 
   std::int64_t volume_value = toml::find<std::int64_t>(volume_toml, "volume");
-  RCLCPP_INFO(get_logger(), "volume_value(toml) : %d", volume_value);
+  RCLCPP_INFO(get_logger(), "volume_value(toml) : %ld", volume_value);
 
   return volume_value;
 }

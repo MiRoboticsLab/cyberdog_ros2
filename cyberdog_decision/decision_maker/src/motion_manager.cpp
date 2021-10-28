@@ -144,17 +144,17 @@ CallbackReturn_T MotionManager::on_configure(const rclcpp_lifecycle::State &)
     this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
 
   mode_server_ = std::make_unique<
-    cyberdog_utils::SimpleActionServer<ChangeMode_T, LifecycleNode_T>>(
+    cyberdog_utils::ActionServer<ChangeMode_T, LifecycleNode_T>>(
     this->shared_from_this(), "checkout_mode",
     std::bind(&MotionManager::checkout_mode, this));
 
   gait_server_ = std::make_unique<
-    cyberdog_utils::SimpleActionServer<ChangeGait_T, LifecycleNode_T>>(
+    cyberdog_utils::ActionServer<ChangeGait_T, LifecycleNode_T>>(
     this->shared_from_this(), "checkout_gait",
     std::bind(&MotionManager::checkout_gait, this));
 
   monorder_server_ = std::make_unique<
-    cyberdog_utils::SimpleActionServer<ExtMonOrder_T, LifecycleNode_T>>(
+    cyberdog_utils::ActionServer<ExtMonOrder_T, LifecycleNode_T>>(
     this->shared_from_this(), "exe_monorder",
     std::bind(&MotionManager::mon_order_exec, this));
 

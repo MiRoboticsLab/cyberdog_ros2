@@ -44,10 +44,7 @@ add_library(${library_name} SHARED
 )
 
 ament_target_dependencies(${library_name}
-  rclcpp
-  lifecycle_msgs
-  rclcpp_lifecycle
-  cascade_lifecycle_msgs
+  ${dependencies}
 )
 
 if(BUILD_TESTING)

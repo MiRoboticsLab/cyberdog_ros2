@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 // Copyright (c) 2019 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CYBERDOG_UTILS__SIMPLE_ACTION_SERVER_HPP_
-#define CYBERDOG_UTILS__SIMPLE_ACTION_SERVER_HPP_
+#ifndef CYBERDOG_UTILS__ACTION_SERVER_HPP_
+#define CYBERDOG_UTILS__ACTION_SERVER_HPP_
 
 #include <memory>
 #include <mutex>
@@ -28,81 +29,63 @@
 namespace cyberdog_utils
 {
 /**
-* @class cyberdog_utils::SimpleActionServer
-* @brief Modified from nav2_util:SimpleActionServer: An action server wrapper to make applications simpler using Actions
+* @class cyberdog_utils::ActionServer
+* @brief Modified from nav2_util:ActionServer: An action server wrapper to make applications simpler using Actions
 */
 template<typename ActionT, typename nodeT = rclcpp::Node>
-class SimpleActionServer
+class ActionServer
 {
 public:
   // Callback function to complete main work. This should itself deal with its
   // own exceptions, but if for some reason one is thrown, it will be caught
-  // in SimpleActionServer and terminate the action itself.
+  // in ActionServer and terminate the action itself.
   typedef std::function<void ()> ExecuteCallback;
 
   // Callback function to notify the user that an exception was thrown that
   // the simple action server caught (or another failure) and the action was
   // terminated. To avoid using, catch exceptions in your application such that
-  // the SimpleActionServer will never need to terminate based on failed action
+  // the ActionServer will never need to terminate based on failed action
   // ExecuteCallback.
   typedef std::function<void ()> CompletionCallback;
 
   /**
-   * @brief An constructor for SimpleActionServer
+   * @brief An constructor for ActionServer
    * @param node Ptr to node to make actions
    * @param action_name Name of the action to call
    * @param execute_callback Execution  callback function of Action
    * @param server_timeout Timeout to to react to stop or preemption requests
    */
-  explicit SimpleActionServer(
-    typename nodeT::SharedPtr node,
+  explicit ActionServer(
+    const typename nodeT::WeakPtr node,
     const std::string & action_name,
     ExecuteCallback execute_callback,
     CompletionCallback completion_callback = nullptr,
     std::chrono::milliseconds server_timeout = std::chrono::milliseconds(500))
-  : SimpleActionServer(
-      node->get_node_base_interface(),
-      node->get_node_clock_interface(),
-      node->get_node_logging_interface(),
-      node->get_node_waitables_interface(),
-      action_name, execute_callback, completion_callback, server_timeout)
-  {}
-
-  /**
-   * @brief An constructor for SimpleActionServer
-   * @param <node interfaces> Abstract node interfaces to make actions
-   * @param action_name Name of the action to call
-   * @param execute_callback Execution  callback function of Action
-   * @param server_timeout Timeout to to react to stop or preemption requests
-   */
-  explicit SimpleActionServer(
-    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface,
-    rclcpp::node_interfaces::NodeClockInterface::SharedPtr node_clock_interface,
-    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface,
-    rclcpp::node_interfaces::NodeWaitablesInterface::SharedPtr node_waitables_interface,
-    const std::string & action_name,
-    ExecuteCallback execute_callback,
-    CompletionCallback completion_callback = nullptr,
-    std::chrono::milliseconds server_timeout = std::chrono::milliseconds(500))
-  : node_base_interface_(node_base_interface),
-    node_clock_interface_(node_clock_interface),
-    node_logging_interface_(node_logging_interface),
-    node_waitables_interface_(node_waitables_interface),
-    action_name_(action_name),
+  : action_name_(action_name),
     execute_callback_(execute_callback),
     completion_callback_(completion_callback),
-    server_timeout_(server_timeout)
+    server_timeout_(server_timeout),
+    init_(false)
   {
-    using namespace std::placeholders;  // NOLINT
-    action_server_ = rclcpp_action::create_server<ActionT>(
-      node_base_interface_,
-      node_clock_interface_,
-      node_logging_interface_,
-      node_waitables_interface_,
-      action_name_,
-      std::bind(&SimpleActionServer::handle_goal, this, _1, _2),
-      std::bind(&SimpleActionServer::handle_cancel, this, _1),
-      std::bind(&SimpleActionServer::handle_accepted, this, _1));
+    if (auto node_ = node.lock()) {
+      init_ = true;
+      node_base_interface_ = node_->get_node_base_interface();
+      node_clock_interface_ = node_->get_node_clock_interface();
+      node_logging_interface_ = node_->get_node_logging_interface();
+      node_waitables_interface_ = node_->get_node_waitables_interface();
+
+      action_server_ = rclcpp_action::create_server<ActionT>(
+        node_base_interface_,
+        node_clock_interface_,
+        node_logging_interface_,
+        node_waitables_interface_,
+        action_name_,
+        std::bind(&ActionServer::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
+        std::bind(&ActionServer::handle_cancel, this, std::placeholders::_1),
+        std::bind(&ActionServer::handle_accepted, this, std::placeholders::_1));
+    } else {
+      std::cout << "Initialize action server failed." << std::endl;
+    }
   }
 
   /**
@@ -116,6 +99,11 @@ public:
     std::shared_ptr<const typename ActionT::Goal>/*goal*/)
   {
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
+
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return rclcpp_action::GoalResponse::REJECT;
+    }
 
     if (!server_active_) {
       return rclcpp_action::GoalResponse::REJECT;
@@ -134,6 +122,11 @@ public:
   rclcpp_action::CancelResponse handle_cancel(
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> handle)
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return rclcpp_action::CancelResponse::REJECT;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (!handle->is_active()) {
@@ -153,6 +146,11 @@ public:
    */
   void handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> handle)
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
     debug_msg("Receiving a new goal");
 
@@ -188,6 +186,11 @@ public:
    */
   void work()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     while (rclcpp::ok() && !stop_execution_ && is_active(current_handle_)) {
       debug_msg("Executing the goal...");
       try {
@@ -233,6 +236,11 @@ public:
    */
   void activate()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
     server_active_ = true;
     stop_execution_ = false;
@@ -243,6 +251,11 @@ public:
    */
   void deactivate()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     debug_msg("Deactivating...");
 
     {
@@ -281,6 +294,11 @@ public:
    */
   bool is_running()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return false;
+    }
+
     return execution_future_.valid() &&
            (execution_future_.wait_for(std::chrono::milliseconds(0)) ==
            std::future_status::timeout);
@@ -292,6 +310,11 @@ public:
    */
   bool is_server_active()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return false;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
     return server_active_;
   }
@@ -302,6 +325,11 @@ public:
    */
   bool is_preempt_requested() const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return false;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
     return preempt_requested_;
   }
@@ -312,6 +340,11 @@ public:
    */
   const std::shared_ptr<const typename ActionT::Goal> accept_pending_goal()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return std::shared_ptr<const typename ActionT::Goal>();
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (!pending_handle_ || !pending_handle_->is_active()) {
@@ -338,6 +371,11 @@ public:
    */
   void terminate_pending_goal()
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (!pending_handle_ || !pending_handle_->is_active()) {
@@ -357,6 +395,11 @@ public:
    */
   const std::shared_ptr<const typename ActionT::Goal> get_current_goal() const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return std::shared_ptr<const typename ActionT::Goal>();
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (!is_active(current_handle_)) {
@@ -373,6 +416,11 @@ public:
    */
   const std::shared_ptr<const typename ActionT::Goal> get_pending_goal() const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return std::shared_ptr<const typename ActionT::Goal>();
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (!pending_handle_ || !pending_handle_->is_active()) {
@@ -389,6 +437,11 @@ public:
    */
   bool is_cancel_requested() const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return false;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     // A cancel request is assumed if either handle is canceled by the client.
@@ -413,6 +466,11 @@ public:
     typename std::shared_ptr<typename ActionT::Result> result =
     std::make_shared<typename ActionT::Result>())
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
     terminate(current_handle_, result);
     terminate(pending_handle_, result);
@@ -427,6 +485,11 @@ public:
     typename std::shared_ptr<typename ActionT::Result> result =
     std::make_shared<typename ActionT::Result>())
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
     terminate(current_handle_, result);
   }
@@ -439,6 +502,11 @@ public:
     typename std::shared_ptr<typename ActionT::Result> result =
     std::make_shared<typename ActionT::Result>())
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (is_active(current_handle_)) {
@@ -454,6 +522,11 @@ public:
    */
   void publish_feedback(typename std::shared_ptr<typename ActionT::Feedback> feedback)
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     if (!is_active(current_handle_)) {
       error_msg("Trying to publish feedback when the current goal handle is not active");
       return;
@@ -463,7 +536,7 @@ public:
   }
 
 protected:
-  // The SimpleActionServer isn't itself a node, so it needs interfaces to one
+  // The ActionServer isn't itself a node, so it needs interfaces to one
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface_;
   rclcpp::node_interfaces::NodeClockInterface::SharedPtr node_clock_interface_;
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
@@ -514,6 +587,11 @@ protected:
     typename std::shared_ptr<typename ActionT::Result> result =
     std::make_shared<typename ActionT::Result>())
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     std::lock_guard<std::recursive_mutex> lock(update_mutex_);
 
     if (is_active(handle)) {
@@ -533,6 +611,11 @@ protected:
    */
   void info_msg(const std::string & msg) const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     RCLCPP_INFO(
       node_logging_interface_->get_logger(),
       "[%s] [ActionServer] %s", action_name_.c_str(), msg.c_str());
@@ -543,6 +626,11 @@ protected:
    */
   void debug_msg(const std::string & msg) const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     RCLCPP_DEBUG(
       node_logging_interface_->get_logger(),
       "[%s] [ActionServer] %s", action_name_.c_str(), msg.c_str());
@@ -553,6 +641,11 @@ protected:
    */
   void error_msg(const std::string & msg) const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     RCLCPP_ERROR(
       node_logging_interface_->get_logger(),
       "[%s] [ActionServer] %s", action_name_.c_str(), msg.c_str());
@@ -563,12 +656,20 @@ protected:
    */
   void warn_msg(const std::string & msg) const
   {
+    if (!init_) {
+      std::cout << "Action server is not initialized yet" << std::endl;
+      return;
+    }
+
     RCLCPP_WARN(
       node_logging_interface_->get_logger(),
       "[%s] [ActionServer] %s", action_name_.c_str(), msg.c_str());
   }
+
+private:
+  bool init_;
 };
 
 }  // namespace cyberdog_utils
 
-#endif  // CYBERDOG_UTILS__SIMPLE_ACTION_SERVER_HPP_
+#endif  // CYBERDOG_UTILS__ACTION_SERVER_HPP_
