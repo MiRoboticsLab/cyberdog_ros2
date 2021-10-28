@@ -1,0 +1,75 @@
+
+gait_bridges_max = 4
+
+[gait_list]
+GAIT_PASSIVE   = {id = 1, tag = "passive"}
+GAIT_KNEEL     = {id = 2, tag = "kneel"}
+GAIT_STAND_R   = {id = 3, tag = "stand_recovery"}
+GAIT_STAND_B   = {id = 4, tag = "stand_qp"}
+GAIT_WALK      = {id = 6, tag = "walk"}
+GAIT_SLOWTROT  = {id = 7, tag = "slow_trot"}
+GAIT_TROT      = {id = 8, tag = "trot"}
+GAIT_FLYTROT   = {id = 9, tag = "fly_trot"}
+GAIT_BOUND     = {id = 10, tag = "bound"}
+GAIT_PRONK     = {id = 11, tag = "pronk"}
+
+[trans_list]
+GAIT_TRANS = {id = 0, tag = "trans"}
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_PASSIVE"
+bridge_gait = "GAIT_STAND_R"
+neib_gait = ["GAIT_PASSIVE", "GAIT_KNEEL", "GAIT_STAND_R", "GAIT_STAND_B",
+  "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT", "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_KNEEL"
+bridge_gait = "GAIT_STAND_R"
+neib_gait = ["GAIT_KNEEL", "GAIT_STAND_R"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_STAND_R"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_PASSIVE", "GAIT_KNEEL", "GAIT_STAND_R", "GAIT_STAND_B"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_STAND_B"
+bridge_gait = "GAIT_STAND_R"
+neib_gait = ["GAIT_STAND_R", "GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT",
+  "GAIT_TROT", "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_WALK"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT",
+  "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_SLOWTROT"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT",
+  "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_TROT"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT",
+  "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_FLYTROT"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT",
+  "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_BOUND"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT",
+  "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]
+
+[[gait_bridges_map]]
+goal_gait = "GAIT_PRONK"
+bridge_gait = "GAIT_STAND_B"
+neib_gait = ["GAIT_STAND_B", "GAIT_WALK", "GAIT_SLOWTROT", "GAIT_TROT",
+  "GAIT_FLYTROT", "GAIT_BOUND", "GAIT_PRONK"]

@@ -13,6 +13,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   # msg
   "msg/ActionRequest.msg"
   "msg/ActionRespond.msg"
+  "msg/BehaviorTreeLog.msg"
+  "msg/BehaviorTreeStatusChange.msg"
   "msg/ControlState.msg"
   "msg/ErrorFlag.msg"
   "msg/Force.msg"

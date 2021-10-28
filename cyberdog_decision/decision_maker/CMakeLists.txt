@@ -18,12 +18,14 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(automation_msgs REQUIRED)
-find_package(cyberdog_decisionutils REQUIRED)
-find_package(cyberdog_utils REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(Boost REQUIRED)
 find_package(cascade_lifecycle_msgs REQUIRED)
 find_package(ception_msgs REQUIRED)
+find_package(cyberdog_bt_engine REQUIRED)
+find_package(cyberdog_decisionutils REQUIRED)
+find_package(cyberdog_motion_bridge REQUIRED)
+find_package(cyberdog_utils REQUIRED)
 find_package(interaction_msgs REQUIRED)
 find_package(lcm_vendor REQUIRED)
 find_package(lcm_translate_msgs REQUIRED)
@@ -48,8 +50,9 @@ set(debug_mock_file ${CMAKE_SOURCE_DIR}/.debug_mock)
 set(dependencies
   automation_msgs
   cyberdog_utils
+  cyberdog_bt_engine
   cyberdog_decisionutils
-  behaviortree_cpp_v3
+  cyberdog_motion_bridge
   builtin_interfaces
   cascade_lifecycle_msgs
   ception_msgs

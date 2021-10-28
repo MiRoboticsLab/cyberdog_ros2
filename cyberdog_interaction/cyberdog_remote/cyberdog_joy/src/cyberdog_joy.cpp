@@ -46,6 +46,7 @@
 #define BUTTON_NUM 16
 #define AXIS_NUM 4
 
+#define LOCOMOTION_BRIDGE_PKG "cyberdog_motion_bridge"
 #define MONO_ORDER_FILE "mono_order.toml"
 #define MAIN_CONFIG_FILE "cyberdog_conf.toml"
 
@@ -146,6 +147,7 @@ struct CyberdogJoy::Impl
   double last_callback;
 
   std::string local_params_dir;
+  std::string locomotion_params_dir;
   std::string joyconfig_file;
 
   toml::table order_map;
@@ -171,6 +173,8 @@ CyberdogJoy::CyberdogJoy(const rclcpp::NodeOptions & options)
   auto local_share_dir = ament_index_cpp::get_package_share_directory(PACKAGE_NAME);
   pimpl_->local_params_dir = local_share_dir + std::string("/params/");
   #endif
+  auto locomotion_bridge_dir = ament_index_cpp::get_package_share_directory(LOCOMOTION_BRIDGE_PKG);
+  pimpl_->locomotion_params_dir = locomotion_bridge_dir + std::string("/params/");
   auto config_toml = toml::parse(pimpl_->local_params_dir + MAIN_CONFIG_FILE);
 
   pimpl_->Joy =
@@ -216,7 +220,7 @@ CyberdogJoy::CyberdogJoy(const rclcpp::NodeOptions & options)
   );
 
   pimpl_->run_count = 6;
-  auto order_toml = toml::parse(pimpl_->local_params_dir + MONO_ORDER_FILE);
+  auto order_toml = toml::parse(pimpl_->locomotion_params_dir + MONO_ORDER_FILE);
   pimpl_->order_map = toml::find<toml::table>(order_toml, "order_list");
 
   pimpl_->cmd_vel_pub = this->create_publisher<msg_SE3VelocityCMD>(

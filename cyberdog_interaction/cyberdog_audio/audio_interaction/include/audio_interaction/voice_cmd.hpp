@@ -43,7 +43,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "cyberdog_utils/lifecycle_node.hpp"
-#include "cyberdog_utils/simple_action_server.hpp"
+#include "cyberdog_utils/action_server.hpp"
 #include "cyberdog_utils/Enums.hpp"
 
 #include "motion_msgs/msg/mon_order.hpp"
@@ -89,8 +89,9 @@ public:
   using MonorderT = motion_msgs::action::ExtMonOrder;
   using GoalHandleMonorderT = rclcpp_action::ClientGoalHandle<MonorderT>;
 
+  using LifecycleNode_T = cyberdog_utils::LifecycleNode;
   using PlayorderT = interaction_msgs::action::AudioPlay;
-  using PlayServer = cyberdog_utils::SimpleActionServer<PlayorderT>;
+  using PlayServer = cyberdog_utils::ActionServer<PlayorderT, LifecycleNode_T>;
   using GoalHandlePlayorderT = rclcpp_action::ClientGoalHandle<PlayorderT>;
 
 

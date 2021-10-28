@@ -70,4 +70,4 @@ motion_manager:
 voice_cmd:
   ros__parameters:
     back_distance: -1.0
-    turn_angle: 6.2831853072
+    turn_angle: 6.28

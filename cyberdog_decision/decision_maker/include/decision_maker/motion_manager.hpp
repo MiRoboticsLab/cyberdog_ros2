@@ -63,8 +63,10 @@
 #include "motion_msgs/action/ext_mon_order.hpp"
 // ROS headers
 #include "ament_index_cpp/get_package_share_directory.hpp"
+#include "cyberdog_bt_engine/bt_action_server.hpp"
+#include "cyberdog_motion_bridge/gait_interface.hpp"
 #include "cyberdog_utils/Enums.hpp"
-#include "cyberdog_utils/simple_action_server.hpp"
+#include "cyberdog_utils/action_server.hpp"
 #include "decision_maker/automation_manager.hpp"
 #include "decision_utils/cascade_manager.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -265,11 +267,12 @@ private:
   inline static uint32_t response_count_;
   inline static uint32_t odom_count_;
 
-// Internal variablels
+// Internal variables
 // Gait & locomotion variables
   bool thread_flag_;
   Gait_T gait_cached_;
   Time_T last_motion_time_;
+  std::shared_ptr<cyberdog_motion_bridge::GaitInterface> gait_interface_;
 // Robot state variables
   Around_T obstacle_data_;
   ControlState_T robot_control_state_;
@@ -282,6 +285,7 @@ private:
   int8_t tqdm_multi_;
 // Package directories
   std::string local_params_dir;
+  std::string locomotion_params_dir;
 
 // Node Executors
   rclcpp::executors::SingleThreadedExecutor node_exec_;
@@ -294,10 +298,10 @@ private:
   std::unique_ptr<std::thread> ros_switch_order_thread_;
 
 // Action Server
-  std::unique_ptr<cyberdog_utils::SimpleActionServer<ChangeMode_T, LifecycleNode_T>> mode_server_;
-  std::unique_ptr<cyberdog_utils::SimpleActionServer<ChangeGait_T,
+  std::unique_ptr<cyberdog_utils::ActionServer<ChangeMode_T, LifecycleNode_T>> mode_server_;
+  std::unique_ptr<cyberdog_utils::ActionServer<ChangeGait_T,
     LifecycleNode_T>> gait_server_;
-  std::unique_ptr<cyberdog_utils::SimpleActionServer<ExtMonOrder_T,
+  std::unique_ptr<cyberdog_utils::ActionServer<ExtMonOrder_T,
     LifecycleNode_T>> monorder_server_;
 
 // Action Client
