@@ -20,7 +20,7 @@ setup(
     zip_safe=True,
     maintainer='shenshuqiu',
     maintainer_email='shenshuqiu@xiaomi.com',
-    description='TODO: Package description',
+    description='ROS 2 package for Wi-Fi',
     license='Apache License, Version 2.0',
     tests_require=['pytest'],
     entry_points={
