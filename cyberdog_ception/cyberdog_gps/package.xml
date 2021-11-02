@@ -1,17 +1,20 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>bcmgps_plugin</name>
+  <name>cyberdog_gps</name>
   <version>1.0.0</version>
-  <description>GPS pluginlib plugins</description>
+  <description>Cyberdog GPS</description>
   <maintainer email="zhengjunyuan1@xiaomi.com">ZhengJunyuan</maintainer>
   <license>Apache License, Version 2.0</license>
 
-  <buildtool_depend>ament_cmake_ros</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>rclcpp</depend>
+  <depend>ception_msgs</depend>
+  <depend>cyberdog_utils</depend>
   <depend>pluginlib</depend>
   <depend>ception_base</depend>
-  <depend>cyberdog_ception_bridge</depend>
+  <depend>bcmgps_plugin</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -64,6 +64,11 @@ launch_nodes:
         executable: "service_light_detection"
         name: "light_detection"
 
+    # - cyberdog_gps_cmd:
+    #     package: "cyberdog_gps"
+    #     executable: "cyberdog_gps_node"
+    #     name: "cyberdog_gps"
+
     - scene_detection_cmd:
         package: "cyberdog_scene_detection"
         executable: "service_scene_detection"
