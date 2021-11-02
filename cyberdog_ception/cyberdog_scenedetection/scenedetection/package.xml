@@ -14,8 +14,8 @@
   <depend>motion_msgs</depend>
   <depend>cyberdog_utils</depend>
   <depend>pluginlib</depend>
-  <depend>gps_base</depend>
-  <depend>gps_plugins</depend>
+  <depend>ception_base</depend>
+  <depend>bcmgps_plugin</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

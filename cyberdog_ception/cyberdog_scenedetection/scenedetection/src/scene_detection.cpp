@@ -39,7 +39,7 @@
 #include "ception_msgs/srv/gps_scene_node.hpp"
 #include "cyberdog_utils/lifecycle_node.hpp"
 
-#include "gps_base/gps_base.hpp"
+#include "ception_base/ception_base.hpp"
 #include "pluginlib/class_loader.hpp"
 
 namespace SceneDetection
@@ -66,12 +66,12 @@ protected:
   cyberdog_utils::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
 
 private:
-  std::shared_ptr<pluginlib::ClassLoader<gps_base::Cyberdog_GPS>> classloader_;
-  std::shared_ptr<gps_base::Cyberdog_GPS> gps_;
-  std::shared_ptr<gps_base::Cyberdog_GPS_payload> payload_;
+  std::shared_ptr<pluginlib::ClassLoader<ception_base::Cyberdog_GPS>> classloader_;
+  std::shared_ptr<ception_base::Cyberdog_GPS> gps_;
+  std::shared_ptr<ception_base::Cyberdog_GPS_payload> payload_;
 
   void gps_data_receiver_callback(void);
-  void payload_callback(std::shared_ptr<gps_base::Cyberdog_GPS_payload> payload);
+  void payload_callback(std::shared_ptr<ception_base::Cyberdog_GPS_payload> payload);
 
   void handle_service(
     const std::shared_ptr<rmw_request_id_t> request_header,
@@ -118,9 +118,9 @@ cyberdog_utils::CallbackReturn GpsPubNode::on_configure(const rclcpp_lifecycle::
     rmw_qos_profile_default, callback_group_);
   message = motion_msgs::msg::Scene();
 
-  classloader_ = std::make_shared<pluginlib::ClassLoader<gps_base::Cyberdog_GPS>>(
-    "gps_base", "gps_base::Cyberdog_GPS");
-  gps_ = classloader_->createSharedInstance("gps_plugins::Cyberdog_BCMGPS");
+  classloader_ = std::make_shared<pluginlib::ClassLoader<ception_base::Cyberdog_GPS>>(
+    "ception_base", "ception_base::Cyberdog_GPS");
+  gps_ = classloader_->createSharedInstance("bcmgps_plugin::Cyberdog_BCMGPS");
   gps_->SetPayloadCallback(
     std::bind(
       &GpsPubNode::payload_callback, this, std::placeholders::_1
@@ -186,7 +186,7 @@ void GpsPubNode::gps_data_receiver_callback()
   publisher_->publish(std::move(message));
 }
 
-void GpsPubNode::payload_callback(std::shared_ptr<gps_base::Cyberdog_GPS_payload> payload)
+void GpsPubNode::payload_callback(std::shared_ptr<ception_base::Cyberdog_GPS_payload> payload)
 {
   payload_ = payload;
 }

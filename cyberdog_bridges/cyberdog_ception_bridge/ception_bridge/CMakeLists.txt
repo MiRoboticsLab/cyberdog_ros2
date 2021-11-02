@@ -11,10 +11,6 @@ install(DIRECTORY params/
   DESTINATION share/${PROJECT_NAME}/params/
 )
 
-install(DIRECTORY logs/
-  DESTINATION share/${PROJECT_NAME}/logs/
-)
-
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()

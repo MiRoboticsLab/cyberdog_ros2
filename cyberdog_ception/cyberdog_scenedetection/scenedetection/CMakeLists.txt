@@ -15,8 +15,7 @@ find_package(motion_msgs REQUIRED)
 find_package(ception_msgs REQUIRED)
 find_package(cyberdog_utils REQUIRED)
 find_package(pluginlib REQUIRED)
-find_package(gps_base REQUIRED)
-find_package(gps_plugins REQUIRED)
+find_package(ception_base REQUIRED)
 
 set(dependencies
   rclcpp
@@ -24,8 +23,7 @@ set(dependencies
   motion_msgs
   cyberdog_utils
   pluginlib
-  gps_base
-  gps_plugins
+  ception_base
 )
 
 set(executable_name service_scene_detection)

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GPS_BASE__GPS_BASE_HPP_
-#define GPS_BASE__GPS_BASE_HPP_
+#ifndef CEPTION_BASE__CEPTION_BASE_HPP_
+#define CEPTION_BASE__CEPTION_BASE_HPP_
 
 #include <memory>
 #include <functional>
 
-namespace gps_base
+namespace ception_base
 {
 class Cyberdog_GPS_payload
 {
@@ -28,7 +28,8 @@ public:
   uint8_t numSV;
   int32_t lon;
   int32_t lat;
-};
+};  // class Cyberdog_GPS_payload
+
 class Cyberdog_GPS
 {
 public:
@@ -46,6 +47,6 @@ protected:
   std::function<void(std::shared_ptr<Cyberdog_GPS_payload> payload)> payload_callback_;
   Cyberdog_GPS() {}
 };  // class Cyberdog_GPS
-}  // namespace gps_base
+}  // namespace ception_base
 
-#endif  // GPS_BASE__GPS_BASE_HPP_
+#endif  // CEPTION_BASE__CEPTION_BASE_HPP_

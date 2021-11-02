@@ -1,17 +1,13 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>gps_plugins</name>
+  <name>ception_base</name>
   <version>1.0.0</version>
-  <description>GPS pluginlib plugins</description>
+  <description>Ception pluginlib base</description>
   <maintainer email="zhengjunyuan1@xiaomi.com">ZhengJunyuan</maintainer>
   <license>Apache License, Version 2.0</license>
 
-  <buildtool_depend>ament_cmake_ros</buildtool_depend>
-
-  <depend>pluginlib</depend>
-  <depend>gps_base</depend>
-  <depend>bcm_gps</depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
