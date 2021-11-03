@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>bcmgps_plugin</name>
+  <version>1.0.0</version>
+  <description>GPS pluginlib plugins</description>
+  <maintainer email="zhengjunyuan1@xiaomi.com">ZhengJunyuan</maintainer>
+  <license>Apache License, Version 2.0</license>
+
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
+
+  <depend>pluginlib</depend>
+  <depend>ception_base</depend>
+  <depend>cyberdog_ception_bridge</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

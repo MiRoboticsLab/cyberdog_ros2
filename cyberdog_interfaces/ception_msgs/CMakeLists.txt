@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Bms.msg"
   "msg/BtRemoteEvent.msg"
   "msg/BodyState.msg"
+  "msg/GpsPayload.msg"
   "msg/Light.msg"
   "msg/Speed3.msg"
   "msg/Ultrasonic.msg"

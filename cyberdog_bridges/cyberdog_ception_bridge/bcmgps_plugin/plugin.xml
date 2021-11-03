@@ -1,0 +1,5 @@
+<library path="bcmgps_plugin">
+  <class type="bcmgps_plugin::Cyberdog_BCMGPS" base_class_type="ception_base::Cyberdog_GPS">
+    <description>This is a bcm_gps plugin.</description>
+  </class>
+</library>
