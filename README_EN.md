@@ -110,6 +110,7 @@ $ sudo systemctl restart cyberdog_ros2.service
 ## Related Projects
 
 - [CyberDog_Ctrl](https://github.com/Karlsx/CyberDog_Ctrl): Control your CyberDog with GRPC
+- [CyberDog_Misc](https://github.com/zbwu/cyberdog_misc): Reversed CyberDog related interfaces and data
 
 ## Related Resources
 

@@ -120,7 +120,8 @@ $ sudo systemctl restart cyberdog_ros2.service
 
 ## 相关项目
 
-- [CyberDog_Ctrl](https://github.com/Karlsx/CyberDog_Ctrl):使用GRPC控制铁蛋
+- [CyberDog_Ctrl](https://github.com/Karlsx/CyberDog_Ctrl): 使用GRPC控制铁蛋
+- [CyberDog_Misc](https://github.com/zbwu/cyberdog_misc): 逆向的铁蛋相关接口和数据
 
 ## 相关资源
 
