@@ -169,8 +169,8 @@ def Yaml_launcher(launch_param: List, launch_nodes_yaml: dict,
             if (n['launch_type'] == 'Base'):
                 raise e('\n' + error_t)
             continue
+        remappings_tuplelist = list()
         if (remappings is not None):
-            remappings_tuplelist = []
             try:
                 if (remappings['remappings'] is not None
                         and node_def_name in remappings['remappings']
@@ -182,7 +182,7 @@ def Yaml_launcher(launch_param: List, launch_nodes_yaml: dict,
                             raise IOError('Remapping format error')
                         remappings_tuplelist.append(t)
             except IOError:
-                remappings_tuplelist = []
+                remappings_tuplelist.clear()
                 print('[launcher][Yaml_launcher_error] Remapping error,'
                       ' disable remapping in node[%s]' % node_def_name)
                 continue
