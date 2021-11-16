@@ -48,6 +48,7 @@ launch_nodes:
         package: "cyberdog_audio"
         executable: "cyberdog_audio"
         output_screen: true
+        respawn: true
 
     - camera_live_cmd:
         package: "cyberdog_camera"
