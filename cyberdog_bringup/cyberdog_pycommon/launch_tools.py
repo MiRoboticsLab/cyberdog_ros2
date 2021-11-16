@@ -169,8 +169,8 @@ def Yaml_launcher(launch_param: List, launch_nodes_yaml: dict,
             if (n['launch_type'] == 'Base'):
                 raise e('\n' + error_t)
             continue
+        remappings_tuplelist = []
         if (remappings is not None):
-            remappings_tuplelist = []
             try:
                 if (remappings['remappings'] is not None
                         and node_def_name in remappings['remappings']
@@ -204,6 +204,8 @@ def Yaml_launcher(launch_param: List, launch_nodes_yaml: dict,
                  and param['output_screen'] else 'log',
                  prefix=[debug_param] if 'enable_debug' in param
                  and param['enable_debug'] else None,
+                 respawn=True if 'respawn' in param
+                 and param['respawn'] else False,
                  remappings=remappings_tuplelist))
     print('[launcher][Launch_Check_Info] Finish lanuch check, ', end='')
     if (checked_no_error['Base']):
