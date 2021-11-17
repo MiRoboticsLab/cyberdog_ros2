@@ -1,6 +1,7 @@
 # Xiaomi CyberDog ROS 2
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange)](https://choosealicense.com/licenses/apache-2.0/)
+[![CI](https://github.com/MiRoboticsLab/cyberdog_ros2/actions/workflows/ci_check.yaml/badge.svg)](https://github.com/MiRoboticsLab/cyberdog_ros2/actions/workflows/ci_check.yaml)
 
 ![CyberDogDog](tools/docs/cyberdog_poster.jpg)
 
