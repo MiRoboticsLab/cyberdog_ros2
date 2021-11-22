@@ -2003,16 +2003,19 @@ void MotionManager::init()
   gait_init.gait = Gait_T::GAIT_PASSIVE;
   gait_init.timestamp = this->get_clock()->now();
   publish_gait(gait_init);
-
   // auto goal_gait_t = 9;
   // auto current_gait_t = 3;
   // std::vector<cyberdog_motion_bridge::GaitMono> gait_to_run_t;
 
+  // auto time_a = get_clock()->now();
   // gait_interface_->get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
   // while (gait_to_run_t.size() > 0) {
   //   message_info(std::string("gait to run is ") + gait_to_run_t.back().get_gait_name());
   //   gait_to_run_t.pop_back();
   // }
+  // auto time_b = get_clock()->now();
+  // auto time_diff = time_b - time_a;
+  // message_info(std::string("time diff is ") + std::to_string(time_diff.seconds()));
 }
 
 std_msgs::msg::Header MotionManager::return_custom_header(std::string frame_id)

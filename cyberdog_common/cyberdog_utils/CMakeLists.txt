@@ -21,6 +21,7 @@ find_package(cascade_lifecycle_msgs REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(toml11_vendor REQUIRED)
 
 include_directories(include)
 

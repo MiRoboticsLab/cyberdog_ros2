@@ -1,20 +1,23 @@
 cmake_minimum_required(VERSION 3.8)
-project(cyberdog_motion_bridge)
+project(cyberdog_motion_plugins)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(cyberdog_bt_engine REQUIRED)
+find_package(cyberdog_utils REQUIRED)
 
 include_directories(include)
 
-install(DIRECTORY include/
-  DESTINATION include/
+set(dependencies
+  cyberdog_bt_engine
+  cyberdog_utils
 )
 
-install(DIRECTORY params/
-  DESTINATION share/${PROJECT_NAME}/params/
+install(DIRECTORY include/
+  DESTINATION include/
 )
 
 if(BUILD_TESTING)

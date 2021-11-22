@@ -303,6 +303,8 @@ private:
     LifecycleNode_T>> gait_server_;
   std::unique_ptr<cyberdog_utils::ActionServer<ExtMonOrder_T,
     LifecycleNode_T>> monorder_server_;
+  std::unique_ptr<cyberdog_decision::BtActionServer<ChangeGait_T,
+    LifecycleNode_T>> gait_server_test_;
 
 // Action Client
   rclcpp_action::Client<ChangeGait_T>::SharedPtr gait_client_;
@@ -323,6 +325,7 @@ private:
 
 // Publisher
   rclcpp_lifecycle::LifecyclePublisher<Gait_T>::SharedPtr gait_pub_;
+  rclcpp::Publisher<Gait_T>::SharedPtr gait_pub_temp_;
   rclcpp_lifecycle::LifecyclePublisher<ControlState_T>::SharedPtr control_state_pub_;
   rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
   rclcpp_lifecycle::LifecyclePublisher<SE3VelocityCMD_T>::SharedPtr cmd_pub_;
