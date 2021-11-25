@@ -28,8 +28,11 @@
 #include "rclcpp/rclcpp.hpp"
 #include "toml11/toml.hpp"
 
-namespace cyberdog_motion_bridge
+namespace cyberdog
 {
+namespace motion_bridge
+{
+
 class GaitMono
 {
 public:
@@ -141,6 +144,7 @@ private:
 
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_;
 };
-}  // namespace cyberdog_motion_bridge
+}  // namespace motion_bridge
+}  // namespace cyberdog
 
 #endif  // CYBERDOG_MOTION_BRIDGE__GAIT_INTERFACE_HPP_

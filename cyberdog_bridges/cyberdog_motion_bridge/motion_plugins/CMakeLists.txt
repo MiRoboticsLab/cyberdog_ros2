@@ -6,13 +6,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(cyberdog_bt_engine REQUIRED)
 find_package(cyberdog_utils REQUIRED)
 
 include_directories(include)
 
 set(dependencies
-  cyberdog_bt_engine
   cyberdog_utils
 )
 

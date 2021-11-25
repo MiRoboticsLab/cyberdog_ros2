@@ -26,7 +26,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "toml11/toml.hpp"
 
-namespace cyberdog_motion_bridge
+namespace cyberdog
+{
+namespace motion_bridge
 {
 
 /* -------[Gait Mono]------- */
@@ -303,4 +305,5 @@ bool GaitInterface::gait_coherency_test(
   return rtn_;
 }
 
-}  // namespace cyberdog_motion_bridge
+}  // namespace motion_bridge
+}  // namespace cyberdog

@@ -9,7 +9,6 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>cyberdog_bt_engine</depend>
   <depend>cyberdog_utils</depend>
 
   <test_depend>ament_lint_auto</test_depend>

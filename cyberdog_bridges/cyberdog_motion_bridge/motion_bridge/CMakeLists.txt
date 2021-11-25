@@ -6,7 +6,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(cyberdog_bt_engine REQUIRED)
 find_package(cyberdog_utils REQUIRED)
 find_package(toml11_vendor REQUIRED)
 
@@ -14,7 +13,6 @@ include_directories(include)
 
 set(library_name motion_bridge)
 set(dependencies
-  cyberdog_bt_engine
   cyberdog_utils
   toml11_vendor
 )
