@@ -11,9 +11,9 @@ launch_nodes:
     #       #[optional] load_nodes_param: false (true/false)
     #       #[optional] enable_debug: false     (true/false)
 
-    - decision_cmd:
-        package: "cyberdog_decisionmaker"
-        executable: "decisionmaker"
+    - unified_manager_cmd:
+        package: "cyberdog_unified_manager"
+        executable: "unified_manager"
         load_nodes_param: true
         # enable_debug: true
 
