@@ -15,4 +15,4 @@ launch_groups:
         - light_detection_cmd
     motion_test:
       except:
-        - decision_cmd
+        - unified_manager_cmd
