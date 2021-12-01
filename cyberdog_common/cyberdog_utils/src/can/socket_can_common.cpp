@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 // Copyright 2021 the Autoware Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,7 +81,7 @@ struct timeval to_timeval(const std::chrono::nanoseconds timeout) noexcept
   constexpr auto BILLION = 1'000'000'000LL;
   struct timeval c_timeout;
   c_timeout.tv_sec = static_cast<decltype(c_timeout.tv_sec)>(count / BILLION);
-  c_timeout.tv_usec = static_cast<decltype(c_timeout.tv_usec)>((count % BILLION) * 1000LL);
+  c_timeout.tv_usec = static_cast<decltype(c_timeout.tv_usec)>((count % BILLION) * 0.001);
 
   return c_timeout;
 }

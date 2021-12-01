@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 // Copyright 2019 the Autoware Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +20,8 @@
 
 #include <unistd.h>  // for close()
 #include <sys/select.h>
-#include <sys/socket.h>
-#include <linux/can.h>
 
+#include <memory>
 #include <cstring>
 #include <string>
 
@@ -71,26 +71,69 @@ void SocketCanReceiver::wait(const std::chrono::nanoseconds timeout) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-CanId SocketCanReceiver::receive(void * const data, const std::chrono::nanoseconds timeout) const
+bool SocketCanReceiver::receive(
+  std::shared_ptr<struct can_frame> rx_frame,
+  const std::chrono::nanoseconds timeout)
 {
-  wait(timeout);
+  try {
+    wait(timeout);
+  } catch (SocketCanTimeout & ex) {
+    return false;
+  }
   // Read
-  struct can_frame frame;
+  struct canfd_frame frame;
   const auto nbytes = read(m_file_descriptor, &frame, sizeof(frame));
   // Checks
   if (nbytes < 0) {
     throw std::runtime_error{strerror(errno)};
   }
-  if (static_cast<std::size_t>(nbytes) < sizeof(frame)) {
+  if (static_cast<std::size_t>(nbytes) < CAN_MTU) {
     throw std::runtime_error{"read: incomplete CAN frame"};
   }
-  if (static_cast<std::size_t>(nbytes) != sizeof(frame)) {
+  if (static_cast<std::size_t>(nbytes) != CAN_MTU) {
     throw std::logic_error{"Message was wrong size"};
   }
   // Write
-  const auto data_length = static_cast<CanId::LengthT>(frame.can_dlc);
-  (void)std::memcpy(data, static_cast<void *>(&frame.data[0U]), data_length);
-  return CanId{frame.can_id, data_length};
+  auto receive_id = CanId{frame.can_id, frame.len};
+  if (receive_id.frame_type() == drivers::socketcan::FrameType::DATA) {
+    rx_frame->can_id = receive_id.standard().get();
+    rx_frame->can_dlc = receive_id.length();
+    std::memcpy(rx_frame->data, frame.data, sizeof(rx_frame->data));
+    return true;
+  }
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool SocketCanReceiver::receive(
+  std::shared_ptr<struct canfd_frame> rx_frame,
+  const std::chrono::nanoseconds timeout)
+{
+  try {
+    wait(timeout);
+  } catch (SocketCanTimeout & ex) {
+    return false;
+  }
+  // Read
+  struct canfd_frame frame;
+  const auto nbytes = read(m_file_descriptor, &frame, sizeof(frame));
+  // Checks
+  uint8_t except_len = CAN_MTU - 8 + frame.len;
+  if (nbytes < 0) {
+    throw std::runtime_error{strerror(errno)};
+  }
+  if (static_cast<std::size_t>(nbytes) < except_len) {
+    throw std::runtime_error{"read: incomplete CAN frame"};
+  }
+  // Write
+  auto receive_id = CanId{frame.can_id, frame.len};
+  if (receive_id.frame_type() == drivers::socketcan::FrameType::DATA) {
+    rx_frame->can_id = receive_id.standard().get();
+    rx_frame->len = receive_id.length();
+    std::memcpy(rx_frame->data, frame.data, sizeof(rx_frame->data));
+    return true;
+  }
+  return false;
 }
 
 }  // namespace socketcan

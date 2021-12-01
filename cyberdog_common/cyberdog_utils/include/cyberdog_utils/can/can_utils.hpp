@@ -26,6 +26,9 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <functional>
+#include <thread>
+#include <vector>
 
 #include "net/if.h"
 #include "sys/ioctl.h"
@@ -51,24 +54,120 @@
 
 namespace cyberdog_utils
 {
+using can_std_callback = std::function<void (std::shared_ptr<struct can_frame> recv_frame)>;
+using can_fd_callback = std::function<void (std::shared_ptr<struct canfd_frame> recv_frame)>;
 
-class can_dev_operation
+// can_rx_dev ////////////////////////////////////////////////////////////////////////////////////
+class can_rx_dev
 {
 public:
-  can_dev_operation();
-  ~can_dev_operation();
+  explicit can_rx_dev(
+    const std::string & interface,
+    const std::string & name,
+    can_std_callback recv_callback,
+    int64_t timeout = -1);
+  explicit can_rx_dev(
+    const std::string & interface,
+    const std::string & name,
+    can_fd_callback recv_callback,
+    int64_t timeout = -1);
+  ~can_rx_dev();
 
-  int wait_for_can_data();
-  int send_can_message(struct can_frame cmd_frame);
-
-  struct can_frame recv_frame;
-
-  std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
-  std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
+  bool is_ready() {return ready_;}
+  void set_filter(const struct can_filter filter[], size_t s);
 
 private:
+  bool ready_;
+  bool canfd_;
+  bool extended_frame_;
+  bool isthreadrunning_;
+  int64_t timeout_;
+  std::string name_;
   std::string interface_;
+  can_std_callback can_std_callback_;
+  can_fd_callback can_fd_callback_;
+  std::unique_ptr<std::thread> main_T_;
+  std::shared_ptr<struct can_frame> rx_std_frame_;
+  std::shared_ptr<struct canfd_frame> rx_fd_frame_;
+  std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
+
+  void init(const std::string & interface, bool canfd_on);
+  bool wait_for_std_can_data();
+  bool wait_for_fd_can_data();
+  void main_recv_func();
 };
+
+// can_tx_dev ////////////////////////////////////////////////////////////////////////////////////
+class can_tx_dev
+{
+public:
+  explicit can_tx_dev(
+    const std::string & interface,
+    const std::string & name,
+    bool extended_frame,
+    bool canfd_on,
+    int64_t timeout = -1);
+  ~can_tx_dev();
+
+  bool send_can_message(struct can_frame & tx_frame);
+  bool send_can_message(struct canfd_frame & tx_frame);
+  bool is_ready() {return ready_;}
+
+private:
+  bool ready_;
+  bool canfd_on_;
+  bool extended_frame_;
+  int64_t timeout_;
+  std::string name_;
+  std::string interface_;
+  std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
+};
+
+// can_dev ///////////////////////////////////////////////////////////////////////////////////////
+class can_dev
+{
+public:
+  explicit can_dev(
+    const std::string & interface,
+    const std::string & name,
+    bool extended_frame,
+    can_std_callback recv_callback,
+    int64_t timeout = -1);
+  explicit can_dev(
+    const std::string & interface,
+    const std::string & name,
+    bool extended_frame,
+    can_fd_callback recv_callback,
+    int64_t timeout = -1);
+  explicit can_dev(
+    const std::string & interface,
+    const std::string & name,
+    bool extended_frame,
+    bool canfd_on,
+    int64_t timeout = -1);
+  ~can_dev();
+
+  bool send_can_message(struct can_frame & tx_frame);
+  bool send_can_message(struct canfd_frame & tx_frame);
+  void set_filter(const struct can_filter filter[], size_t s);
+  bool is_send_only() {return send_only_;}
+  bool is_ready()
+  {
+    bool result = (tx_op_ == nullptr) ? false : tx_op_->is_ready();
+    if (send_only_) {
+      return result;
+    } else {
+      return result && ((rx_op_ == nullptr) ? false : rx_op_->is_ready());
+    }
+  }
+
+private:
+  bool send_only_;
+  std::string name_;
+  std::unique_ptr<can_rx_dev> rx_op_;
+  std::unique_ptr<can_tx_dev> tx_op_;
+};
+
 }  // namespace cyberdog_utils
 
 #endif  // CYBERDOG_UTILS__CAN__CAN_UTILS_HPP_

@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 // Copyright 2021 the Autoware Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +19,10 @@
 
 #ifndef CYBERDOG_UTILS__CAN__SOCKET_CAN_SENDER_HPP_
 #define CYBERDOG_UTILS__CAN__SOCKET_CAN_SENDER_HPP_
+
+#include <sys/socket.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
 
 #include <chrono>
 #include <string>
@@ -103,8 +108,35 @@ public:
     // all pointers can implicitly convert to void *
   }
 
+  /// Send raw data with an explicit CAN id via fd can
+  /// \param[in] data A pointer to the beginning of the data to send
+  /// \param[in] timeout Maximum duration to wait for file descriptor to be free for write. Negative
+  ///                    durations are treated the same as zero timeout
+  /// \param[in] id The id field for the CAN frame
+  /// \param[in] length The amount of data to send starting from the data pointer
+  /// \throw std::domain_error If length is > 64
+  /// \throw SocketCanTimeout On timeout
+  /// \throw std::runtime_error on other errors
+  void send_fd(
+    const void * const data,
+    const std::size_t length,
+    const CanId id,
+    const std::chrono::nanoseconds timeout = std::chrono::nanoseconds::zero()) const;
+
   /// Get the default CAN id
   CanId default_id() const noexcept;
+
+  void enable_canfd(bool enable = true)
+  {
+    int canfd_on = enable ? 1 : 0;
+    if (m_first_init == false) {
+      m_canfd_state = canfd_on;
+      m_first_init = true;
+    } else if (m_canfd_state != canfd_on) {
+      throw std::logic_error{"Can't mix can and canfd device by logic"};
+    }
+    setsockopt(m_file_descriptor, SOL_CAN_RAW, CAN_RAW_FD_FRAMES, &canfd_on, sizeof(canfd_on));
+  }
 
 private:
   // Underlying implementation of sending, data is assumed to be of an appropriate length
@@ -113,9 +145,17 @@ private:
     const std::size_t length,
     const CanId id,
     const std::chrono::nanoseconds timeout) const;
+  // Underlying implementation of can_fd sending, data is assumed to be of an appropriate length
+  void send_fd_impl(
+    const void * const data,
+    const std::size_t length,
+    const CanId id,
+    const std::chrono::nanoseconds timeout) const;
   // Wait for file descriptor to be available to send data via select()
   SOCKETCAN_LOCAL void wait(const std::chrono::nanoseconds timeout) const;
 
+  inline static bool m_first_init;
+  inline static int8_t m_canfd_state;
   int32_t m_file_descriptor{};
   CanId m_default_id;
 };  // class SocketCanSender

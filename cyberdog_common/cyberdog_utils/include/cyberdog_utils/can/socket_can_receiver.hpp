@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 // Copyright 2021 the Autoware Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +20,15 @@
 #ifndef CYBERDOG_UTILS__CAN__SOCKET_CAN_RECEIVER_HPP_
 #define CYBERDOG_UTILS__CAN__SOCKET_CAN_RECEIVER_HPP_
 
+#include <sys/socket.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
+
 #include <array>
 #include <chrono>
 #include <cstring>
 #include <string>
+#include <memory>
 
 #include "cyberdog_utils/can/visibility_control.hpp"
 #include "cyberdog_utils/can/socket_can_id.hpp"
@@ -41,45 +47,36 @@ public:
   /// Destructor
   ~SocketCanReceiver() noexcept;
 
-  /// Receive CAN data
-  /// \param[out] data A buffer to be written with data bytes. Must be at least 8 bytes in size
-  /// \param[in] timeout Maximum duration to wait for data on the file descriptor. Negative
-  ///                    durations are treated the same as zero timeout
-  /// \return The CanId for the received can_frame, with length appropriately populated
-  /// \throw SocketCanTimeout On timeout
-  /// \throw std::runtime_error on other errors
-  CanId receive(
-    void * const data,
-    const std::chrono::nanoseconds timeout = std::chrono::nanoseconds::zero()) const;
-  /// Receive typed CAN data. Slightly less efficient than untyped interface; has extra copy and
-  /// branches
-  /// \tparam Type of data to receive, must be 8 bytes or smaller
-  /// \param[out] data A buffer to be written with data bytes. Must be at least 8 bytes in size
-  /// \param[in] timeout Maximum duration to wait for data on the file descriptor. Negative
-  ///                    durations are treated the same as zero timeout
-  /// \return The CanId for the received can_frame, with length appropriately populated
-  /// \throw SocketCanTimeout On timeout
-  /// \throw std::runtime_error If received data would not fit into provided type
-  /// \throw std::runtime_error on other errors
-  template<typename T, typename = std::enable_if_t<!std::is_pointer<T>::value>>
-  CanId receive(
-    T & data,
-    const std::chrono::nanoseconds timeout = std::chrono::nanoseconds::zero()) const
+  bool receive(
+    std::shared_ptr<struct can_frame> rx_frame,
+    const std::chrono::nanoseconds timeout = std::chrono::nanoseconds::zero());
+  bool receive(
+    std::shared_ptr<struct canfd_frame> rx_frame,
+    const std::chrono::nanoseconds timeout = std::chrono::nanoseconds::zero());
+
+  void enable_canfd(bool enable = true)
   {
-    static_assert(sizeof(data) <= MAX_DATA_LENGTH, "Data type too large for CAN");
-    std::array<uint8_t, MAX_DATA_LENGTH> data_raw{};
-    const auto ret = receive(&data_raw[0U], timeout);
-    if (ret.length() != sizeof(data)) {
-      throw std::runtime_error{"Received CAN data is of size incompatible with provided type!"};
+    int canfd_on = enable ? 1 : 0;
+    if (m_first_init == false) {
+      m_canfd_state = canfd_on;
+      m_first_init = true;
+    } else if (m_canfd_state != canfd_on) {
+      throw std::logic_error{"Can't mix can and canfd device by logic"};
     }
-    (void)std::memcpy(&data, &data_raw[0U], ret.length());
-    return ret;
+    setsockopt(m_file_descriptor, SOL_CAN_RAW, CAN_RAW_FD_FRAMES, &canfd_on, sizeof(canfd_on));
+  }
+
+  void set_filter(const struct can_filter filter[], size_t s)
+  {
+    setsockopt(m_file_descriptor, SOL_CAN_RAW, CAN_RAW_FILTER, filter, s);
   }
 
 private:
   // Wait for file descriptor to be available to send data via select()
   SOCKETCAN_LOCAL void wait(const std::chrono::nanoseconds timeout) const;
 
+  inline static bool m_first_init;
+  inline static int8_t m_canfd_state;
   int32_t m_file_descriptor;
 };  // class SocketCanReceiver
 

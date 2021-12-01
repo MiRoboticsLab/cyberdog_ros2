@@ -1,3 +1,4 @@
+// Copyright (c) 2021 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 // Copyright 2021 the Autoware Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +20,6 @@
 
 #include <unistd.h>  // for close()
 #include <sys/select.h>
-#include <sys/socket.h>
-#include <linux/can.h>
 
 #include <cstring>
 #include <chrono>
@@ -75,6 +74,19 @@ void SocketCanSender::send(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void SocketCanSender::send_fd(
+  const void * const data,
+  const std::size_t length,
+  const CanId id,
+  const std::chrono::nanoseconds timeout) const
+{
+  if (length > MAX_DATA_LENGTH) {
+    throw std::domain_error{"Size is too large to send via CAN"};
+  }
+  send_fd_impl(data, length, id, timeout);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void SocketCanSender::wait(const std::chrono::nanoseconds timeout) const
 {
   if (decltype(timeout)::zero() < timeout) {
@@ -102,7 +114,11 @@ void SocketCanSender::send_impl(
   const std::chrono::nanoseconds timeout) const
 {
   // Use select call on positive timeout
-  wait(timeout);
+  try {
+    wait(timeout);
+  } catch (SocketCanTimeout & ex) {
+    return;
+  }
   // Actually send the data
   struct can_frame data_frame;
   data_frame.can_id = id.get();
@@ -110,10 +126,36 @@ void SocketCanSender::send_impl(
   data_frame.can_dlc = static_cast<decltype(data_frame.can_dlc)>(length);
   // lint -e{586} NOLINT data_frame is a stack variable; guaranteed not to overlap
   (void)std::memcpy(static_cast<void *>(&data_frame.data[0U]), data, length);
-  if (write(
-      m_file_descriptor, &data_frame,
-      static_cast<int>(CAN_MTU)) != static_cast<int>(CAN_MTU))
+  if (write(m_file_descriptor, &data_frame, static_cast<int>(CAN_MTU)) !=
+    static_cast<int>(CAN_MTU))
   {
+    throw std::runtime_error{strerror(errno)};
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void SocketCanSender::send_fd_impl(
+  const void * const data,
+  const std::size_t length,
+  const CanId id,
+  const std::chrono::nanoseconds timeout) const
+{
+  // Use select call on positive timeout
+  try {
+    wait(timeout);
+  } catch (SocketCanTimeout & ex) {
+    return;
+  }
+  // Actually send the data
+  struct canfd_frame data_frame;
+  data_frame.can_id = id.get();
+  // User facing functions do check
+  data_frame.len = static_cast<decltype(data_frame.len)>(length);
+  // lint -e{586} NOLINT data_frame is a stack variable; guaranteed not to overlap
+  std::memcpy(static_cast<void *>(&data_frame.data[0U]), data, length);
+  uint8_t real_len = CAN_MTU - 8 + data_frame.len;
+  auto bytes_sent = write(m_file_descriptor, &data_frame, static_cast<int>(real_len));
+  if (bytes_sent != static_cast<int>(real_len)) {
     throw std::runtime_error{strerror(errno)};
   }
 }
