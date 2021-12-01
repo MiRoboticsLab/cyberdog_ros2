@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CYBERDOG_MOTION_BRIDGE__GAIT_INTERFACE_HPP_
-#define CYBERDOG_MOTION_BRIDGE__GAIT_INTERFACE_HPP_
+#ifndef MOTION_BRIDGE__GAIT_INTERFACE_HPP_
+#define MOTION_BRIDGE__GAIT_INTERFACE_HPP_
 
 // C++ headers
 #include <map>
@@ -69,17 +69,13 @@ public:
   /**
    * @brief An constructor for GaitInterface
    * @param toml_path toml file path of gait bridges map
-   * @param log_interface ROS log interface
    */
-  explicit GaitInterface(
-    const std::string toml_path,
-    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface);
+  explicit GaitInterface(const std::string toml_path);
 
   /**
    * @brief An simple constructor for GaitInterface
-   * @param log_interface ROS log interface
    */
-  explicit GaitInterface(rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface);
+  GaitInterface();
   ~GaitInterface();
 
   /**
@@ -141,10 +137,8 @@ private:
   inline static std::shared_ptr<std::map<uint8_t, GaitMono>> trans_gait_map_;
   inline static std::shared_ptr<std::map<uint8_t, GaitMono>> gait_map_;
   inline static std::shared_ptr<std::string> toml_path_;
-
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_;
 };
 }  // namespace motion_bridge
 }  // namespace cyberdog
 
-#endif  // CYBERDOG_MOTION_BRIDGE__GAIT_INTERFACE_HPP_
+#endif  // MOTION_BRIDGE__GAIT_INTERFACE_HPP_

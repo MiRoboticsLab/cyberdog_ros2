@@ -22,7 +22,7 @@
 #include <vector>
 #include <utility>
 
-#include "cyberdog_motion_bridge/gait_interface.hpp"
+#include "motion_bridge/gait_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "toml11/toml.hpp"
 
@@ -83,22 +83,17 @@ inline bool GaitMono::get_bridge_gait(uint8_t & bridge_gait) const
 
 /* -------[Gait Interface]------- */
 
-GaitInterface::GaitInterface(
-  const std::string toml_path,
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface)
-: logger_(log_interface)
+GaitInterface::GaitInterface(const std::string toml_path)
 {
   if (!init_) {
     if (init_gait_map(toml_path)) {toml_path_ = std::make_shared<std::string>(toml_path);}
   }
 }
 
-GaitInterface::GaitInterface(rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface)
-: logger_(log_interface)
+GaitInterface::GaitInterface()
 {
   if (!init_) {
     cyberdog_utils::message_info(
-      logger_,
       GAIT_INTERFACE +
       std::string("Gait instance is empty."));
   }
@@ -120,7 +115,6 @@ bool GaitInterface::get_bridges_list(
   bool rtn_(false);
   if (!init_) {
     cyberdog_utils::message_info(
-      logger_,
       GAIT_INTERFACE +
       std::string("Got bridges list failed. Gait interface is not initialized yet."));
   } else {
@@ -172,20 +166,20 @@ bool GaitInterface::init_gait_map(const std::string toml_path)
   auto trans_gait_map_ptr = std::make_shared<std::map<uint8_t, GaitMono>>();
   bool rtn_(false);
   bool miss_code(false);
-  if (!cyberdog_utils::get_raw_toml_data(toml_path, gait_tag, gait_bridges_tab) ||
-    !cyberdog_utils::get_raw_toml_data(toml_path, gait_defines, gait_define_tab) ||
-    !cyberdog_utils::get_raw_toml_data(toml_path, bridges_max, gait_bridges_max) ||
-    !cyberdog_utils::get_raw_toml_data(toml_path, gait_trans, gait_trans_tab))
+  toml::value toml_value;
+  if (!cyberdog_utils::get_toml_from_path(toml_path, toml_value) ||
+    !cyberdog_utils::get_raw_from_toml(toml_value, gait_tag, gait_bridges_tab) ||
+    !cyberdog_utils::get_raw_from_toml(toml_value, gait_defines, gait_define_tab) ||
+    !cyberdog_utils::get_raw_from_toml(toml_value, bridges_max, gait_bridges_max) ||
+    !cyberdog_utils::get_raw_from_toml(toml_value, gait_trans, gait_trans_tab))
   {
     cyberdog_utils::message_info(
-      logger_,
       GAIT_INTERFACE +
       std::string("Got toml data failed."));
     return rtn_;
   }
   if (gait_bridges_max == 0 || gait_trans_tab.size() == 0) {
     cyberdog_utils::message_info(
-      logger_,
       GAIT_INTERFACE +
       std::string("Gait bridges / trans gait table length is zero. Check TOML file, please."));
     return rtn_;
@@ -215,7 +209,6 @@ bool GaitInterface::init_gait_map(const std::string toml_path)
     // Gait tab not found
     if (gait_tab == gait_define_tab.end()) {
       cyberdog_utils::message_info(
-        logger_,
         GAIT_INTERFACE +
         std::string("Gait defination table [") +
         gait_name +
@@ -245,7 +238,6 @@ bool GaitInterface::init_gait_map(const std::string toml_path)
   // auto test
   if (miss_code) {
     cyberdog_utils::message_info(
-      logger_,
       GAIT_INTERFACE +
       std::string("Some configuration is missed. Check gait toml, please."));
     return rtn_;
@@ -258,7 +250,6 @@ bool GaitInterface::init_gait_map(const std::string toml_path)
     rtn_ = true;
   } else {
     cyberdog_utils::message_info(
-      logger_,
       GAIT_INTERFACE +
       std::string("Auto test failed. Please try with another gait bridges map"));
   }
@@ -289,7 +280,6 @@ bool GaitInterface::gait_coherency_test(
           gait_list))
       {
         cyberdog_utils::message_info(
-          logger_,
           GAIT_INTERFACE +
           std::string("Failed when checking from ") +
           current_gait.second.get_gait_name() +

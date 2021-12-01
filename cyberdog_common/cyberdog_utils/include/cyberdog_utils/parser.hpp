@@ -29,52 +29,74 @@
 namespace cyberdog_utils
 {
 void message_info(
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface,
-  std::string_view log)
+  std::string_view log,
+  const rclcpp::Logger log_head = rclcpp::get_logger("Common_Logger"))
 {
-  RCLCPP_INFO_STREAM(log_interface->get_logger(), log);
+  RCLCPP_INFO_STREAM(log_head, log);
 }
 
 void message_warn(
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface,
-  std::string_view log)
+  std::string_view log,
+  const rclcpp::Logger log_head = rclcpp::get_logger("Common_Logger"))
 {
-  RCLCPP_INFO_STREAM(log_interface->get_logger(), log);
+  RCLCPP_INFO_STREAM(log_head, log);
 }
 
 void message_error(
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr log_interface,
-  std::string_view log)
+  std::string_view log,
+  const rclcpp::Logger log_head = rclcpp::get_logger("Common_Logger"))
 {
-  RCLCPP_INFO_STREAM(log_interface->get_logger(), log);
+  RCLCPP_INFO_STREAM(log_head, log);
 }
 
 /**
- * @brief Get the raw data from TOML with filepath
+ * @brief Get the raw toml data from filepath
  *
  * @param file_path Absolute path of TOML file
+ * @param toml_value Value to return
+ * @return true
+ * @return false
+ */
+bool get_toml_from_path(
+  const std::string file_path,
+  toml::value & toml_value)
+{
+  bool _rtn(true);
+  if (!std::experimental::filesystem::exists(file_path)) {
+    message_error(std::string("TOML file not found"));
+    _rtn = false;
+  } else {
+    try {
+      toml_value = toml::parse(file_path);
+    } catch (const std::runtime_error & e) {
+      message_error(std::string("Value not found in TOML file"));
+      _rtn = false;
+    }
+  }
+  return _rtn;
+}
+
+/**
+ * @brief Get the raw data from TOML value
+ *
+ * @param toml_value TOML value to read
  * @param data_tag Data tag of value in TOML file
  * @param raw_data Value to return
  * @return true
  * @return false
  */
 template<typename T>
-bool get_raw_toml_data(
-  const std::string file_path,
+bool get_raw_from_toml(
+  const toml::value toml_value,
   const std::string data_tag,
   T & raw_data)
 {
   bool _rtn(true);
-  if (!std::experimental::filesystem::exists(file_path)) {
-    std::cerr << "TOML file not found" << std::endl;
+  try {
+    raw_data = toml::find<T>(toml_value, data_tag);
+  } catch (const std::out_of_range & out_err) {
     _rtn = false;
-  } else {
-    try {
-      raw_data = toml::find<T>(toml::parse(file_path), data_tag);
-    } catch (const std::runtime_error & e) {
-      std::cerr << "Value not found in TOML file" << std::endl;
-      _rtn = false;
-    }
+    message_error(std::string("Value not found in TOML value."));
   }
   return _rtn;
 }

@@ -63,7 +63,7 @@
 #include "motion_msgs/action/ext_mon_order.hpp"
 // ROS headers
 #include "ament_index_cpp/get_package_share_directory.hpp"
-#include "cyberdog_motion_bridge/gait_interface.hpp"
+#include "motion_bridge/gait_interface.hpp"
 #include "cyberdog_utils/Enums.hpp"
 #include "cyberdog_utils/action_server.hpp"
 #include "manager_utils/bt_action_server.hpp"
