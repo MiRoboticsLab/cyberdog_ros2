@@ -139,8 +139,8 @@ CallbackReturn_T MotionManager::on_configure(const rclcpp_lifecycle::State &)
   parameter_check(cons_abs_lin_x_, cons_speed_l_normal_, std::string("cons_speed_l_normal_mps"));
 
   const auto gait_toml = locomotion_params_dir + std::string("map_gait.toml");
-  gait_interface_ = std::make_shared<cyberdog::motion_bridge::GaitInterface>(
-    cyberdog::motion_bridge::GaitInterface(gait_toml, this->get_node_logging_interface()));
+  gait_interface_ = std::make_shared<motion_bridge::GaitInterface>(
+    motion_bridge::GaitInterface(gait_toml));
 
   callback_group_service =
     this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);

@@ -16,8 +16,8 @@ include(ExternalProject)
 externalproject_add(
   ${EXTPRJ_NAME}
   PREFIX ${EXTPRJ_NAME}
-  URL https://cdn.cnbj2m.fds.api.mi-img.com/cyberdog-package/packages/depend/mpg123/mpg123-1.29.0.tar.bz2
-  URL_MD5 e485dff7a99d338ff885975f89f222c1
+  URL https://www.mpg123.de/download/mpg123-1.29.2.tar.bz2
+  URL_MD5 05137a60b40d66bc185b1e106815aec7
   CONFIGURE_COMMAND eval ${PREFIX_DIR}/configure --prefix=${OUT_DIR}
   BUILD_COMMAND "make"
   INSTALL_DIR ${OUT_DIR}
