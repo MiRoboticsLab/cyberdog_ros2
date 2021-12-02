@@ -21,6 +21,7 @@ timeout_us = 1000000
 # var_type = "float"                      
 #            (float / double / i64 / i32 / i16 / i8 / u64 / u32 / u16 / u8 / bool)
 # parser_param = [0, 3]                     (array<uint8>[2] / array<uint8>[3])
+# [optional] var_zoom = 1.0                 (float)
 # [optional] parser_type = "auto"           (bit / var / auto)
 # [optional] description = ""               (string)
 
@@ -29,6 +30,7 @@ can_id = "0x0300 00 00"
 var_name = "example_var_1"
 var_type = "double"
 parser_param = [0, 7]
+var_zoom = 0.0001
 description = "this is example named example_var_1"
 
 [[var]]

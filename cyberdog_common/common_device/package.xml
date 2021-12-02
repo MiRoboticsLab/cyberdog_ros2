@@ -3,7 +3,7 @@
 <package format="3">
   <name>common_device</name>
   <version>1.0.0</version>
-  <description>Common pluginlib base</description>
+  <description>Easier to use peripherals with toml description file</description>
   <maintainer email="zhengjunyuan1@xiaomi.com">ZhengJunyuan</maintainer>
   <license>Apache License, Version 2.0</license>
 
