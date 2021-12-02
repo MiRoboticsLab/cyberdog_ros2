@@ -24,10 +24,10 @@
 #include "common_device/can_device.hpp"
 
 #define XNAME(x) (#x)
-#define LINK_VAR(x, var) if ((x) != nullptr) {(x)->VAR_MAP().insert( \
-      std::pair<std::string, common_device::device_data_var>( \
-        std::string(common_device::get_var_name(XNAME(var))), \
-        common_device::device_data_var(sizeof((var)), static_cast<void *>(&(var)))));}
+#define LINK_VAR(var) LinkVar( \
+    common_device::get_var_name(XNAME(var)), \
+    common_device::device_data_var(sizeof((var)), static_cast<void *>(&(var))))
+
 
 namespace common_device
 {
@@ -55,6 +55,11 @@ public:
   }
 
   std::shared_ptr<device_base<T>> base;
+
+  void LinkVar(const std::string name, const device_data_var & var)
+  {
+    if (base != nullptr) {base->LinkVar(name, var);}
+  }
 
   bool Operate(const std::string & CMD, const std::vector<uint8_t> & data = std::vector<uint8_t>())
   {

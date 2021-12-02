@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <utility>
 #include <iostream>
 #include <functional>
 
@@ -33,13 +34,17 @@ class device_base
 public:
   // !! DO NOT use this except with LINK_VAR !!
   std::shared_ptr<T> DATA() {return device_data_;}
-  // !! DO NOT use this except with LINK_VAR !!
-  std::map<std::string, device_data_var> & VAR_MAP() {return device_var_map_;}
 
   void SetDataCallback(std::function<void(std::shared_ptr<T>)> callback)
   {
     if (callback != nullptr) {devicedata_callback_ = callback;}
   }
+
+  void LinkVar(const std::string & name, const device_data_var & var)
+  {
+    device_var_map_.insert(std::pair<std::string, device_data_var>(name, var));
+  }
+
   virtual bool Operate(
     const std::string & CMD,
     const std::vector<uint8_t> & data = std::vector<uint8_t>()) = 0;

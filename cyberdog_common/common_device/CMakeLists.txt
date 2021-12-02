@@ -10,6 +10,11 @@ find_package(ament_cmake REQUIRED)
 find_package(toml11_vendor REQUIRED)
 find_package(cyberdog_utils REQUIRED)
 
+set(dependencies
+  toml11_vendor
+  cyberdog_utils
+)
+
 install(
   DIRECTORY include/
   DESTINATION include/
@@ -22,4 +27,5 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
+ament_export_dependencies(${dependencies})
 ament_package()
