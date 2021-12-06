@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange)](https://choosealicense.com/licenses/apache-2.0/)
 [![CI](https://github.com/MiRoboticsLab/cyberdog_ros2/actions/workflows/ci_check.yaml/badge.svg)](https://github.com/MiRoboticsLab/cyberdog_ros2/actions/workflows/ci_check.yaml)
-[![Join the chat at https://gitter.im/MiRoboticsLab/CyberDog](https://badges.gitter.im/MiRoboticsLab/CyberDog.svg)](https://gitter.im/MiRoboticsLab/CyberDog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://telegram.me/cyberdog_mi](https://img.shields.io/badge/Telegram-Group-blue.svg?logo=telegram)](https://telegram.me/cyberdog_mi)
 
 ![CyberDogDog](tools/docs/cyberdog_poster.jpg)
 
