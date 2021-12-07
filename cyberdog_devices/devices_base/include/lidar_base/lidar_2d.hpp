@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LED_BASE__LED_BASE_HPP_
-#define LED_BASE__LED_BASE_HPP_
+#ifndef LIDAR_BASE__LIDAR_2D_BASE_HPP_
+#define LIDAR_BASE__LIDAR_2D_BASE_HPP_
 
-namespace led_base
+#include <memory>
+#include <string>
+
+namespace cyberdog
 {
-class Cyberdog_LED
+namespace device
 {
-  virtual bool Init() = 0;
-  virtual bool Set() = 0;
-  virtual bool Play() = 0;
 
-protected:
-  Cyberdog_LED() {}
-};  // class Cyberdog_LED
-}  // led_base
+}  // device
+}  // cyberdog
 
-#endif // LED_BASE__LED_BASE_HPP_
+#endif  // LIDAR_BASE__LIDAR_2D_BASE_HPP_
