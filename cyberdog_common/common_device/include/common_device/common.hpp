@@ -155,10 +155,10 @@ bool toml_parse(toml::value & toml, const std::string & path)
   return true;
 }
 
-class device_data_var
+class device_data
 {
 public:
-  device_data_var(uint8_t len, void * addr)
+  device_data(uint8_t len, void * addr)
   {
     this->len = len;
     this->addr = addr;

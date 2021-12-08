@@ -1,14 +1,16 @@
 # -- common params -- #
-# protocol = "can"          (string)
-# name = "can_device_name"  (string)
+# protocol = "can"             (string)
+# name = "can_device_name"     (string)
+# [optional] for_send = false  (true / false)
 protocol = "can"
 name = "can_device_1"
+for_send = false
 
 # -- can params -- #
 # can_interface = "can0"             (string)
 # [optional] extended_frame = false  (true / false)
 # [optional] canfd_enable = false    (true / false)
-# [optional] timeout_us = -1         (int64)
+# [optional] timeout_us = 3'000'000  (int64)
 can_interface = "can0"
 extended_frame = true
 canfd_enable = false

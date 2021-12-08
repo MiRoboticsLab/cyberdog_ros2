@@ -26,37 +26,44 @@
 #define XNAME(x) (#x)
 #define LINK_VAR(var) LinkVar( \
     common_device::get_var_name(XNAME(var)), \
-    common_device::device_data_var(sizeof((var)), static_cast<void *>(&(var))))
+    common_device::device_data(sizeof((var)), static_cast<void *>(&(var))))
 
 
 namespace common_device
 {
-template<typename T>
+template<typename TDataClass>
 class device
 {
 public:
+  device(const device &) = delete;
   explicit device(const std::string & device_toml_path)
   {
     toml::value toml_config;
     if (toml_parse(toml_config, device_toml_path) == false) {
       printf(
-        C_RED "[DEVICE][ERROR] toml file:\"%s\" error, load inner init file\n" C_END,
+        C_RED "[DEVICE][ERROR] toml file:\"%s\" error, load prebuilt file\n" C_END,
         device_toml_path.c_str());
       // TBD toml_config = ;
     }
 
     Init(toml_config, device_toml_path);
-    if (base != nullptr && base->GetErrorNum() != 0) {
+    if (base == nullptr || base->GetErrorNum() != 0) {
       printf(
-        C_RED "[DEVICE][ERROR] toml file:\"%s\" init error, load inner init file\n" C_END,
+        C_RED "[DEVICE][ERROR] toml file:\"%s\" init error, load prebuilt file\n" C_END,
         device_toml_path.c_str());
       // TBD Init();
     }
   }
 
-  std::shared_ptr<device_base<T>> base;
+  std::shared_ptr<TDataClass> GetData()
+  {
+    if (base != nullptr) {return base->GetData();}
+    if (tmp_data == nullptr) {tmp_data = std::make_shared<TDataClass>();}
+    return tmp_data;
+  }
 
-  void LinkVar(const std::string name, const device_data_var & var)
+  // please use "#define LINK_VAR(var)" instead
+  void LinkVar(const std::string name, const device_data & var)
   {
     if (base != nullptr) {base->LinkVar(name, var);}
   }
@@ -67,12 +74,21 @@ public:
     return false;
   }
 
-  void SetDataCallback(std::function<void(std::shared_ptr<T>)> callback)
+  bool SendSelfData()
+  {
+    if (base != nullptr) {return base->SendSelfData();}
+    return false;
+  }
+
+  void SetDataCallback(std::function<void(std::shared_ptr<TDataClass>)> callback)
   {
     if (base != nullptr) {base->SetDataCallback(callback);}
   }
 
 private:
+  std::shared_ptr<device_base<TDataClass>> base;
+  std::shared_ptr<TDataClass> tmp_data;
+
   void Init(const toml::value & toml_config, const std::string & device_toml_path = "")
   {
     auto protocol = toml::find_or<std::string>(toml_config, "protocol", "#unknow");
@@ -85,7 +101,7 @@ private:
 
     if (protocol == "can") {
       auto can_interface = toml::find_or<std::string>(toml_config, "can_interface", "can0");
-      base = std::make_shared<can_device<T>>(can_interface, name, toml_config);
+      base = std::make_shared<can_device<TDataClass>>(can_interface, name, toml_config);
     } else if (protocol == "spi") {
       // todo when need
       printf(C_RED "[DEVICE][ERROR] protocol:\"%s\" not support yet\n" C_END, protocol.c_str());

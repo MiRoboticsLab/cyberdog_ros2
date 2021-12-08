@@ -18,6 +18,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 #include "common_device/common.hpp"
 #include "common_device/device_base.hpp"
@@ -25,8 +26,8 @@
 
 namespace common_device
 {
-template<typename T>
-class can_device : public device_base<T>
+template<typename TDataClass>
+class can_device : public device_base<TDataClass>
 {
 public:
   can_device(
@@ -34,35 +35,37 @@ public:
     const std::string & name,
     const toml::value & toml_config)
   {
-    name_ = name;
+    this->name_ = name;
+    this->for_send_ = toml::find_or<bool>(toml_config, "for_send", false);
+
     auto extended_frame = toml::find_or<bool>(toml_config, "extended_frame", false);
     auto canfd_enable = toml::find_or<bool>(toml_config, "canfd_enable", false);
-    auto timeout_us = toml::find_or<int64_t>(toml_config, "timeout_us", -1);
-    if (timeout_us > 0) {timeout_us *= 1000;}
+    auto timeout_us = toml::find_or<int64_t>(toml_config, "timeout_us", MAX_TIME_OUT_US);
+    timeout_us = std::clamp(timeout_us, MIN_TIME_OUT_US, MAX_TIME_OUT_US);
 
-    can_parser_ = std::make_shared<can_parser>(toml_config, name_, canfd_enable);
+    can_parser_ = std::make_shared<can_parser>(toml_config, this->name_, canfd_enable);
     printf(
       "[CAN_DEVICE][INFO] Creat can device[%s]: %d error, %d warning\n",
-      name_.c_str(), can_parser_->GetErrorNum(), can_parser_->GetWarnNum());
+      this->name_.c_str(), can_parser_->GetErrorNum(), can_parser_->GetWarnNum());
     auto recv_list = can_parser_->GetRecvList();
     int recv_num = recv_list.size();
-    bool send_only = (recv_num == 0) ? true : false;
+    bool send_only = (recv_num == 0) ? true : this->for_send_;
 
     if (send_only) {
-      printf("[CAN_DEVICE][INFO][%s] No recv canid, enable send-only mode\n", name_.c_str());
+      printf("[CAN_DEVICE][INFO][%s] No recv canid, enable send-only mode\n", this->name_.c_str());
       can_op_ = std::make_shared<cyberdog_utils::can_dev>(
         interface,
-        name_,
+        this->name_,
         extended_frame,
         canfd_enable,
-        timeout_us);
+        timeout_us * 1000);
     } else {
       can_op_ = std::make_shared<cyberdog_utils::can_dev>(
         interface,
-        name_,
+        this->name_,
         extended_frame,
         std::bind(&can_device::recv_callback, this, std::placeholders::_1),
-        timeout_us);
+        timeout_us * 1000);
     }
 
     // set can_filter
@@ -91,7 +94,7 @@ public:
       } else {
         printf(
           C_RED "[CAN_DEVICE][ERROR][%s] Operate CMD:\"%s\" sending data error\n" C_END,
-          name_.c_str(), CMD.c_str());
+          this->name_.c_str(), CMD.c_str());
       }
     } else {
       canfd_frame tx_frame;
@@ -102,22 +105,32 @@ public:
       } else {
         printf(
           C_RED "[CAN_DEVICE][ERROR][%s] Operate CMD:\"%s\" sending data error\n" C_END,
-          name_.c_str(), CMD.c_str());
+          this->name_.c_str(), CMD.c_str());
       }
     }
     return false;
+  }
+
+  bool SendSelfData() override
+  {
+    if (this->for_send_ == false) {
+      printf(
+        C_YELLOW "[CAN_DEVICE][WARN][%s] Device not in sending mode, "
+        "should not send data from data class\n" C_END,
+        this->name_.c_str());
+    }
+    return can_parser_->Encode(this->device_data_map_, can_op_);
   }
 
   int GetErrorNum() override {return can_parser_->GetErrorNum();}
   int GetWarnNum() override {return can_parser_->GetWarnNum();}
 
 private:
-  std::string name_;
   std::shared_ptr<can_parser> can_parser_;
   std::shared_ptr<cyberdog_utils::can_dev> can_op_;
   void recv_callback(std::shared_ptr<can_frame> recv_frame)
   {
-    if (can_parser_->Decode(this->device_var_map_, recv_frame) &&
+    if (can_parser_->Decode(this->device_data_map_, recv_frame) &&
       this->devicedata_callback_ != nullptr)
     {
       this->devicedata_callback_(this->device_data_);

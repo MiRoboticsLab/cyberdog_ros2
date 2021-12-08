@@ -385,17 +385,17 @@ public:
 
   // return true when finish all package
   bool Decode(
-    std::map<std::string, device_data_var> & sensor_var_map,
+    std::map<std::string, device_data> & device_data_map,
     std::shared_ptr<canfd_frame> rx_frame)
   {
-    return Decode(sensor_var_map, rx_frame->can_id, rx_frame->data);
+    return Decode(device_data_map, rx_frame->can_id, rx_frame->data);
   }
   // return true when finish all package
   bool Decode(
-    std::map<std::string, device_data_var> & sensor_var_map,
+    std::map<std::string, device_data> & device_data_map,
     std::shared_ptr<can_frame> rx_frame)
   {
-    return Decode(sensor_var_map, rx_frame->can_id, rx_frame->data);
+    return Decode(device_data_map, rx_frame->can_id, rx_frame->data);
   }
 
   bool Encode(can_frame & tx_frame, const std::string & CMD, const std::vector<uint8_t> & data)
@@ -422,6 +422,158 @@ public:
     return Encode(CMD, tx_frame.can_id, tx_frame.data, data);
   }
 
+  bool Encode(
+    const std::map<std::string, device_data> & device_data_map,
+    std::shared_ptr<cyberdog_utils::can_dev> can_op)
+  {
+    bool no_error = true;
+    canid_t * can_id;
+    uint8_t * data;
+
+    can_frame * std_frame = nullptr;
+    canfd_frame * fd_frame = nullptr;
+    if (canfd_) {
+      fd_frame = new canfd_frame;
+      fd_frame->len = 64;
+      can_id = &fd_frame->can_id;
+      data = &fd_frame->data[0];
+    } else {
+      std_frame = new can_frame;
+      std_frame->can_dlc = 8;
+      can_id = &std_frame->can_id;
+      data = &std_frame->data[0];
+    }
+
+    // var encode
+    for (auto & parser_var : parser_var_map_) {
+      *can_id = parser_var.first;
+      for (auto & rule : parser_var.second) {
+        std::string var_name = rule.var_name;
+        if (device_data_map.find(var_name) == device_data_map.end()) {
+          no_error = false;
+          printf(
+            C_RED "[CAN_PARSER][ERROR][%s] Can't find var_name:\"%s\" in device_data_map\n"
+            "\tYou may need use LINK_VAR() to link data class/struct in device_data_map\n" C_END,
+            name_.c_str(), var_name.c_str());
+          continue;
+        }
+        const device_data * const var = &device_data_map.at(var_name);
+        if (rule.var_type == "double") {
+          uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
+          if (u8_num == 2) {
+            put_var<int16_t, double>(var, data, rule, name_, no_error);
+          } else if (u8_num == 4) {
+            put_var<int32_t, double>(var, data, rule, name_, no_error);
+          } else if (u8_num == 8) {
+            put_var<double>(var, data, rule, name_, no_error);
+          } else {
+            no_error = false;
+            printf(
+              C_RED "[CAN_PARSER][ERROR][%s] size %d can't send double\n" C_END,
+              name_.c_str(), u8_num);
+          }
+        } else if (rule.var_type == "float") {
+          uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
+          if (u8_num == 2) {
+            put_var<int16_t, float>(var, data, rule, name_, no_error);
+          } else if (u8_num == 4) {
+            put_var<float>(var, data, rule, name_, no_error);
+          } else {
+            no_error = false;
+            printf(
+              C_RED "[CAN_PARSER][ERROR][%s] size %d can't send float\n" C_END,
+              name_.c_str(), u8_num);
+          }
+        } else if (rule.var_type == "bool") {
+          put_var<bool>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "u64") {
+          put_var<uint64_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "u32") {
+          put_var<uint32_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "u16") {
+          put_var<uint16_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "u8") {
+          put_var<uint8_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "i64") {
+          put_var<int64_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "i32") {
+          put_var<int32_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "i16") {
+          put_var<int16_t>(var, data, rule, name_, no_error);
+        } else if (rule.var_type == "i8") {
+          put_var<int8_t>(var, data, rule, name_, no_error);
+        } else {
+          // will not run here in theory
+          no_error = false;
+          printf(
+            C_RED "[CAN_PARSER][ERROR][%s] Not support var_type[%s]\n" C_END,
+            name_.c_str(), rule.var_type.c_str());
+        }
+      }
+      // send out
+      if (canfd_) {
+        if (fd_frame != nullptr) {can_op->send_can_message(*fd_frame);} else {
+          no_error = false;
+          printf(C_RED "[CAN_PARSER][ERROR][%s] Send fd_frame error\n" C_END, name_.c_str());
+        }
+      } else {
+        if (std_frame != nullptr) {can_op->send_can_message(*std_frame);} else {
+          no_error = false;
+          printf(C_RED "[CAN_PARSER][ERROR][%s] Send std_frame error\n" C_END, name_.c_str());
+        }
+      }
+      // clear data buff
+      std::memset(data, 0, CAN_LEN());
+    }
+    // array encode
+    int frame_index = 0;
+    for (auto & rule : parser_array_) {
+      std::string array_name = rule.array_name;
+      if (device_data_map.find(array_name) == device_data_map.end()) {
+        no_error = false;
+        printf(
+          C_RED "[CAN_PARSER][ERROR][%s] Can't find array_name:\"%s\" in device_data_map\n"
+          "\tYou may need use LINK_VAR() to link data class/struct in device_data_map\n" C_END,
+          name_.c_str(), array_name.c_str());
+        continue;
+      }
+      const device_data * const var = &device_data_map.at(array_name);
+      int frame_num = static_cast<int>(rule.can_id.size());
+      if (frame_num * CAN_LEN() != var->len) {
+        no_error = false;
+        printf(
+          C_RED "[CAN_PARSER][ERROR][%s] array_name:\"%s\" size not match, "
+          "can't write to can frame data for send\n" C_END,
+          name_.c_str(), array_name.c_str());
+      }
+      auto ids = std::vector<canid_t>(frame_num);
+      for (auto & a : rule.can_id) {ids[a.second] = a.first;}
+      uint8_t * device_array = static_cast<uint8_t *>(var->addr);
+      for (int index = frame_index; index < frame_num; index++) {
+        *can_id = ids[index];
+        for (int a = 0; a < CAN_LEN(); a++) {
+          data[a] = *device_array;
+          device_array++;
+        }
+        // send out
+        if (canfd_) {
+          if (fd_frame != nullptr) {can_op->send_can_message(*fd_frame);} else {
+            no_error = false;
+            printf(C_RED "[CAN_PARSER][ERROR][%s] Send fd_frame error\n" C_END, name_.c_str());
+          }
+        } else {
+          if (std_frame != nullptr) {can_op->send_can_message(*std_frame);} else {
+            no_error = false;
+            printf(C_RED "[CAN_PARSER][ERROR][%s] Send std_frame error\n" C_END, name_.c_str());
+          }
+        }
+      }
+    }
+
+    if (canfd_) {delete fd_frame;} else {delete std_frame;}
+    return no_error;
+  }
+
 private:
   bool canfd_;
   int error_num_ = 0;
@@ -436,40 +588,40 @@ private:
 
   // return true when finish all package
   bool Decode(
-    std::map<std::string, device_data_var> & sensor_var_map,
+    std::map<std::string, device_data> & device_data_map,
     canid_t can_id,
     uint8_t * data)
   {
     // var decode
     if (parser_var_map_.find(can_id) != parser_var_map_.end()) {
       for (auto & rule : parser_var_map_.at(can_id)) {
-        if (sensor_var_map.find(rule.var_name) != sensor_var_map.end()) {
-          device_data_var * var = &sensor_var_map.at(rule.var_name);
+        if (device_data_map.find(rule.var_name) != device_data_map.end()) {
+          device_data * var = &device_data_map.at(rule.var_name);
           // main decode begin
           if (rule.var_type == "double") {
-            uint8_t num = rule.parser_param[1] - rule.parser_param[0];
-            if (num == 1) {
+            uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
+            if (u8_num == 2) {
               get_var<double, int16_t>(var, data, rule, name_);
-            } else if (num == 3) {
+            } else if (u8_num == 4) {
               get_var<double, int32_t>(var, data, rule, name_);
-            } else if (num == 7) {
+            } else if (u8_num == 8) {
               get_var<double>(var, data, rule, name_);
             } else {
               printf(
                 C_RED "[CAN_PARSER][ERROR][%s] size %d can't get double\n" C_END,
-                name_.c_str(), num + 1);
+                name_.c_str(), u8_num);
             }
             zoom_var<double>(var, rule.var_zoom);
           } else if (rule.var_type == "float") {
-            uint8_t num = rule.parser_param[1] - rule.parser_param[0];
-            if (num == 1) {
+            uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
+            if (u8_num == 2) {
               get_var<float, int16_t>(var, data, rule, name_);
-            } else if (num == 3) {
+            } else if (u8_num == 4) {
               get_var<float>(var, data, rule, name_);
             } else {
               printf(
-                C_RED "[CAN_PARSER][ERROR][%s] size %d can't get double\n" C_END,
-                name_.c_str(), num + 1);
+                C_RED "[CAN_PARSER][ERROR][%s] size %d can't get float\n" C_END,
+                name_.c_str(), u8_num);
             }
             zoom_var<float>(var, rule.var_zoom);
           } else if (rule.var_type == "bool") {
@@ -498,8 +650,8 @@ private:
           }
         } else {
           printf(
-            C_RED "[CAN_PARSER][ERROR][%s] Can't find var_name:\"%s\" in sensor_var_map\n"
-            "\tYou may need use LINK_VAR() to link data class/struct in sensor_var_map\n" C_END,
+            C_RED "[CAN_PARSER][ERROR][%s] Can't find var_name:\"%s\" in device_data_map\n"
+            "\tYou may need use LINK_VAR() to link data class/struct in device_data_map\n" C_END,
             name_.c_str(), rule.var_name.c_str());
         }
       }
@@ -508,8 +660,8 @@ private:
     for (auto & rule : parser_array_) {
       auto offset = rule.get_offset(can_id);
       if (offset == -1) {continue;}
-      if (sensor_var_map.find(rule.array_name) != sensor_var_map.end()) {
-        device_data_var * var = &sensor_var_map.at(rule.array_name);
+      if (device_data_map.find(rule.array_name) != device_data_map.end()) {
+        device_data * var = &device_data_map.at(rule.array_name);
         if (var->len < rule.can_package_num * CAN_LEN()) {
           printf(
             C_RED "[CAN_PARSER][ERROR][%s] array_name:\"%s\" length overflow\n" C_END,
@@ -544,17 +696,17 @@ private:
         }
       } else {
         printf(
-          C_RED "[CAN_PARSER][ERROR][%s] Can't find array_name:\"%s\" in sensor_var_map\n"
-          "\tYou may need use LINK_VAR() to link data class/struct in sensor_var_map\n" C_END,
+          C_RED "[CAN_PARSER][ERROR][%s] Can't find array_name:\"%s\" in device_data_map\n"
+          "\tYou may need use LINK_VAR() to link data class/struct in device_data_map\n" C_END,
           name_.c_str(), rule.array_name.c_str());
       }
     }
 
     // check all frame received
-    for (auto & single_var : sensor_var_map) {
+    for (auto & single_var : device_data_map) {
       if (single_var.second.loaded == false) {return false;}
     }
-    for (auto & single_var : sensor_var_map) {single_var.second.loaded = false;}
+    for (auto & single_var : device_data_map) {single_var.second.loaded = false;}
     return true;
   }
 
@@ -591,14 +743,14 @@ private:
     }
   }
 
-  template<typename T1, typename T2>
+  template<typename Target, typename Source>
   void get_var(
-    device_data_var * var,
-    uint8_t * can_data,
+    device_data * var,
+    const uint8_t * const can_data,
     const var_rule & rule,
     const std::string & parser_name)
   {
-    if (sizeof(T1) > var->len) {
+    if (sizeof(Target) > var->len) {
       printf(
         C_RED "[CAN_PARSER][ERROR][%s] var_name:\"%s\" size overflow, "
         "can't write to device data_class\n" C_END,
@@ -624,22 +776,76 @@ private:
         name_.c_str(), rule.parser_type.c_str());
     }
 
-    *static_cast<T1 *>(var->addr) = *(reinterpret_cast<T2 *>(&result));
+    *static_cast<Target *>(var->addr) = *(reinterpret_cast<Source *>(&result));
     var->loaded = true;
   }
 
-  template<typename T1>
+  template<typename Target>
   inline void get_var(
-    device_data_var * var,
-    uint8_t * can_data,
+    device_data * var,
+    const uint8_t * const can_data,
     const var_rule & rule,
     const std::string & parser_name)
   {
-    get_var<T1, T1>(var, can_data, rule, parser_name);
+    get_var<Target, Target>(var, can_data, rule, parser_name);
+  }
+
+  template<typename Target, typename Source>
+  void put_var(
+    const device_data * const var,
+    uint8_t * can_data,
+    const var_rule & rule,
+    const std::string & parser_name,
+    bool & no_error_flag)
+  {
+    bool no_error = true;
+    if (rule.parser_type == "bit") {
+      uint8_t h_pos = rule.parser_param[1];
+      uint8_t l_pos = rule.parser_param[2];
+      can_data[rule.parser_param[0]] |=
+        (*static_cast<uint8_t *>(var->addr) << l_pos) & creat_mask(h_pos, l_pos);
+    } else if (rule.parser_type == "var") {
+      uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
+      if (sizeof(Target) != u8_num) {
+        no_error = false;
+        printf(
+          C_RED "[CAN_PARSER][ERROR][%s] var_name:\"%s\" size not match, Target need:%ld - get:%d"
+          "can't write to can frame data for send\n" C_END,
+          parser_name.c_str(), rule.var_name.c_str(), sizeof(Target), u8_num);
+      }
+      Target target;
+      if (rule.var_type == "float" || rule.var_type == "double") {
+        target = static_cast<Target>(*static_cast<Source *>(var->addr) / rule.var_zoom);
+      } else {target = static_cast<Target>(*static_cast<Source *>(var->addr));}
+      uint64_t * hex = reinterpret_cast<uint64_t *>(&target);
+      uint8_t min = rule.parser_param[0];
+      uint8_t max = rule.parser_param[1];
+      for (int a = min; a <= max; a++) {
+        can_data[a] = (*hex >> (max - a) * 8) & 0xFF;
+      }
+    } else {
+      // will not run here in theory
+      no_error = false;
+      printf(
+        C_RED "[CAN_PARSER][ERROR][%s] unknow parser_type[%s] " C_END,
+        name_.c_str(), rule.parser_type.c_str());
+    }
+    if (no_error == false) {no_error_flag = false;}
+  }
+
+  template<typename Target>
+  void put_var(
+    const device_data * const var,
+    uint8_t * can_data,
+    const var_rule & rule,
+    const std::string & parser_name,
+    bool & no_error_flag)
+  {
+    put_var<Target, Target>(var, can_data, rule, parser_name, no_error_flag);
   }
 
   template<typename T>
-  inline void zoom_var(device_data_var * var, float kp)
+  inline void zoom_var(device_data * var, float kp)
   {
     *static_cast<T *>(var->addr) *= kp;
   }
@@ -654,6 +860,7 @@ private:
     }
     return mask;
   }
+
   std::string show_conflict(uint8_t mask)
   {
     uint8_t tmp = 0b10000000;
@@ -664,6 +871,7 @@ private:
     }
     return result;
   }
+
   bool same_var_error(std::string & name, std::set<std::string> & checker)
   {
     if (checker.find(name) != checker.end()) {
@@ -674,6 +882,7 @@ private:
     } else {checker.insert(name);}
     return false;
   }
+
   bool var_area_warning(
     canid_t can_id,
     int data_l,
@@ -694,8 +903,7 @@ private:
             C_YELLOW "[CAN_PARSER][WARN][%s] data area decode many times at pos'*':\n"
             "\tcan_id[0x%08x],DATA[%d]%s\n" C_END,
             name_.c_str(),
-            can_id, index, show_conflict(
-              conflict).c_str());
+            can_id, index, show_conflict(conflict).c_str());
         } else {
           printf(
             C_YELLOW "\t                   DATA[%d]%s\n" C_END,
@@ -706,6 +914,7 @@ private:
     }
     return is_warning;
   }
+
   bool same_data_area_warning(var_rule & rule, std::map<canid_t, std::vector<uint8_t>> & checker)
   {
     bool is_warning = false;
@@ -736,6 +945,7 @@ private:
     }
     return is_warning;
   }
+
   bool same_data_area_warning(array_rule & rule, std::map<canid_t, std::vector<uint8_t>> & checker)
   {
     bool is_warning = false;

@@ -214,7 +214,7 @@ bool can_tx_dev::send_can_message(struct can_frame & tx_frame)
     } else {
       result = false;
       printf(
-        C_RED "[CAN_TX STD][ERROR][%s] Error sending CAN message: %s\n" C_END,
+        C_RED "[CAN_TX STD][ERROR][%s] Error sending CAN message: %s - No device\n" C_END,
         name_.c_str(), interface_.c_str());
     }
   } catch (const std::exception & ex) {
@@ -253,7 +253,7 @@ bool can_tx_dev::send_can_message(struct canfd_frame & tx_frame)
     } else {
       result = false;
       printf(
-        C_RED "[CAN_TX FD][ERROR][%s] Error sending CAN message: %s\n" C_END,
+        C_RED "[CAN_TX FD][ERROR][%s] Error sending CAN message: %s - No device\n" C_END,
         name_.c_str(), interface_.c_str());
     }
   } catch (const std::exception & ex) {
