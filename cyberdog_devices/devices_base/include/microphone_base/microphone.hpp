@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MICROPHONE_BASE__MICROPHONE_BASE_HPP_
-#define MICROPHONE_BASE__MICROPHONE_BASE_HPP_
+#ifndef MICROPHONE_BASE__MICROPHONE_HPP_
+#define MICROPHONE_BASE__MICROPHONE_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // MICROPHONE_BASE__MICROPHONE_BASE_HPP_
+#endif  // MICROPHONE_BASE__MICROPHONE_HPP_

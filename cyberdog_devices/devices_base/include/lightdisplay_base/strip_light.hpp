@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LIGHTDISPLAY_BASE__LED_BASE_HPP_
-#define LIGHTDISPLAY_BASE__LED_BASE_HPP_
+#ifndef LIGHTDISPLAY_BASE__STRIP_LIGHT_HPP_
+#define LIGHTDISPLAY_BASE__STRIP_LIGHT_HPP_
 
 #include <map>
 #include <memory>
@@ -26,24 +26,6 @@ namespace cyberdog
 namespace device
 {
 
-struct RGB
-{
-  uint8_t red;
-  uint8_t green;
-  uint8_t blue;
-  uint8_t reserve;
-};
-
-struct Mono
-{
-  uint32_t level;
-};
-
-union LightEffect {
-  RGB rgb_effect;
-  Mono mono_effect;
-};
-
 struct LightModule
 {
   uint16_t id;
@@ -53,18 +35,26 @@ struct LightModule
 
 enum LightMode
 {
-  PAUSE = 0,
-  RUNNING = 1,
-  SET = 2,
+  DEFAULT = 0,
+  PAUSE = 1,
+  RUNNING = 2,
+  SET = 3,
   TEST = 4
 };
 
 struct LightFrame
 {
-  std::vector<LightEffect> seq;
+  std::vector<uint32_t> seq;
   uint16_t effect_type;
   std::string effect_args;
 };
+#define RED_SHIFT 16
+#define GREEN_SHFIT 8
+#define BLUE_SHIFT 0
+typedef uint32_t LightEffect;
+typedef uint16_t effect_id_t;
+typedef std::vector<LightFrame> effect_frame_v;
+typedef std::map<effect_id_t, effect_frame_v> effects_map;
 
 /**
  * @brief StripLight is designed for RGB/Mono color light or light strips devices.
@@ -77,8 +67,7 @@ struct LightFrame
 class StripLight
 {
 public:
-  StripLight(const StripLight &) = delete;
-
+  ~StripLight() {}
   /**
    * @brief Initialize LED class and set parameters
    * @param modules vector of LED light modules
@@ -87,7 +76,7 @@ public:
    */
   virtual bool init(
     const std::vector<LightModule> & modules,
-    const std::map<uint16_t, std::vector<LightFrame>> & saved_map = {}) = 0;
+    const effects_map & saved_map = {}) = 0;
   /**
    * @brief Pause LED
    * @return true if pause succeed
@@ -112,7 +101,7 @@ public:
   virtual bool set_id(
     const LightModule & target,
     const uint16_t & effect_id,
-    const std::vector<LightFrame> & effect_frames) = 0;
+    const effect_frame_v & effect_frames) = 0;
   /**
    * @brief Test raw data frame sequence
    * @param target target module device
@@ -121,7 +110,7 @@ public:
    */
   virtual bool test_frames(
     const LightModule & target,
-    const std::vector<LightFrame> & effect_frames) = 0;
+    const effect_frame_v & effect_frames) = 0;
   /**
    * @brief Run specific id set before
    * @param target target module device
@@ -143,11 +132,12 @@ public:
     const LightModule & target,
     uint32_t & device_status) = 0;
 
-private:
+protected:
+  StripLight() {}
   std::vector<LightModule> infos_;
-  std::map<uint16_t, LightModule> effects_map_;
+  effects_map effects_map_;
 };
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // LIGHTDISPLAY_BASE__LED_BASE_HPP_
+#endif  // LIGHTDISPLAY_BASE__STRIP_LIGHT_HPP_

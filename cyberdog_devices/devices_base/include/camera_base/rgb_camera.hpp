@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CAMERA_BASE__RGB_CAMMERA_BASE_HPP_
-#define CAMERA_BASE__RGB_CAMMERA_BASE_HPP_
+#ifndef CAMERA_BASE__RGB_CAMERA_HPP_
+#define CAMERA_BASE__RGB_CAMERA_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // CAMERA_BASE__RGB_CAMMERA_BASE_HPP_
+#endif  // CAMERA_BASE__RGB_CAMERA_HPP_

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GNSS_BASE__GNSS_BASE_HPP_
-#define GNSS_BASE__GNSS_BASE_HPP_
+#ifndef GNSS_BASE__GNSS_HPP_
+#define GNSS_BASE__GNSS_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // GNSS_BASE__GNSS_BASE_HPP_
+#endif  // GNSS_BASE__GNSS_HPP_

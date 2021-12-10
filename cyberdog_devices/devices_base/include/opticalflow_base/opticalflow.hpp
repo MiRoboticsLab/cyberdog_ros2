@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OPTICALFLOW_BASE__OPTICALFLOW_BASE_HPP_
-#define OPTICALFLOW_BASE__OPTICALFLOW_BASE_HPP_
+#ifndef OPTICALFLOW_BASE__OPTICALFLOW_HPP_
+#define OPTICALFLOW_BASE__OPTICALFLOW_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // OPTICALFLOW_BASE__OPTICALFLOW_BASE_HPP_
+#endif  // OPTICALFLOW_BASE__OPTICALFLOW_HPP_

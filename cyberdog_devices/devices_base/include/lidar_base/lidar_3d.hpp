@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LIDAR_BASE__LIDAR_3D_BASE_HPP_
-#define LIDAR_BASE__LIDAR_3D_BASE_HPP_
+#ifndef LIDAR_BASE__LIDAR_3D_HPP_
+#define LIDAR_BASE__LIDAR_3D_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // LIDAR_BASE__LIDAR_3D_BASE_HPP_
+#endif  // LIDAR_BASE__LIDAR_3D_HPP_

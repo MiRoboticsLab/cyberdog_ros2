@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GPIO_BASE__GPIO_BASE_HPP_
-#define GPIO_BASE__GPIO_BASE_HPP_
+#ifndef GPIO_BASE__GPIO_HPP_
+#define GPIO_BASE__GPIO_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // GPIO_BASE__GPIO_BASE_HPP_
+#endif  // GPIO_BASE__GPIO_HPP_

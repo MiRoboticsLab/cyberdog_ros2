@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LIGHTSENSOR_BASE__LIGHTSENSOR_BASE_HPP_
-#define LIGHTSENSOR_BASE__LIGHTSENSOR_BASE_HPP_
+#ifndef LIGHTSENSOR_BASE__LIGHTSENSOR_HPP_
+#define LIGHTSENSOR_BASE__LIGHTSENSOR_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // LIGHTSENSOR_BASE__LIGHTSENSOR_BASE_HPP_
+#endif  // LIGHTSENSOR_BASE__LIGHTSENSOR_HPP_

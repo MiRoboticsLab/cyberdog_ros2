@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TOF_BASE__TOF_BASE_HPP_
-#define TOF_BASE__TOF_BASE_HPP_
+#ifndef TOF_BASE__TOF_HPP_
+#define TOF_BASE__TOF_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // TOF_BASE__TOF_BASE_HPP_
+#endif  // TOF_BASE__TOF_HPP_

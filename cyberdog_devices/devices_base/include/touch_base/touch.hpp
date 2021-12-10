@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TOUCH_BASE__TOUCH_BASE_HPP_
-#define TOUCH_BASE__TOUCH_BASE_HPP_
+#ifndef TOUCH_BASE__TOUCH_HPP_
+#define TOUCH_BASE__TOUCH_HPP_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace cyberdog
 namespace device
 {
 
-}  // device
-}  // cyberdog
+}  // namespace device
+}  // namespace cyberdog
 
-#endif  // TOUCH_BASE__TOUCH_BASE_HPP_
+#endif  // TOUCH_BASE__TOUCH_HPP_
