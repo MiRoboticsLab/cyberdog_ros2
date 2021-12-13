@@ -125,8 +125,8 @@ public:
   int GetInitErrorNum() override {return can_parser_->GetInitErrorNum();}
   int GetInitWarnNum() override {return can_parser_->GetInitWarnNum();}
 
-  virtual bool IsRxTimeout() override {return can_op_->is_rx_timeout();}
-  virtual bool IsTxTimeout() override {return can_op_->is_tx_timeout();}
+  bool IsRxTimeout() override {return can_op_->is_rx_timeout();}
+  bool IsTxTimeout() override {return can_op_->is_tx_timeout();}
 
 private:
   std::shared_ptr<can_parser> can_parser_;
