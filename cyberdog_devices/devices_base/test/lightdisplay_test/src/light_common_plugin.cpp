@@ -84,9 +84,13 @@ public:
     auto mcu_iter = mcu_maps.find(target.id);
     if (mcu_iter == mcu_maps.end()) {return false;}
     auto effect_iter = mcu_iter->second.find(effect_id);
-    if (effect_iter == mcu_iter->second.end()) {return false;}
-    mcu_iter->second.erase(effect_id);
-    mcu_iter->second.emplace(std::pair<uint16_t, effect_frame_v>(effect_id, effect_frames));
+    if (effect_iter != mcu_iter->second.end()) {
+      mcu_iter->second.erase(effect_id);
+      mcu_iter->second.emplace(std::pair<uint16_t, effect_frame_v>(effect_id, effect_frames));
+    } else {
+      mcu_iter->second.emplace(std::pair<uint16_t, effect_frame_v>(effect_id, effect_frames));
+    }
+
     return true;
   }
   bool test_frames(
@@ -108,9 +112,13 @@ public:
     if (!init_) {return false;}
     (void)effect_id;
     (void)time_duration_ns;
-    auto value_iter = light_status_.find(target.id);
-    if (value_iter == light_status_.end()) {return false;}
-    if (value_iter->second != LightMode::RUNNING) {return false;}
+    auto target_iter = mcu_maps.find(target.id);
+    if (target_iter == mcu_maps.end()) {return false;}
+    auto value_iter = target_iter->second.find(effect_id);
+    if (value_iter == target_iter->second.end()) {return false;}
+    auto status_iter = light_status_.find(target.id);
+    if (status_iter == light_status_.end()) {return false;}
+    if (status_iter->second != LightMode::RUNNING) {return false;}
     return true;
   }
   bool get_status(
