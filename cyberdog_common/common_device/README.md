@@ -99,6 +99,24 @@ public:
 > ```
 > - `callback` : 设置的回调函数
 
+> 获取接收方式是否超时 : 返回是否超时
+> ```cpp
+> bool IsRxTimeout()
+> ```
+> Note : 当成功接收后将清空超时记录
+
+> 获取发送方式是否超时 : 返回是否超时
+> ```cpp
+> bool IsTxTimeout()
+> ```
+> Note : 当成功发送后将清空超时记录
+
+> 获取接收方式是否出错 : 返回是否出错
+> ```cpp
+> bool IsRxError()
+> ```
+> Note : 当成功完整接收描述文件内数据将清空出错记录
+
 使用示例:
 ```cpp
 class acc
@@ -119,7 +137,7 @@ int main(int argc, char ** argv)
   UNUSED_VAR(argc);
   UNUSED_VAR(argv);
 
-  // recive-operate mode
+  // receive-operate mode
   common_device::device<acc> device_1("parser/can/acc_device/acc_1.toml");
   device_1.LINK_VAR(device_1.GetData()->x);
   device_1.LINK_VAR(device_1.GetData()->y);

@@ -74,11 +74,13 @@ public:
   ~can_rx_dev();
 
   bool is_ready() {return ready_;}
+  bool is_timeout() {return is_timeout_;}
   void set_filter(const struct can_filter filter[], size_t s);
 
 private:
   bool ready_;
   bool canfd_;
+  bool is_timeout_;
   bool extended_frame_;
   bool isthreadrunning_;
   int64_t timeout_;
@@ -91,9 +93,14 @@ private:
   std::shared_ptr<struct canfd_frame> rx_fd_frame_;
   std::unique_ptr<drivers::socketcan::SocketCanReceiver> receiver_;
 
-  void init(const std::string & interface, bool canfd_on);
-  bool wait_for_std_can_data();
-  bool wait_for_fd_can_data();
+  void init(
+    const std::string & interface,
+    const std::string & name,
+    bool canfd_on,
+    can_std_callback std_c,
+    can_fd_callback fd_c,
+    int64_t timeout);
+  bool wait_for_can_data();
   void main_recv_func();
 };
 
@@ -112,15 +119,19 @@ public:
   bool send_can_message(struct can_frame & tx_frame);
   bool send_can_message(struct canfd_frame & tx_frame);
   bool is_ready() {return ready_;}
+  bool is_timeout() {return is_timeout_;}
 
 private:
   bool ready_;
   bool canfd_on_;
+  bool is_timeout_;
   bool extended_frame_;
   int64_t timeout_;
   std::string name_;
   std::string interface_;
   std::unique_ptr<drivers::socketcan::SocketCanSender> sender_;
+
+  bool send_can_message(struct can_frame * std_frame, struct canfd_frame * fd_frame);
 };
 
 // can_dev ///////////////////////////////////////////////////////////////////////////////////////
@@ -160,6 +171,8 @@ public:
       return result && ((rx_op_ == nullptr) ? false : rx_op_->is_ready());
     }
   }
+  bool is_rx_timeout() {return rx_op_->is_timeout();}
+  bool is_tx_timeout() {return tx_op_->is_timeout();}
 
 private:
   bool send_only_;

@@ -47,7 +47,7 @@ public:
     }
 
     Init(toml_config, device_toml_path);
-    if (base == nullptr || base->GetErrorNum() != 0) {
+    if (base == nullptr || base->GetInitErrorNum() != 0) {
       printf(
         C_RED "[DEVICE][ERROR] toml file:\"%s\" init error, load prebuilt file\n" C_END,
         device_toml_path.c_str());
@@ -83,6 +83,21 @@ public:
   void SetDataCallback(std::function<void(std::shared_ptr<TDataClass>)> callback)
   {
     if (base != nullptr) {base->SetDataCallback(callback);}
+  }
+
+  bool IsRxTimeout()
+  {
+    if (base != nullptr) {return base->IsRxTimeout();}
+  }
+
+  bool IsTxTimeout()
+  {
+    if (base != nullptr) {return base->IsTxTimeout();}
+  }
+
+  bool IsRxError()
+  {
+    if (base != nullptr) {return base->IsRxError();}
   }
 
 private:

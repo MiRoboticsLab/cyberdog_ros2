@@ -49,6 +49,10 @@ public:
 
   void LinkVar(const std::string & name, const device_data & var)
   {
+    if (device_data_map_.find(name) != device_data_map_.end()) {
+      printf(C_RED "[DEVICE][ERROR][%s] LINK_VAR error, get same name\n" C_END, name_.c_str());
+      return;
+    }
     device_data_map_.insert(std::pair<std::string, device_data>(name, var));
   }
 
@@ -57,8 +61,12 @@ public:
     const std::vector<uint8_t> & data = std::vector<uint8_t>()) = 0;
   virtual bool SendSelfData() = 0;
 
-  virtual int GetErrorNum() = 0;
-  virtual int GetWarnNum() = 0;
+  virtual int GetInitErrorNum() = 0;
+  virtual int GetInitWarnNum() = 0;
+
+  virtual bool IsRxTimeout() = 0;
+  virtual bool IsTxTimeout() = 0;
+  bool IsRxError() {return rx_error_;}
 
 protected:
   device_base()
@@ -69,6 +77,7 @@ protected:
   ~device_base() {}
 
   bool for_send_;
+  bool rx_error_;
   std::string name_;
   std::shared_ptr<TDataClass> device_data_;
   std::map<std::string, device_data> device_data_map_;

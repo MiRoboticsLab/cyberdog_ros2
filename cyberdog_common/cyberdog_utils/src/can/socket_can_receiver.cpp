@@ -51,21 +51,21 @@ void SocketCanReceiver::wait(const std::chrono::nanoseconds timeout) const
     auto read_set = single_set(m_file_descriptor);
     // Wait
     if (0 == select(m_file_descriptor + 1, &read_set, NULL, NULL, &c_timeout)) {
-      throw SocketCanTimeout{"CAN Receive Timeout"};
+      throw SocketCanTimeout{"$CAN Receive Timeout"};
     }
     //lint --e{9130, 1924, 9123, 9125, 1924, 9126} NOLINT
     if (!FD_ISSET(m_file_descriptor, &read_set)) {
-      throw SocketCanTimeout{"CAN Receive timeout"};
+      throw SocketCanTimeout{"$CAN Receive timeout"};
     }
   } else {
     auto read_set = single_set(m_file_descriptor);
     // Wait
     if (0 == select(m_file_descriptor + 1, &read_set, NULL, NULL, NULL)) {
-      throw SocketCanTimeout{"CAN Receive Timeout"};
+      throw SocketCanTimeout{"$CAN Receive Timeout"};
     }
     //lint --e{9130, 1924, 9123, 9125, 1924, 9126} NOLINT
     if (!FD_ISSET(m_file_descriptor, &read_set)) {
-      throw SocketCanTimeout{"CAN Receive timeout"};
+      throw SocketCanTimeout{"$CAN Receive timeout"};
     }
   }
 }
@@ -75,11 +75,7 @@ bool SocketCanReceiver::receive(
   std::shared_ptr<struct can_frame> rx_frame,
   const std::chrono::nanoseconds timeout)
 {
-  try {
-    wait(timeout);
-  } catch (SocketCanTimeout & ex) {
-    return false;
-  }
+  wait(timeout);
   // Read
   struct canfd_frame frame;
   const auto nbytes = read(m_file_descriptor, &frame, sizeof(frame));
@@ -109,11 +105,7 @@ bool SocketCanReceiver::receive(
   std::shared_ptr<struct canfd_frame> rx_frame,
   const std::chrono::nanoseconds timeout)
 {
-  try {
-    wait(timeout);
-  } catch (SocketCanTimeout & ex) {
-    return false;
-  }
+  wait(timeout);
   // Read
   struct canfd_frame frame;
   const auto nbytes = read(m_file_descriptor, &frame, sizeof(frame));

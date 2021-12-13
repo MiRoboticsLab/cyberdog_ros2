@@ -43,11 +43,7 @@ can_rx_dev::can_rx_dev(
   can_std_callback rx_callback,
   int64_t timeout)
 {
-  name_ = name;
-  canfd_ = false;
-  timeout_ = timeout;
-  can_std_callback_ = rx_callback;
-  init(interface, false);
+  init(interface, name, false, rx_callback, nullptr, timeout);
 }
 
 can_rx_dev::can_rx_dev(
@@ -56,11 +52,7 @@ can_rx_dev::can_rx_dev(
   can_fd_callback rx_callback,
   int64_t timeout)
 {
-  name_ = name;
-  canfd_ = true;
-  timeout_ = timeout;
-  can_fd_callback_ = rx_callback;
-  init(interface, true);
+  init(interface, name, true, nullptr, rx_callback, timeout);
 }
 
 can_rx_dev::~can_rx_dev()
@@ -77,13 +69,25 @@ void can_rx_dev::set_filter(const struct can_filter filter[], size_t s)
   if (receiver_ != nullptr) {receiver_->set_filter(filter, s);}
 }
 
-void can_rx_dev::init(const std::string & interface, bool canfd_on)
+void can_rx_dev::init(
+  const std::string & interface,
+  const std::string & name,
+  bool canfd_on,
+  can_std_callback std_callback,
+  can_fd_callback fd_callback,
+  int64_t timeout)
 {
+  name_ = name;
   ready_ = false;
+  canfd_ = canfd_on;
+  timeout_ = timeout;
+  is_timeout_ = false;
   interface_ = interface;
+  can_std_callback_ = std_callback;
+  can_fd_callback_ = fd_callback;
   try {
     receiver_ = std::make_unique<drivers::socketcan::SocketCanReceiver>(interface_);
-    receiver_->enable_canfd(canfd_on);
+    receiver_->enable_canfd(canfd_);
     isthreadrunning_ = true;
     main_T_ = std::make_unique<std::thread>(std::bind(&can_rx_dev::main_recv_func, this));
   } catch (const std::exception & ex) {
@@ -95,48 +99,39 @@ void can_rx_dev::init(const std::string & interface, bool canfd_on)
   ready_ = true;
 }
 
-bool can_rx_dev::wait_for_std_can_data()
+bool can_rx_dev::wait_for_can_data()
 {
   drivers::socketcan::CanId receive_id{};
-  rx_std_frame_ = std::make_shared<struct can_frame>();
-
-  try {
-    if (receiver_ != nullptr) {
-      return receiver_->receive(rx_std_frame_, std::chrono::nanoseconds(timeout_));
-    } else {
-      isthreadrunning_ = false;
-      printf(
-        C_RED "[CAN_RX STD][ERROR][%s] Error receiving CAN STD message: %s, "
-        "no receiver init\n" C_END,
-        name_.c_str(), interface_.c_str());
-    }
-  } catch (const std::exception & ex) {
-    printf(
-      C_RED "[CAN_RX STD][ERROR][%s] Error receiving CAN STD message: %s - %s\n" C_END,
-      name_.c_str(), interface_.c_str(), ex.what());
+  std::string can_type;
+  if (canfd_) {
+    can_type = "FD";
+    rx_fd_frame_ = std::make_shared<struct canfd_frame>();
+  } else {
+    can_type = "STD";
+    rx_std_frame_ = std::make_shared<struct can_frame>();
   }
-  return false;
-}
 
-bool can_rx_dev::wait_for_fd_can_data()
-{
-  drivers::socketcan::CanId receive_id{};
-  rx_fd_frame_ = std::make_shared<struct canfd_frame>();
-
-  try {
-    if (receiver_ != nullptr) {
-      return receiver_->receive(rx_fd_frame_, std::chrono::nanoseconds(timeout_));
-    } else {
-      isthreadrunning_ = false;
+  if (receiver_ != nullptr) {
+    try {
+      bool result = canfd_ ? receiver_->receive(rx_fd_frame_, std::chrono::nanoseconds(timeout_)) :
+        receiver_->receive(rx_std_frame_, std::chrono::nanoseconds(timeout_));
+      if (result) {is_timeout_ = false;}
+      return result;
+    } catch (const std::exception & ex) {
+      if (ex.what()[0] == '$') {
+        is_timeout_ = true;
+        return false;
+      }
       printf(
-        C_RED "[CAN_RX FD][ERROR][%s] Error receiving CAN FD message: %s, "
-        "no receiver init\n" C_END,
-        name_.c_str(), interface_.c_str());
+        C_RED "[CAN_RX %s][ERROR][%s] Error receiving CAN %s message: %s - %s\n" C_END,
+        can_type.c_str(), name_.c_str(), can_type.c_str(), interface_.c_str(), ex.what());
     }
-  } catch (const std::exception & ex) {
+  } else {
+    isthreadrunning_ = false;
     printf(
-      C_RED "[CAN_RX FD][ERROR][%s] Error receiving CAN FD message: %s - %s\n" C_END,
-      name_.c_str(), interface_.c_str(), ex.what());
+      C_RED "[CAN_RX %s][ERROR][%s] Error receiving CAN %s message: %s, "
+      "no receiver init\n" C_END,
+      can_type.c_str(), name_.c_str(), can_type.c_str(), interface_.c_str());
   }
   return false;
 }
@@ -145,10 +140,10 @@ void can_rx_dev::main_recv_func()
 {
   printf("[CAN_RX][INFO][%s] Start recv thread: %s\n", interface_.c_str(), name_.c_str());
   while (isthreadrunning_ && ready_) {
-    if (canfd_ == false && wait_for_std_can_data()) {
-      if (can_std_callback_ != nullptr) {can_std_callback_(rx_std_frame_);}
-    } else if (canfd_ == true && wait_for_fd_can_data()) {
-      if (can_fd_callback_ != nullptr) {can_fd_callback_(rx_fd_frame_);}
+    if (wait_for_can_data()) {
+      if (!canfd_ && can_std_callback_ != nullptr) {
+        can_std_callback_(rx_std_frame_);
+      } else if (canfd_ && can_fd_callback_ != nullptr) {can_fd_callback_(rx_fd_frame_);}
     }
   }
   printf("[CAN_RX][INFO][%s] Exit recv thread: %s\n", interface_.c_str(), name_.c_str());
@@ -166,6 +161,7 @@ can_tx_dev::can_tx_dev(
   ready_ = false;
   name_ = name;
   timeout_ = timeout;
+  is_timeout_ = false;
   canfd_on_ = canfd_on;
   interface_ = interface;
   extended_frame_ = extended_frame;
@@ -189,78 +185,66 @@ can_tx_dev::~can_tx_dev()
 
 bool can_tx_dev::send_can_message(struct can_frame & tx_frame)
 {
-  if (canfd_on_ == true) {
-    printf(
-      C_RED "[CAN_TX FD][ERROR][%s] Error sending CAN message: %s - "
-      "Not support can/canfd frame mixed\n" C_END,
-      name_.c_str(), interface_.c_str());
-    return false;
-  }
-  bool result = true;
-  drivers::socketcan::CanId send_id = extended_frame_ ?
-    drivers::socketcan::CanId(
-    tx_frame.can_id,
-    drivers::socketcan::FrameType::DATA,
-    drivers::socketcan::ExtendedFrame) :
-    drivers::socketcan::CanId(
-    tx_frame.can_id,
-    drivers::socketcan::FrameType::DATA,
-    drivers::socketcan::StandardFrame);
-  if (tx_frame.can_id == 0) {tx_frame.can_dlc = 8;}
-
-  try {
-    if (sender_ != nullptr) {
-      sender_->send(tx_frame.data, tx_frame.can_dlc, send_id, std::chrono::nanoseconds(timeout_));
-    } else {
-      result = false;
-      printf(
-        C_RED "[CAN_TX STD][ERROR][%s] Error sending CAN message: %s - No device\n" C_END,
-        name_.c_str(), interface_.c_str());
-    }
-  } catch (const std::exception & ex) {
-    result = false;
-    printf(
-      C_RED "[CAN_TX STD][ERROR][%s] Error sending CAN message: %s - %s\n" C_END,
-      name_.c_str(), interface_.c_str(), ex.what());
-  }
-  return result;
+  return send_can_message(&tx_frame, nullptr);
 }
 
 bool can_tx_dev::send_can_message(struct canfd_frame & tx_frame)
 {
-  if (canfd_on_ == false) {
+  return send_can_message(nullptr, &tx_frame);
+}
+
+bool can_tx_dev::send_can_message(struct can_frame * std_frame, struct canfd_frame * fd_frame)
+{
+  bool self_fd = (fd_frame != nullptr);
+  std::string can_type = self_fd ? "FD" : "STD";
+  if (canfd_on_ != self_fd) {
     printf(
-      C_RED "[CAN_TX FD][ERROR][%s] Error sending CAN message: %s - "
+      C_RED "[CAN_TX %s][ERROR][%s] Error sending CAN message: %s - "
       "Not support can/canfd frame mixed\n" C_END,
-      name_.c_str(), interface_.c_str());
+      can_type.c_str(), name_.c_str(), interface_.c_str());
     return false;
   }
+  canid_t * canid = self_fd ? &fd_frame->can_id : &std_frame->can_id;
+
   bool result = true;
   drivers::socketcan::CanId send_id = extended_frame_ ?
     drivers::socketcan::CanId(
-    tx_frame.can_id,
+    *canid,
     drivers::socketcan::FrameType::DATA,
     drivers::socketcan::ExtendedFrame) :
     drivers::socketcan::CanId(
-    tx_frame.can_id,
+    *canid,
     drivers::socketcan::FrameType::DATA,
     drivers::socketcan::StandardFrame);
-  if (tx_frame.can_id == 0) {tx_frame.len = 64;}
 
-  try {
-    if (sender_ != nullptr) {
-      sender_->send_fd(tx_frame.data, tx_frame.len, send_id, std::chrono::nanoseconds(timeout_));
-    } else {
+  if (sender_ != nullptr) {
+    try {
+      if (self_fd) {
+        sender_->send_fd(
+          fd_frame->data, (fd_frame->len == 0) ? 64 : fd_frame->len, send_id,
+          std::chrono::nanoseconds(timeout_));
+        is_timeout_ = false;
+      } else {
+        sender_->send(
+          std_frame->data, (std_frame->can_dlc == 0) ? 8 : std_frame->can_dlc, send_id,
+          std::chrono::nanoseconds(timeout_));
+        is_timeout_ = false;
+      }
+    } catch (const std::exception & ex) {
+      if (ex.what()[0] == '$') {
+        is_timeout_ = true;
+        return false;
+      }
       result = false;
       printf(
-        C_RED "[CAN_TX FD][ERROR][%s] Error sending CAN message: %s - No device\n" C_END,
-        name_.c_str(), interface_.c_str());
+        C_RED "[CAN_TX %s][ERROR][%s] Error sending CAN message: %s - %s\n" C_END,
+        can_type.c_str(), name_.c_str(), interface_.c_str(), ex.what());
     }
-  } catch (const std::exception & ex) {
+  } else {
     result = false;
     printf(
-      C_RED "[CAN_TX FD][ERROR][%s] Error sending CAN message: %s - %s\n" C_END,
-      name_.c_str(), interface_.c_str(), ex.what());
+      C_RED "[CAN_TX %s][ERROR][%s] Error sending CAN message: %s - No device\n" C_END,
+      can_type.c_str(), name_.c_str(), interface_.c_str());
   }
   return result;
 }

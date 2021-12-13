@@ -46,7 +46,7 @@ public:
     can_parser_ = std::make_shared<can_parser>(toml_config, this->name_, canfd_enable);
     printf(
       "[CAN_DEVICE][INFO] Creat can device[%s]: %d error, %d warning\n",
-      this->name_.c_str(), can_parser_->GetErrorNum(), can_parser_->GetWarnNum());
+      this->name_.c_str(), can_parser_->GetInitErrorNum(), can_parser_->GetInitWarnNum());
     auto recv_list = can_parser_->GetRecvList();
     int recv_num = recv_list.size();
     bool send_only = (recv_num == 0) ? true : this->for_send_;
@@ -122,17 +122,21 @@ public:
     return can_parser_->Encode(this->device_data_map_, can_op_);
   }
 
-  int GetErrorNum() override {return can_parser_->GetErrorNum();}
-  int GetWarnNum() override {return can_parser_->GetWarnNum();}
+  int GetInitErrorNum() override {return can_parser_->GetInitErrorNum();}
+  int GetInitWarnNum() override {return can_parser_->GetInitWarnNum();}
+
+  virtual bool IsRxTimeout() override {return can_op_->is_rx_timeout();}
+  virtual bool IsTxTimeout() override {return can_op_->is_tx_timeout();}
 
 private:
   std::shared_ptr<can_parser> can_parser_;
   std::shared_ptr<cyberdog_utils::can_dev> can_op_;
   void recv_callback(std::shared_ptr<can_frame> recv_frame)
   {
-    if (can_parser_->Decode(this->device_data_map_, recv_frame) &&
+    if (can_parser_->Decode(this->device_data_map_, recv_frame, this->rx_error_) &&
       this->devicedata_callback_ != nullptr)
     {
+      this->rx_error_ = false;
       this->devicedata_callback_(this->device_data_);
     }
   }

@@ -94,11 +94,11 @@ void SocketCanSender::wait(const std::chrono::nanoseconds timeout) const
     auto write_set = single_set(m_file_descriptor);
     // Wait
     if (0 == select(m_file_descriptor + 1, NULL, &write_set, NULL, &c_timeout)) {
-      throw SocketCanTimeout{"CAN Send Timeout"};
+      throw SocketCanTimeout{"$CAN Send Timeout"};
     }
     // lint --e{9130, 9123, 9125, 1924, 9126} NOLINT
     if (!FD_ISSET(m_file_descriptor, &write_set)) {
-      throw SocketCanTimeout{"CAN Send timeout"};
+      throw SocketCanTimeout{"$CAN Send timeout"};
     }
   } else {
     // do nothing
@@ -114,11 +114,7 @@ void SocketCanSender::send_impl(
   const std::chrono::nanoseconds timeout) const
 {
   // Use select call on positive timeout
-  try {
-    wait(timeout);
-  } catch (SocketCanTimeout & ex) {
-    return;
-  }
+  wait(timeout);
   // Actually send the data
   struct can_frame data_frame;
   data_frame.can_id = id.get();
@@ -141,11 +137,7 @@ void SocketCanSender::send_fd_impl(
   const std::chrono::nanoseconds timeout) const
 {
   // Use select call on positive timeout
-  try {
-    wait(timeout);
-  } catch (SocketCanTimeout & ex) {
-    return;
-  }
+  wait(timeout);
   // Actually send the data
   struct canfd_frame data_frame;
   data_frame.can_id = id.get();

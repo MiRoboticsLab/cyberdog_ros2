@@ -59,7 +59,7 @@ std::string get_var_name(const std::string & full_name)
         if (get == true) {
           printf(
             C_RED "[DEVICE_BASE][ERROR] Not support class or struct "
-            "in device_data class:\"%s\"\n" C_END,
+            "in TDataClass:\"%s\"\n" C_END,
             full_name.c_str());
         }
         var_name = "";
