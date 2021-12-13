@@ -34,6 +34,7 @@ enum EffectType
 const std::vector<LightModule> modules_test_real = {
   {1, 1, "mono light"}, {2, 3, "three mono lights"}, {3, 3, "three rgb lights"}};
 const std::vector<LightModule> modules_test_fake = {};
+const std::vector<LightModule> modules_test_single = {{5, 2, "two mono lights"}};
 const LightModule test_module = {4, 2, "two rgb lights"};
 const LightEffect effect_mono_1 = 10;
 const LightEffect effect_mono_2 = 127;

@@ -55,9 +55,9 @@ public:
     if (!init_) {return false;}
     for (const auto & info : infos_) {
       auto value_iter = light_status_.find(info.id);
-      if (value_iter == light_status_.end()) {
-        return false;
-      } else {value_iter->second = LightMode::PAUSE;}
+      if (value_iter != light_status_.end()) {
+        value_iter->second = LightMode::PAUSE;
+      }
     }
     return true;
   }
@@ -137,17 +137,6 @@ public:
   }
 
 private:
-  bool compare_effects(const effects_map & input_map)
-  {
-    bool rtn_flag_(true);
-    effects_map merged_map;
-    for (const auto & single_mcu : mcu_maps) {
-      merged_map.merge(static_cast<effects_map>(single_mcu.second));
-    }
-    if (gen_hash(merged_map) != gen_hash(input_map)) {return false;}
-    return rtn_flag_;
-  }
-
   std::vector<size_t> gen_hash(const effects_map & map_to_hash)
   {
     std::hash<std::string> hash_generator;
@@ -165,7 +154,18 @@ private:
       hash_v.push_back(hash_generator(map_str));
     }
     return hash_v;
+  }  // LCOV_EXCL_LINE
+  bool compare_effects(const effects_map & input_map)
+  {
+    bool rtn_flag_(true);
+    effects_map merged_map;
+    for (const auto & single_mcu : mcu_maps) {
+      merged_map.merge(static_cast<effects_map>(single_mcu.second));
+    }
+    if (gen_hash(merged_map) != gen_hash(input_map)) {return false;}
+    return rtn_flag_;
   }
+
   bool init_;
 
   // MCU status

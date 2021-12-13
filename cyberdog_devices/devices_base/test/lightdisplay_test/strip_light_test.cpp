@@ -71,6 +71,9 @@ TEST(StripLightTest, setModes) {
   ASSERT_TRUE(
     test_instance->set_mode(
       cyberdog::device::modules_test_real[0], cyberdog::device::LightMode::RUNNING));
+  ASSERT_FALSE(
+    test_instance->set_mode(
+      cyberdog::device::modules_test_single[0], cyberdog::device::LightMode::RUNNING));
   uint32_t status(cyberdog::device::LightMode::DEFAULT);
   ASSERT_TRUE(test_instance->get_status(cyberdog::device::modules_test_real[0], status));
   ASSERT_EQ(status, static_cast<uint32_t>(cyberdog::device::LightMode::RUNNING));
@@ -92,6 +95,9 @@ TEST(StripLightTest, setIDs) {
     test_instance->set_id(
       cyberdog::device::modules_test_real[0], 5, new_effect));
   ASSERT_TRUE(
+    test_instance->set_id(
+      cyberdog::device::modules_test_real[0], 1, new_effect));
+  ASSERT_TRUE(
     test_instance->set_mode(
       cyberdog::device::modules_test_real[0], cyberdog::device::LightMode::RUNNING));
   ASSERT_TRUE(
@@ -112,6 +118,9 @@ TEST(StripLightTest, runIDs) {
   ASSERT_FALSE(
     test_instance->run_id(
       cyberdog::device::modules_test_real[0], 2, 1000));
+  ASSERT_FALSE(
+    test_instance->run_id(
+      cyberdog::device::modules_test_single[0], 1, 1000));
   ASSERT_TRUE(
     test_instance->run_id(
       cyberdog::device::modules_test_real[0], 1, 1000));
@@ -130,6 +139,11 @@ TEST(StripLightTest, getStatus) {
   uint32_t status(cyberdog::device::LightMode::DEFAULT);
   ASSERT_TRUE(test_instance->get_status(cyberdog::device::modules_test_real[0], status));
   ASSERT_EQ(status, static_cast<uint32_t>(cyberdog::device::LightMode::TEST));
+  ASSERT_TRUE(test_instance->pause());
+  ASSERT_TRUE(test_instance->get_status(cyberdog::device::modules_test_real[1], status));
+  ASSERT_EQ(status, static_cast<uint32_t>(cyberdog::device::LightMode::PAUSE));
+  ASSERT_FALSE(test_instance->get_status(cyberdog::device::modules_test_single[0], status));
+  ASSERT_EQ(status, static_cast<uint32_t>(cyberdog::device::LightMode::PAUSE));
 }
 
 TEST(StripLightTest, testFrames) {
