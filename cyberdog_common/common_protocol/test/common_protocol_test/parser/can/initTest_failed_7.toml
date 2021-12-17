@@ -1,0 +1,42 @@
+# Testing Operate data get
+protocol = "can"
+name = "initTest_failed_7"
+
+can_interface = "can0"
+extended_frame = false
+canfd_enable = false
+timeout_us = 1234567
+
+[[var]]
+description = ""
+can_id = "0x300"
+var_name = "u64_var"
+var_type = "u64"
+parser_param = [0, 7]
+
+[[array]]
+description = ""
+can_package_num = 1
+can_id = ["0x301"]
+array_name = "u8_array"
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_0"
+can_id = "0x300"
+ctrl_len = 2
+ctrl_data = ["0xA1", "0xA2"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_1"
+can_id = "0x301"
+ctrl_len = 2
+ctrl_data = ["0xB1", "0xB2"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_2"
+can_id = "0x301"
+ctrl_len = 2
+ctrl_data = ["0xC1", "0xC2"]

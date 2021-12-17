@@ -1,10 +1,8 @@
 # -- common params -- #
 # protocol = "can"             (string)
 # name = "can_device_name"     (string)
-# [optional] for_send = false  (true / false)
 protocol = "can"
 name = "can_device_1"
-for_send = false
 
 # -- can params -- #
 # can_interface = "can0"             (string)

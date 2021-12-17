@@ -1,0 +1,96 @@
+# Testing missing key
+protocol = "can"
+name = "initTest_failed_2"
+
+can_interface = "can0"
+extended_frame = true
+canfd_enable = true
+timeout_us = 1234567
+
+[[var]]
+description = ""
+can_id = "0x0300 00 00"
+var_name = "bool_var_1"
+var_type = "bool"
+var_zoom = 1.0
+parser_param = [1, 1, 1]
+
+[[var]]
+description = ""
+# can_id = "0x0300 00 00"
+var_name = "bool_var_2"
+var_type = "bool"
+parser_param = [2, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0x0300'00'00"
+# var_name = "bool_var_3"
+var_type = "bool"
+parser_param = [3, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 00"
+var_name = "bool_var_4"
+# var_type = "bool"
+parser_param = [4, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 00"
+var_name = "bool_var_5"
+var_type = "bool"
+# parser_param = [5, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0xFFFF'FFFF"
+var_name = "bool_var_6"
+var_type = "bool"
+parser_param = [1, 1, 1]
+
+[[array]]
+description = ""
+can_package_num = 8
+can_id = ["0x200", "0x207"]
+array_name = "example_array_1"
+
+[[array]]
+description = ""
+# can_package_num = 8
+can_id = ["0x300", "0x307"]
+array_name = "example_array_1"
+
+[[array]]
+description = ""
+can_package_num = 8
+# can_id = ["0x200", "0x207"]
+array_name = "example_array_2"
+
+[[array]]
+description = ""
+can_package_num = 8
+can_id = ["0x400", "0x407"]
+# array_name = "example_array_3"
+
+[[cmd]]
+description = ""
+cmd_name = "example_cmd_1"
+can_id = "0x02"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+# cmd_name = "example_cmd_2"
+can_id = "0x02"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "example_cmd_3"
+# can_id = "0x02"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]

@@ -1,0 +1,92 @@
+# Testing src code error
+protocol = "can"
+name = "initTest_failed_6"
+
+can_interface = "can0"
+extended_frame = false
+canfd_enable = false
+timeout_us = 1234567
+
+[[var]]
+description = ""
+can_id = "0x300"
+var_name = "bool_var"
+var_type = "bool"
+parser_param = [0, 2, 2]
+
+[[var]]
+description = ""
+can_id = "0x300"
+var_name = "bool_var_2"
+var_type = "bool"
+parser_param = [0, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0X1f0"
+var_name = "u8_var"
+var_type = "u64"
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0X1f1"
+var_name = "u16_var"
+var_type = "u16"
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0x1f2"
+var_name = "double_32bit"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [0, 6]
+
+[[var]]
+description = ""
+can_id = "0x3C1"
+var_name = "float_var"
+var_type = "float"
+var_zoom = 0.01
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0x3C2"
+var_name = "float_16bit"
+var_type = "float"
+var_zoom = 0.01
+parser_param = [0, 2]
+
+[[array]]
+description = ""
+can_package_num = 17
+can_id = ["0x310", "0x320"]
+array_name = "u8_array_1"
+
+[[array]]
+description = ""
+can_package_num = 16
+can_id = ["0x3c0", "0x3cF"]
+array_name = "u8_array_F"
+
+[[array]]
+description = ""
+can_package_num = 7
+can_id = ["0x3F1", "0x3f7", "0X3f5", "0x3f2", "0x3a0", "0x3a1", "0x3a2"]
+array_name = "u8_array_2"
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_0"
+can_id = "0x311"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_1"
+can_id = "0x3f7"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]

@@ -1,0 +1,50 @@
+# Testing CMD error
+protocol = "can"
+name = "initTest_failed_5"
+
+can_interface = "can0"
+extended_frame = true
+canfd_enable = false
+timeout_us = 1234567
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_0"
+can_id = "0x02"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_0"
+can_id = "0x03"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_1"
+can_id = "0x03"
+ctrl_len = -5
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_1"
+can_id = "0x03"
+ctrl_len = -5
+ctrl_data = ["0xF106", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_2"
+can_id = "0x03"
+ctrl_len = 1
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "CMD_3"
+can_id = "0x03"
+ctrl_len = 2
+ctrl_data = ["0xF106", "0x13"]
