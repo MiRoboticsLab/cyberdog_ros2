@@ -1,5 +1,0 @@
-<library path="light_plugins">
-  <class name="light_pluginlib/LightCommon" type="cyberdog::device::LightCommon" base_class_type="cyberdog::device::StripLight">
-    <description>Test plugin for strip light.</description>
-  </class>
-</library>

@@ -12,18 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CAMERA_BASE__DEPTH_CAMERA_HPP_
-#define CAMERA_BASE__DEPTH_CAMERA_HPP_
+#ifndef DEVICE_RANGE__ULTRASONIC_SENSOR_HPP_
+#define DEVICE_RANGE__ULTRASONIC_SENSOR_HPP_
 
-#include <memory>
-#include <string>
+#include "common_base/common_type.hpp"
+#include "common_base/input_device.hpp"
 
 namespace cyberdog
 {
 namespace device
 {
+struct UltrasonicTargetT
+{
+  uint16_t id;
+  uint16_t type;
+  PoseT relat_pose;
+};
+struct UltrasonicCalibT
+{
+  double lim_min;
+  double lim_max;
+  double hfov;
+  double vfov;
+};
 
+typedef double UltrasonicDataT;
+typedef uint32_t UltrasonicModeT;
+typedef uint32_t UltrasonicArgK;
+
+class UltrasonicSensor : InputDevice
+  <UltrasonicTargetT, UltrasonicDataT, UltrasonicModeT,
+    UltrasonicArgK, UltrasonicCalibT, UltrasonicCalibT>{};
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // CAMERA_BASE__DEPTH_CAMERA_HPP_
+#endif  // DEVICE_RANGE__ULTRASONIC_SENSOR_HPP_

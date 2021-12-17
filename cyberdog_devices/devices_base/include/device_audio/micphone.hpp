@@ -12,18 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IMU_BASE__IMU_HPP_
-#define IMU_BASE__IMU_HPP_
+#ifndef DEVICE_AUDIO__MICPHONE_HPP_
+#define DEVICE_AUDIO__MICPHONE_HPP_
 
-#include <memory>
-#include <string>
+#include "common_base/common_type.hpp"
+#include "common_base/input_device.hpp"
 
 namespace cyberdog
 {
 namespace device
 {
+struct MicPhoneTargetT
+{
+  uint16_t id;
+  uint16_t type;
+  PoseT relat_pose;
+};
 
+class MicPhone
+{};
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // IMU_BASE__IMU_HPP_
+#endif  // DEVICE_AUDIO__MICPHONE_HPP_

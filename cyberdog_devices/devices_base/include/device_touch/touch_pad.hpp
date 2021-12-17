@@ -12,18 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef OPTICALFLOW_BASE__OPTICALFLOW_HPP_
-#define OPTICALFLOW_BASE__OPTICALFLOW_HPP_
+#ifndef DEVICE_TOUCH__TOUCH_HPP_
+#define DEVICE_TOUCH__TOUCH_HPP_
 
-#include <memory>
-#include <string>
+#include "common_base/common_type.hpp"
+#include "common_base/input_device.hpp"
 
 namespace cyberdog
 {
 namespace device
 {
-
+struct TouchPadTargetT
+{
+  uint16_t id;
+  uint16_t type;
+  PoseT relat_pose;
+};
+class TouchPad
+{};
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // OPTICALFLOW_BASE__OPTICALFLOW_HPP_
+#endif  // DEVICE_TOUCH__TOUCH_HPP_

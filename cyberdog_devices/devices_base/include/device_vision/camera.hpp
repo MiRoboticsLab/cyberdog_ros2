@@ -12,18 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GPIO_BASE__GPIO_HPP_
-#define GPIO_BASE__GPIO_HPP_
+#ifndef DEVICE_VISION__CAMERA_HPP_
+#define DEVICE_VISION__CAMERA_HPP_
 
-#include <memory>
-#include <string>
+#include "common_base/common_type.hpp"
+#include "common_base/input_device.hpp"
 
 namespace cyberdog
 {
 namespace device
 {
+struct CameraTargetT
+{
+  uint16_t id;
+  uint16_t type;
+  PoseT relat_pose;
+};
+struct ImageT
+{};
+struct CameraCalibT
+{};
 
+typedef uint32_t CameraModeT;
+typedef uint32_t CameraArgK;
+
+class RGBCamera : public virtual InputDevice
+  <CameraTargetT, ImageT, CameraModeT, CameraArgK, CameraCalibT, CameraCalibT> {};
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // GPIO_BASE__GPIO_HPP_
+#endif  // DEVICE_VISION__CAMERA_HPP_

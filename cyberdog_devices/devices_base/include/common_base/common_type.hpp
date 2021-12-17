@@ -12,18 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TOF_BASE__TOF_HPP_
-#define TOF_BASE__TOF_HPP_
+#ifndef COMMON_BASE__COMMON_TYPE_HPP_
+#define COMMON_BASE__COMMON_TYPE_HPP_
 
-#include <memory>
-#include <string>
+#include <cstdint>
 
 namespace cyberdog
 {
 namespace device
 {
 
+struct PoseT
+{
+  double pos_x;
+  double pos_y;
+  double pos_z;
+  double q_w;
+  double q_x;
+  double q_y;
+  double q_z;
+};
+
+typedef uint32_t StatusT;
+const StatusT STATUS_DEFAULT = 0x0000'0000;
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // TOF_BASE__TOF_HPP_
+#endif  // COMMON_BASE__COMMON_TYPE_HPP_

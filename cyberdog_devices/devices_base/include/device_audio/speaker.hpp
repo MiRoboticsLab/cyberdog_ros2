@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GNSS_BASE__GNSS_HPP_
-#define GNSS_BASE__GNSS_HPP_
+#ifndef DEVICE_AUDIO__SPEAKER_HPP_
+#define DEVICE_AUDIO__SPEAKER_HPP_
 
-#include <memory>
-#include <string>
+#include "common_base/common_type.hpp"
+#include "common_base/output_device.hpp"
 
 namespace cyberdog
 {
 namespace device
 {
-
+struct SpeakerTargetT
+{};
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // GNSS_BASE__GNSS_HPP_
+#endif  // DEVICE_AUDIO__SPEAKER_HPP_
