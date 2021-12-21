@@ -16,9 +16,9 @@
 #define COMMON_PROTOCOL__COMMON_PROTOCOL_HPP_
 
 #include <string>
-#include <utility>
 #include <memory>
 #include <vector>
+#include <utility>
 
 #include "common_protocol/protocol_base.hpp"
 #include "common_protocol/can_protocol.hpp"
@@ -66,7 +66,7 @@ public:
   }
 
   // please use "#define LINK_VAR(var)" instead
-  void LinkVar(const std::string origin_name, const protocol_data & var)
+  void LinkVar(const std::string & origin_name, const protocol_data & var)
   {
     if (base_ != nullptr) {base_->LinkVar(get_var_name(origin_name, error_clct_), var);}
   }

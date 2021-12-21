@@ -39,7 +39,7 @@ namespace common
 
 #define STATE_CODE_TYPE uint8_t
 #define STATE_CODE_TIMES uint8_t
-#define MAX_STATE_TIMES static_cast<int>(uint8_t(-1))
+#define MAX_STATE_TIMES static_cast<int>(STATE_CODE_TIMES(-1))
 #define CHILD_STATE_CLCT std::shared_ptr<state_collector>
 
 using StateMap = std::map<STATE_CODE_TYPE, STATE_CODE_TIMES>;
