@@ -12,51 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DEVICE_RANGE__TOF_HPP_
-#define DEVICE_RANGE__TOF_HPP_
+#ifndef DEVICE_AUDIO__MICROPHONE_HPP_
+#define DEVICE_AUDIO__MICROPHONE_HPP_
 
-#include <variant>
+#include <variant>  // NOLINT
 #include <vector>
 
 #include "common_base/common_type.hpp"
 #include "common_base/input_device.hpp"
+#include "device_audio/audio_type.hpp"
 
 namespace cyberdog
 {
 namespace device
 {
-struct TOFTargetT
+
+struct MicTargetT
 {
   uint16_t id;
-  uint8_t type;
-  uint8_t calibrated;
+  uint16_t type;
   PoseT relat_pose;
 };
-struct TOFCalibT
-{
-  double lim_min;
-  double lim_max;
-  double hfov;
-  double vfov;
-};
 
-typedef std::vector<double> PointsDataT;
-typedef std::variant<PointsDataT> TOFDataT;
-typedef uint32_t TOFModeT;
-typedef uint32_t TOFArgK;
+typedef uint32_t MicModeT;
+typedef uint32_t MicAmpK;
+typedef double MicAmpV;
+typedef bool MicCalibT;
 
 /**
- * @brief TOF is designed for Global Navigation Satellite System devices with serial points data.
+ * @brief Microphone is designed for all types of micro phones with uint8_t and int16_t stream.
  * You will got sequential data from this device after setting callback function.
  * You must initialize device with function init(), set device modules informations, and
  * synchronize data if you need. The synchronization mechanism is up to devices and protocol.
  * After initialization, set callback function, please.
  * Argument Key to Argument Map is designed for calibration test online.
  */
-class TOFSensor : public virtual InputDevice
-  <TOFTargetT, TOFDataT, TOFModeT, TOFArgK, TOFCalibT, TOFCalibT> {};
-
+class Microphone : public virtual InputDevice
+  <MicTargetT, AudioT, MicModeT, MicAmpK, MicAmpV, MicCalibT> {};
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // DEVICE_RANGE__TOF_HPP_
+#endif  // DEVICE_AUDIO__MICROPHONE_HPP_

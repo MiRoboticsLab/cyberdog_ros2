@@ -16,7 +16,7 @@
 #define DEVICE_EMWAVE__GNSS_HPP_
 
 #include <ctime>
-#include <variant>
+#include <variant>  // NOLINT
 
 #include "common_base/common_type.hpp"
 #include "common_base/input_device.hpp"
@@ -25,6 +25,7 @@ namespace cyberdog
 {
 namespace device
 {
+
 struct GNSSTargetT
 {
   uint16_t id;
@@ -34,11 +35,11 @@ struct GNSSTargetT
 
 /* NMEA cardinal direction types */
 typedef char NMEACardinalT;
-#define NMEA_CARDINAL_DIR_NORTH		(NMEACardinalT) 'N'
-#define NMEA_CARDINAL_DIR_EAST		(NMEACardinalT) 'E'
-#define NMEA_CARDINAL_DIR_SOUTH		(NMEACardinalT) 'S'
-#define NMEA_CARDINAL_DIR_WEST		(NMEACardinalT) 'W'
-#define NMEA_CARDINAL_DIR_UNKNOWN	(NMEACardinalT) '\0'
+#define NMEA_CARDINAL_DIR_NORTH         (NMEACardinalT) 'N'
+#define NMEA_CARDINAL_DIR_EAST          (NMEACardinalT) 'E'
+#define NMEA_CARDINAL_DIR_SOUTH         (NMEACardinalT) 'S'
+#define NMEA_CARDINAL_DIR_WEST          (NMEACardinalT) 'W'
+#define NMEA_CARDINAL_DIR_UNKNOWN       (NMEACardinalT) '\0'
 
 struct NMEAPositionT
 {
@@ -75,22 +76,22 @@ struct GPGLL
 struct GPGSA
 {
   uint8_t mode;
-	uint8_t fixtype;
-	int sat_id_00;
-	int sat_id_01;
-	int sat_id_02;
-	int sat_id_03;
-	int sat_id_04;
-	int sat_id_05;
-	int sat_id_06;
-	int sat_id_07;
-	int sat_id_08;
-	int sat_id_09;
-	int sat_id_10;
-	int sat_id_11;
-	double pdop;
-	double hdop;
-	double vdop;
+  uint8_t fixtype;
+  int sat_id_00;
+  int sat_id_01;
+  int sat_id_02;
+  int sat_id_03;
+  int sat_id_04;
+  int sat_id_05;
+  int sat_id_06;
+  int sat_id_07;
+  int sat_id_08;
+  int sat_id_09;
+  int sat_id_10;
+  int sat_id_11;
+  double pdop;
+  double hdop;
+  double vdop;
 };
 // Ref to https://docs.novatel.com/OEM7/Content/Logs/GPGSV.htm
 struct GPGSV
@@ -99,12 +100,13 @@ struct GPGSV
   NMEAPositionT lontitude;
   NMEAPositionT latitude;
   uint8_t n_satellites;
-  struct {
-		int prn;
-		int elevation;
-		int azimuth;
-		int snr;
-	} sat[4];
+  struct
+  {
+    int prn;
+    int elevation;
+    int azimuth;
+    int snr;
+  } sat[4];
 };
 // Ref to https://docs.novatel.com/OEM7/Content/Logs/GPRMC.htm
 struct GPRMC
@@ -113,8 +115,8 @@ struct GPRMC
   NMEAPositionT lontitude;
   NMEAPositionT latitude;
   double speed_knots;
-	double track_deg;
-	double magvar_deg;
+  double track_deg;
+  double magvar_deg;
   NMEAPositionT magvar_cardinal;
   uint8_t magvar_direction;
   uint8_t mode_indicator;
@@ -123,8 +125,8 @@ struct GPRMC
 struct GPVTG
 {
   double mag_track_deg;
-	double speed_knots;
-	double speed_kmph;
+  double speed_knots;
+  double speed_kmph;
   uint8_t mag_track_indicator;
   uint8_t speed_knots_indicator;
   uint8_t speed_kmph_indicator;

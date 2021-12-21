@@ -40,9 +40,9 @@ const LightTargetT test_module = {4, 2, "two rgb lights"};
 const LightEffect effect_mono_1 = 10;
 const LightEffect effect_mono_2 = 127;
 const LightEffect effect_mono_3 = 255;
-const LightEffect effect_rgb_1 = 255 << RED_SHIFT | 106 << GREEN_SHFIT | 106 << BLUE_SHIFT;
-const LightEffect effect_rgb_2 = 255 << RED_SHIFT | 185 << GREEN_SHFIT | 15 << BLUE_SHIFT;
-const LightEffect effect_rgb_3 = 0 << RED_SHIFT | 206 << GREEN_SHFIT | 209 << BLUE_SHIFT;
+const LightEffect effect_rgb_1 = 255 << RED_SHIFT | 106 << GREEN_SHIFT | 106 << BLUE_SHIFT;
+const LightEffect effect_rgb_2 = 255 << RED_SHIFT | 185 << GREEN_SHIFT | 15 << BLUE_SHIFT;
+const LightEffect effect_rgb_3 = 0 << RED_SHIFT | 206 << GREEN_SHIFT | 209 << BLUE_SHIFT;
 const LightArgV effect_frames_single =
 {{{effect_mono_2}, EffectType::HOLDON, ""}};
 const LightArgV effect_frames_multiple =

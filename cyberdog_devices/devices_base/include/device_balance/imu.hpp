@@ -15,7 +15,7 @@
 #ifndef DEVICE_BALANCE__IMU_HPP_
 #define DEVICE_BALANCE__IMU_HPP_
 
-#include <variant>
+#include <variant>  // NOLINT
 
 #include "common_base/common_type.hpp"
 #include "common_base/input_device.hpp"

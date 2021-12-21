@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DEVICE_TOUCH__TOUCH_PAD_HPP_
-#define DEVICE_TOUCH__TOUCH_PAD_HPP_
+#ifndef DEVICE_RANGE__SPAD_SENSOR_HPP_
+#define DEVICE_RANGE__SPAD_SENSOR_HPP_
 
 #include <variant>  // NOLINT
 #include <vector>
@@ -26,32 +26,38 @@ namespace cyberdog
 namespace device
 {
 
-struct TouchPadTargetT
+struct SPADTargetT
 {
   uint16_t id;
-  uint16_t type;
+  uint8_t type;
+  uint8_t calibrated;
   PoseT relat_pose;
 };
+struct SPADCalibT
+{
+  double lim_min;
+  double lim_max;
+  double hfov;
+  double vfov;
+};
 
-typedef uint32_t TouchPadModeT;
-typedef uint32_t TouchEventT;
-typedef std::vector<bool> TouchRawDataT;
-typedef std::variant<TouchEventT, TouchRawDataT> TouchDataT;
-typedef bool TouchArgK;
-typedef bool TouchCalibT;
+typedef std::vector<double> PointsDataT;
+typedef std::variant<PointsDataT> SPADDataT;
+typedef uint32_t SPADModeT;
+typedef uint32_t SPADArgK;
 
 /**
- * @brief TouchPad is designed for touch detection devices with event and raw positions
- *  stream data.
+ * @brief SPADSensor is designed for single photon avalanche diode devices with serial points data.
  * You will got sequential data from this device after setting callback function.
  * You must initialize device with function init(), set device modules informations, and
  * synchronize data if you need. The synchronization mechanism is up to devices and protocol.
  * After initialization, set callback function, please.
  * Argument Key to Argument Map is designed for calibration test online.
  */
-class TouchPad : public InputDevice
-  <TouchPadTargetT, TouchDataT, TouchPadModeT, TouchArgK, TouchCalibT, TouchCalibT> {};
+class SPADSensor : public virtual InputDevice
+  <SPADTargetT, SPADDataT, SPADModeT, SPADArgK, SPADCalibT, SPADCalibT> {};
+
 }  // namespace device
 }  // namespace cyberdog
 
-#endif  // DEVICE_TOUCH__TOUCH_PAD_HPP_
+#endif  // DEVICE_RANGE__SPAD_SENSOR_HPP_

@@ -107,7 +107,7 @@ public:
   bool send_with_key(
     const LightTargetT & target,
     const LightArgK & effect_id,
-    const LightArgD_ns & time_duration_ns) override
+    const LightArgD_ms & time_duration_ns) override
   {
     if (!init_) {return false;}
     (void)effect_id;

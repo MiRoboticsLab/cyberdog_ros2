@@ -50,13 +50,13 @@ struct LightFrame
 };
 
 #define RED_SHIFT 16
-#define GREEN_SHFIT 8
+#define GREEN_SHIFT 8
 #define BLUE_SHIFT 0
 typedef uint32_t LightEffect;
 typedef uint32_t LightModeT;
 typedef uint32_t LightArgK;
 typedef std::vector<LightFrame> LightArgV;
-typedef uint64_t LightArgD_ns;
+typedef uint32_t LightArgD_ms;
 typedef std::map<LightArgK, LightArgV> LightEffectMapT;
 
 /**
@@ -67,7 +67,7 @@ typedef std::map<LightArgK, LightArgV> LightEffectMapT;
  * to devices and protocol. After initialization, you can do anything you want.
  */
 class StripLight : public virtual OutputDevice
-  <LightTargetT, LightModeT, LightArgK, LightArgV, LightArgD_ns, bool> {};
+  <LightTargetT, LightModeT, LightArgK, LightArgV, LightArgD_ms, bool> {};
 }  // namespace device
 }  // namespace cyberdog
 
