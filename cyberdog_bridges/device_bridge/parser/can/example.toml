@@ -1,0 +1,76 @@
+# -- common params -- #
+# protocol = "can"          (string)
+# name = "can_device_name"  (string)
+protocol = "can"
+name = "can_device_1"
+
+# -- can params -- #
+# can_interface = "can0"             (string)
+# [optional] extended_frame = false  (true / false)
+# [optional] canfd_enable = false    (true / false)
+# [optional] timeout_us = 3'000'000  (int64)
+can_interface = "can0"
+extended_frame = true
+canfd_enable = false
+timeout_us = 1000000
+
+# -- data_var -- #
+# [[var]]
+# can_id = "0x0300 00 00" / "0x0300'00'00"  (string-HEX)
+# var_name = "var_name_1"                   (string)
+# var_type = "float"                      
+#            (float / double / i64 / i32 / i16 / i8 / u64 / u32 / u16 / u8 / bool)
+# parser_param = [0, 3]                     (array<uint8>[2] / array<uint8>[3])
+# [optional] var_zoom = 1.0                 (float)
+# [optional] parser_type = "auto"           (bit / var / auto)
+# [optional] description = ""               (string)
+
+[[var]]
+can_id = "0x0300 00 00"
+var_name = "example_var_1"
+var_type = "double"
+parser_param = [0, 7]
+var_zoom = 0.0001
+description = "this is example named example_var_1"
+
+[[var]]
+can_id = "0x0300'00'01"
+var_name = "example_var_2"
+var_type = "uint8"
+parser_param = [0, 7, 4]
+parser_type = "bit"
+description = "this is example named example_var_2"
+
+# -- data_array -- #
+# [[array]]
+# can_package_num = 8          (size_t)
+# can_id = ["0x200", "0x207"]  (array<string-HEX>[2] / array<string-HEX>[can_package_num])
+# array_name = "array_name_1"  (string)
+# [optional] description = ""  (string)
+
+[[array]]
+can_package_num = 8
+can_id = ["0x200", "0x207"]
+array_name = "example_array_1"
+description = "this is example named example_array_1"
+
+[[array]]
+can_package_num = 4
+can_id = ["0x200", "0x201", "0x202", "0x203"]
+array_name = "example_array_2"
+description = "this is example named example_array_2"
+
+# -- cmd -- #
+# [[cmd]]
+# cmd_name = "cmd_name_1"      (string)
+# can_id = "0x02"              (string-HEX)
+# [optional] ctrl_len = 0      (uint8)
+# [optional] ctrl_data = []    (array<string-HEX>[x] : where x <= ctrl_len)
+# [optional] description = ""  (string)
+
+[[cmd]]
+cmd_name = "example_cmd_1"
+can_id = "0x02"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+description = "this is example named example_cmd_1"

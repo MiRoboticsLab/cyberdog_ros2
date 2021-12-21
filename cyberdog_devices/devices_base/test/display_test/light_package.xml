@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>light_pluginlib</name>
+  <version>1.0.0</version>
+  <description>Test pluginlib for light display.</description>
+  <maintainer email="xuhaiwang@xiaomi.com">homalozoa</maintainer>
+  <license>Apache License, Version 2.0</license>
+  <export>
+    <pluginlib plugin="${prefix}/light_plugins.xml" />
+  </export>
+</package>

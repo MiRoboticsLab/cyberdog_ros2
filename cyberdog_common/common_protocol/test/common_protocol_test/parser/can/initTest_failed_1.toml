@@ -1,0 +1,9 @@
+# Testing error protocol & missing common params
+protocol = "hahahaha"
+
+[[var]]
+description = ""
+can_id = "0x0300 00 00"
+var_name = "bool_var"
+var_type = "bool"
+parser_param = [0, 1, 1]

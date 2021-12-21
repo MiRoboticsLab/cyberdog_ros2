@@ -1,0 +1,182 @@
+# Testing normal usage FD_CAN with extended_frame
+protocol = "can"
+name = "initTest_success_1"
+
+can_interface = "can0"
+extended_frame = true
+canfd_enable = true
+timeout_us = 1234567
+
+[[var]]
+description = ""
+can_id = "0x0300 00 00"
+var_name = "bool_var"
+var_type = "bool"
+parser_param = [32, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0x0300'00'01"
+var_name = "double_var"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [20, 27]
+
+[[var]]
+description = ""
+can_id = "0x0300'00'C1"
+var_name = "double_32bit"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [21, 24]
+
+[[var]]
+description = ""
+can_id = "0x0300'00'C1"
+var_name = "double_16bit"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [11, 12]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 f2"
+var_name = "float_var"
+var_type = "float"
+var_zoom = 0.01
+parser_param = [10, 13]
+
+[[var]]
+description = ""
+can_id = "0x1FFF'FFFF"
+var_name = "float_16bit"
+var_type = "float"
+var_zoom = 0.01
+parser_param = [10, 11]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 F3"
+var_name = "i8_var"
+var_type = "i8"
+parser_type = "var"
+parser_param = [10, 10]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 03"
+var_name = "i16_var"
+var_type = "i16"
+parser_type = "var"
+parser_param = [21, 22]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 03"
+var_name = "i32_var"
+var_type = "i32"
+parser_param = [33, 36]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 04"
+var_name = "i64_var"
+var_type = "i64"
+parser_param = [40, 47]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 05"
+var_name = "u8_var"
+var_type = "u8"
+parser_type = "var"
+parser_param = [30, 30]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 05"
+var_name = "u16_var"
+var_type = "u16"
+parser_type = "var"
+parser_param = [31, 32]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 05"
+var_name = "u32_var"
+var_type = "u32"
+parser_param = [3, 6]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 06"
+var_name = "u64_var"
+var_type = "u64"
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 07"
+var_name = "u8_all_bit_1"
+var_type = "u8"
+parser_type = "bit"
+parser_param = [20, 7, 0]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 07"
+var_name = "u8_all_bit_2"
+var_type = "u8"
+parser_param = [21, 7, 0]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 07"
+var_name = "u8_1_bit"
+var_type = "u8"
+parser_type = "bit"
+parser_param = [32, 4, 4]
+
+[[var]]
+description = ""
+can_id = "0x0300 00 07"
+var_name = "u8_4_bit"
+var_type = "u8"
+parser_type = "bit"
+parser_param = [43, 7, 4]
+
+[[array]]
+description = ""
+can_package_num = 2
+can_id = ["0x0300 00 10", "0x0300 00 11"]
+array_name = "u8_array_1"
+
+[[array]]
+description = ""
+can_package_num = 1
+can_id = ["0x0300 0F 10"]
+array_name = "u8_array_2"
+
+[[cmd]]
+description = ""
+cmd_name = "start"
+can_id = "0x0300 00 20"
+ctrl_len = 10
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "open"
+can_id = "0x0300 00 20"
+
+[[cmd]]
+description = ""
+cmd_name = "close"
+can_id = "0x0300 00 20"
+ctrl_len = 12
+
+[[cmd]]
+description = ""
+cmd_name = "error_test"
+can_id = "0x0300 00 11"
+ctrl_len = 2

@@ -1,0 +1,80 @@
+# Testing array error
+protocol = "can"
+name = "initTest_failed_4"
+
+can_interface = "can0"
+extended_frame = false
+canfd_enable = false
+timeout_us = 1234567
+
+[[array]]
+description = ""
+can_package_num = 8
+can_id = ["0x0300 00 10"]
+array_name = "u8_array_1"
+
+[[array]]
+description = ""
+can_package_num = 8
+can_id = ["0x200"]
+array_name = "u8_array_2"
+
+[[array]]
+description = ""
+can_package_num = 8
+can_id = ["0x300", "0x200"]
+array_name = "u8_array_3"
+
+[[array]]
+description = ""
+can_package_num = 1
+can_id = ["0x300", "0x300"]
+array_name = "u8_array_4"
+
+[[array]]
+description = ""
+can_package_num = 2
+can_id = ["0x300", "0x300"]
+array_name = "u8_array_5"
+
+[[array]]
+description = ""
+can_package_num = 2
+can_id = ["0x300", "0x301"]
+array_name = "u8_array_5"
+
+[[array]]
+description = ""
+can_package_num = 2
+can_id = ["0x301", "0x302"]
+array_name = "u8_array_6"
+
+[[array]]
+description = ""
+can_package_num = 4
+can_id = ["0x3F1", "0X3f4"]
+array_name = "u8_array_6"
+
+[[array]]
+description = ""
+can_package_num = 1
+can_id = []
+array_name = "u8_array_7"
+
+[[array]]
+description = ""
+can_package_num = 1
+can_id = ["0x3a1", "0X3A4"]
+array_name = "u8_array_8"
+
+[[array]]
+description = ""
+can_package_num = 1
+can_id = ["0x3a1", "0X3n4"]
+array_name = "u8_array_9"
+
+[[array]]
+description = ""
+can_package_num = '%'
+can_id = ["0x3F1", "0X3f4", "0X3f4"]
+array_name = "u8_array_10"

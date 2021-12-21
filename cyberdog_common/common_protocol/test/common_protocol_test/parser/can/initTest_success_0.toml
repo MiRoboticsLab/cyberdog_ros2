@@ -1,0 +1,182 @@
+# Testing normal usage STD_CAN with std_frame
+protocol = "can"
+name = "initTest_success_0"
+
+can_interface = "can0"
+extended_frame = false
+canfd_enable = false
+timeout_us = 1234567
+
+[[var]]
+description = ""
+can_id = "0x300"
+var_name = "bool_var"
+var_type = "bool"
+parser_param = [0, 1, 1]
+
+[[var]]
+description = ""
+can_id = "0x301"
+var_name = "double_var"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0x3C0"
+var_name = "double_32bit"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [0, 3]
+
+[[var]]
+description = ""
+can_id = "0x3C0"
+var_name = "double_16bit"
+var_type = "double"
+var_zoom = 0.01
+parser_param = [4, 5]
+
+[[var]]
+description = ""
+can_id = "0x302"
+var_name = "float_var"
+var_type = "float"
+var_zoom = 0.01
+parser_param = [0, 3]
+
+[[var]]
+description = ""
+can_id = "0x3C1"
+var_name = "float_16bit"
+var_type = "float"
+var_zoom = 0.01
+parser_param = [0, 1]
+
+[[var]]
+description = ""
+can_id = "0x303"
+var_name = "i8_var"
+var_type = "i8"
+parser_type = "var"
+parser_param = [0, 0]
+
+[[var]]
+description = ""
+can_id = "0x303"
+var_name = "i16_var"
+var_type = "i16"
+parser_type = "var"
+parser_param = [1, 2]
+
+[[var]]
+description = ""
+can_id = "0x303"
+var_name = "i32_var"
+var_type = "i32"
+parser_param = [3, 6]
+
+[[var]]
+description = ""
+can_id = "0x304"
+var_name = "i64_var"
+var_type = "i64"
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0x305"
+var_name = "u8_var"
+var_type = "u8"
+parser_type = "var"
+parser_param = [0, 0]
+
+[[var]]
+description = ""
+can_id = "0x305"
+var_name = "u16_var"
+var_type = "u16"
+parser_type = "var"
+parser_param = [1, 2]
+
+[[var]]
+description = ""
+can_id = "0x305"
+var_name = "u32_var"
+var_type = "u32"
+parser_param = [3, 6]
+
+[[var]]
+description = ""
+can_id = "0x306"
+var_name = "u64_var"
+var_type = "u64"
+parser_param = [0, 7]
+
+[[var]]
+description = ""
+can_id = "0x307"
+var_name = "u8_all_bit_1"
+var_type = "u8"
+parser_type = "bit"
+parser_param = [0, 7, 0]
+
+[[var]]
+description = ""
+can_id = "0x307"
+var_name = "u8_all_bit_2"
+var_type = "u8"
+parser_param = [1, 7, 0]
+
+[[var]]
+description = ""
+can_id = "0x307"
+var_name = "u8_1_bit"
+var_type = "u8"
+parser_type = "bit"
+parser_param = [2, 4, 4]
+
+[[var]]
+description = ""
+can_id = "0x307"
+var_name = "u8_4_bit"
+var_type = "u8"
+parser_type = "bit"
+parser_param = [3, 7, 4]
+
+[[array]]
+description = ""
+can_package_num = 16
+can_id = ["0x310", "0x31F"]
+array_name = "u8_array_1"
+
+[[array]]
+description = ""
+can_package_num = 8
+can_id = ["0x3F1", "0x3f7", "0X3f5", "0x3f2", "0x3a0", "0x3a1", "0x3a2", "0x3a3"]
+array_name = "u8_array_2"
+
+[[cmd]]
+description = ""
+cmd_name = "start"
+can_id = "0x2F0"
+ctrl_len = 2
+ctrl_data = ["0x06", "0x13"]
+
+[[cmd]]
+description = ""
+cmd_name = "open"
+can_id = "0x2F0"
+
+[[cmd]]
+description = ""
+cmd_name = "close"
+can_id = "0X2f0"
+ctrl_len = 2
+
+[[cmd]]
+description = ""
+cmd_name = "error_test"
+can_id = "0x3f7"
+ctrl_len = 2

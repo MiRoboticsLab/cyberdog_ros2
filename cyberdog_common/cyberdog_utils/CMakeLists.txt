@@ -36,12 +36,6 @@ set(dependencies
 
 add_library(${library_name} SHARED
   src/lifecycle_node.cpp
-  src/can/can_utils.cpp
-  src/can/socket_can_common.cpp
-  src/can/socket_can_id.cpp
-  src/can/socket_can_receiver.cpp
-  src/can/socket_can_sender.cpp
-  src/sensor/sensor_utils.cpp
 )
 
 ament_target_dependencies(${library_name}
