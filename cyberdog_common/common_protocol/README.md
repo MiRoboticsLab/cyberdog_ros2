@@ -1,4 +1,5 @@
 # COMMON_PROTOCOL
+[English Version](README_EN.md)
 
 common_protocol是一个通用的外设抽象类，可动态灵活的配置基于某种通信协议外设的数据解析方式，且所有通信协议都被抽象为一种描述文件，该文件通过外部加载的形式载入，可在不重新编译软件源代码的情况下进行更改，<u>为防止改动出现错误，每一个描述文件都在初始编译态预置在了程序内部，当外部文件缺失或出现错误的情况下可自动载入内部预置文件(TBD)</u>
 
@@ -282,7 +283,7 @@ description = "this is example named example_cmd_1"
             - `float`与`double`在特殊情况下先<u>以高位优先按二进制</u>的解析形式合并，再以<u>小数点精度缩放</u>的解析形式生成为一个变量
             - 详细解析见下方示例表格(`例1`到`例3`)
         - 以位形式解析(即`parser_type = "bit"`) :
-            - `parser_param`为`array<uint8>[3]`，即长度为3的`uint8`数组，且满足`0 <= parser_param[0] < MAX_CAN_LEN` && `8 > parser_param[1] >= parser_param[2] >= 0`，其中`MAX_CAN_LEN`在`STD_CAN`中为8，`FD_CAN`中为64
+            - `parser_param`为`array<uint8>[3]`，即长度为3的`uint8`数组，且满足`0 <= parser_param[0] < MAX_CAN_LEN && 8 > parser_param[1] >= parser_param[2] >= 0`，其中`MAX_CAN_LEN`在`STD_CAN`中为8，`FD_CAN`中为64
             - 解析时通过<u>移位和位与</u>解析原则将`can_data[parser_param[0]]`中高`parser_param[1]`位到低`parser_param[2]`位中的数据取出并右移`parser_param[2]`位
             - 详细解析见下方示例表格(`例4`)
     - [可选] `var_zoom` : 缩放参数，以乘法形式与变量合并，仅`float`和`double`有效，默认缺省值为 : `1.0`
