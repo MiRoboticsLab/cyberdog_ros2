@@ -30,28 +30,28 @@
 
 namespace cyberdog
 {
-namespace motion_bridge
+namespace bridge
 {
 
 class GaitMono
 {
 public:
   explicit GaitMono(
-    const uint8_t gait_id,
-    const std::string gait_name,
-    const std::string gait_tag);
+    const uint8_t & gait_id,
+    const std::string & gait_name,
+    const std::string & gait_tag);
   explicit GaitMono(
-    const uint8_t gait_id,
-    const std::string gait_name,
-    const std::string gait_tag,
-    const uint8_t bridge_gait,
-    const std::set<std::uint8_t> neibor_gaits);
+    const uint8_t & gait_id,
+    const std::string & gait_name,
+    const std::string & gait_tag,
+    const uint8_t & bridge_gait,
+    const std::set<std::uint8_t> & neibor_gaits);
   ~GaitMono();
 
   inline uint8_t get_gait_id() const {return this->gait_const_id_;}
   inline std::string get_gait_name() const {return this->gait_name_;}
   inline std::string get_gait_tag() const {return this->gait_tag_;}
-  bool find_neibor_gaits(const uint8_t gait_id) const;
+  bool find_neibor_gaits(const uint8_t & gait_id) const;
   bool get_bridge_gait(uint8_t & bridge_gait) const;
 
 private:
@@ -66,18 +66,8 @@ private:
 class GaitInterface
 {
 public:
-  /**
-   * @brief An constructor for GaitInterface
-   * @param toml_path toml file path of gait bridges map
-   */
-  explicit GaitInterface(const std::string toml_path);
-
-  /**
-   * @brief An simple constructor for GaitInterface
-   */
-  GaitInterface();
-  ~GaitInterface();
-
+  GaitInterface() {}
+  ~GaitInterface() {}
   /**
    * @brief Get bridges list before checking gait
    * @param goal_gait goal gait to check
@@ -86,9 +76,15 @@ public:
    * @return true if got bridges list
    */
   bool get_bridges_list(
-    const uint8_t goal_gait,
-    const uint8_t current_gait,
+    const uint8_t & goal_gait,
+    const uint8_t & current_gait,
     std::vector<GaitMono> & bridges_list);
+  /**
+   * @brief Initialize gait map
+   * @param toml_path toml file path of gait_bridges_map
+   * @return true if init succceed
+   */
+  bool init_gait_map(const std::string & toml_path);
 
 private:
   /**
@@ -99,24 +95,18 @@ private:
    * @return true if got bridges list
    */
   bool get_bridge_list_internal(
-    const uint8_t bridges_max,
-    const uint8_t goal_gait,
-    const uint8_t current_gait,
-    const std::shared_ptr<std::map<uint8_t, GaitMono>> gait_map,
+    const uint8_t & bridges_max,
+    const uint8_t & goal_gait,
+    const uint8_t & current_gait,
+    const std::map<uint8_t, GaitMono> & gait_map,
     std::vector<GaitMono> & bridges_list);
-  /**
-   * @brief Initialize gait map
-   * @param toml_path toml file path of gait_bridges_map
-   * @return true if init succceed
-   */
-  bool init_gait_map(const std::string toml_path);
   /**
    * @brief Auto test of gait map coherency
    * @return true if test pass
    */
   bool gait_coherency_test(
-    const uint8_t bridges_max,
-    const std::shared_ptr<std::map<uint8_t, GaitMono>> gait_map);
+    const uint8_t & bridges_max,
+    const std::map<uint8_t, GaitMono> & gait_map);
 
   // vars
   const std::string GAIT_INTERFACE = "[Gait_Interface] ";
@@ -132,13 +122,12 @@ private:
   const std::string _str_bridge_gait = "bridge_gait";
   const std::string _str_neib_gait = "neib_gait";
 
-  inline static uint32_t init_;
-  inline static uint8_t gait_bridges_max_;
-  inline static std::shared_ptr<std::map<uint8_t, GaitMono>> trans_gait_map_;
-  inline static std::shared_ptr<std::map<uint8_t, GaitMono>> gait_map_;
-  inline static std::shared_ptr<std::string> toml_path_;
+  uint32_t init_;
+  uint8_t gait_bridges_max_;
+  std::map<uint8_t, GaitMono> trans_gait_map_;
+  std::map<uint8_t, GaitMono> gait_map_;
 };
-}  // namespace motion_bridge
+}  // namespace bridge
 }  // namespace cyberdog
 
 #endif  // MOTION_BRIDGE__GAIT_INTERFACE_HPP_

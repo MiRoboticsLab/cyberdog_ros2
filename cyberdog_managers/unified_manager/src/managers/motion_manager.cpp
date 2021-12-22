@@ -139,8 +139,9 @@ CallbackReturn_T MotionManager::on_configure(const rclcpp_lifecycle::State &)
   parameter_check(cons_abs_lin_x_, cons_speed_l_normal_, std::string("cons_speed_l_normal_mps"));
 
   const auto gait_toml = locomotion_params_dir + std::string("map_gait.toml");
-  gait_interface_ = std::make_shared<motion_bridge::GaitInterface>(
-    motion_bridge::GaitInterface(gait_toml));
+  if (!gait_interface_.init_gait_map(gait_toml)) {
+    return CallbackReturn_T::ERROR;
+  }
 
   callback_group_service =
     this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
@@ -311,7 +312,6 @@ CallbackReturn_T MotionManager::on_cleanup(const rclcpp_lifecycle::State &)
   motion_out_.reset();
   motion_in_.reset();
   state_es_in_.reset();
-  gait_interface_.reset();
 
   automation_manager_node_.reset();
   automation_node_thread_.reset();
@@ -367,7 +367,6 @@ CallbackReturn_T MotionManager::on_error(const rclcpp_lifecycle::State &)
   motion_out_.reset();
   motion_in_.reset();
   state_es_in_.reset();
-  gait_interface_.reset();
   automation_node_thread_.reset();
   lcm_control_res_handle_thread_.reset();
   lcm_statees_res_handle_thread_.reset();
@@ -820,9 +819,9 @@ void MotionManager::checkout_gait()
 
   auto goal_gait_t = 9;
   auto current_gait_t = 3;
-  std::vector<cyberdog::motion_bridge::GaitMono> gait_to_run_t;
+  std::vector<cyberdog::bridge::GaitMono> gait_to_run_t;
 
-  gait_interface_->get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
+  gait_interface_.get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
   while (gait_to_run_t.size() > 0) {
     message_info(std::string("gait to run is ") + gait_to_run_t.back().get_gait_name());
     gait_to_run_t.pop_back();
@@ -2007,10 +2006,10 @@ void MotionManager::init()
   publish_gait(gait_init);
   auto goal_gait_t = 9;
   auto current_gait_t = 3;
-  std::vector<cyberdog::motion_bridge::GaitMono> gait_to_run_t;
+  std::vector<cyberdog::bridge::GaitMono> gait_to_run_t;
 
   auto time_a = get_clock()->now();
-  gait_interface_->get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
+  gait_interface_.get_bridges_list(goal_gait_t, current_gait_t, gait_to_run_t);
   while (gait_to_run_t.size() > 0) {
     message_info(std::string("gait to run is ") + gait_to_run_t.back().get_gait_name());
     gait_to_run_t.pop_back();

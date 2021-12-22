@@ -36,7 +36,7 @@ externalproject_add(
       -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
       -DSDL_ATOMIC=OFF
       -DSDL_AUDIO=ON
-      -DSDL_VIDEO=ON
+      -DSDL_VIDEO=OFF
       -DSDL_RENDER=ON
       -DSDL_EVENTS=ON
       -DSDL_JOYSTICK=ON

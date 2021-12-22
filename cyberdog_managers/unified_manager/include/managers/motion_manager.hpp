@@ -275,7 +275,7 @@ private:
   bool thread_flag_;
   Gait_T gait_cached_;
   Time_T last_motion_time_;
-  std::shared_ptr<cyberdog::motion_bridge::GaitInterface> gait_interface_;
+  bridge::GaitInterface gait_interface_;
 // Robot state variables
   Around_T obstacle_data_;
   ControlState_T robot_control_state_;

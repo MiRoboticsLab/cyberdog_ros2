@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MOTION_BRIDGE__CMD_INTERFACE_HPP_
-#define MOTION_BRIDGE__CMD_INTERFACE_HPP_
+#ifndef MOTION_BASE__MOTION_CMD_HPP_
+#define MOTION_BASE__MOTION_CMD_HPP_
 
-#endif  // MOTION_BRIDGE__CMD_INTERFACE_HPP_
+#endif  // MOTION_BASE__MOTION_CMD_HPP_

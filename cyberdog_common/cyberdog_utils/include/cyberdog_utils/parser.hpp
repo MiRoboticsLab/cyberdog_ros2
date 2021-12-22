@@ -21,13 +21,17 @@
 
 #include <experimental/filesystem>  // NOLINT
 #include <string>
+#include <string_view>  // NOLINT
 #include <type_traits>
 
 #include "rclcpp/rclcpp.hpp"
 #include "toml11/toml.hpp"
 
-namespace cyberdog_utils
+namespace cyberdog
 {
+namespace util
+{
+
 void message_info(
   std::string_view log,
   const rclcpp::Logger log_head = rclcpp::get_logger("Common_Logger"))
@@ -155,6 +159,7 @@ const Value & map_get_or(
   return value_iter->second;
 }
 
-}  // namespace cyberdog_utils
+}  // namespace util
+}  // namespace cyberdog
 
 #endif  // CYBERDOG_UTILS__PARSER_HPP_
