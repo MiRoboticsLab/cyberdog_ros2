@@ -20,5 +20,4 @@ Introduce your merge request.
 
 ## Relevant issues
 
-- [issue_1](url_to_issue_1)
-- [issue_2](url_to_issue_2)
+- #120(replace to yours)
