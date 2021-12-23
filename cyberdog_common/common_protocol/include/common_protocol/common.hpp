@@ -40,7 +40,8 @@ namespace common
 #define STATE_CODE_TYPE uint8_t
 #define STATE_CODE_TIMES uint8_t
 #define MAX_STATE_TIMES static_cast<int>(STATE_CODE_TIMES(-1))
-#define CHILD_STATE_CLCT std::shared_ptr<state_collector>
+#define CHILD_STATE_CLCT std::shared_ptr<StateCollector>
+#define PROTOCOL_DATA_MAP std::map<std::string, ProtocolData>
 
 using StateMap = std::map<STATE_CODE_TYPE, STATE_CODE_TIMES>;
 
@@ -95,10 +96,10 @@ enum ErrorCode
   RUNTIME_ILLEGAL_LINKVAR,
 };
 
-class protocol_data
+class ProtocolData
 {
 public:
-  protocol_data(uint8_t len, void * addr)
+  ProtocolData(uint8_t len, void * addr)
   {
     this->len = len;
     this->addr = addr;
@@ -109,13 +110,13 @@ public:
   void * addr;
   bool loaded;
   int array_expect;
-};  // class protocol_data
+};  // class ProtocolData
 
-class state_collector
+class StateCollector
 {
 public:
-  state_collector() {}
-  explicit state_collector(STATE_CODE_TYPE state_code) {LogState(state_code);}
+  StateCollector() {}
+  explicit StateCollector(STATE_CODE_TYPE state_code) {LogState(state_code);}
   void LogState(STATE_CODE_TYPE state_code) {LogState(state_code, 1);}
   StateMap GetAllStateMap()
   {
@@ -194,7 +195,7 @@ public:
 
   CHILD_STATE_CLCT CreatChild()
   {
-    children_.push_back(std::make_shared<state_collector>());
+    children_.push_back(std::make_shared<StateCollector>());
     return children_[children_.size() - 1];
   }
 
@@ -210,9 +211,9 @@ private:
       state_map_.insert(std::pair<STATE_CODE_TYPE, uint8_t>(state_code, 1));
     }
   }
-};  // class state_collector
+};  // class StateCollector
 
-std::string get_var_name(const std::string & full_name, state_collector & clct)
+std::string get_var_name(const std::string & full_name, StateCollector & clct)
 {
   bool get = false;
   bool start = false;

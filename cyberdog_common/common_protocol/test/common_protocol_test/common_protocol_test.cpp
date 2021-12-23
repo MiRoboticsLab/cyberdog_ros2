@@ -167,12 +167,12 @@ void callback(std::shared_ptr<testing_full_var> data)
   callback_data = data;
 }
 
-std::shared_ptr<EVM::protocol<testing_full_var>> CreatDevice(
+std::shared_ptr<EVM::Protocol<testing_full_var>> CreatDevice(
   std::string path,
   bool make_error = false,
   bool for_send = false)
 {
-  auto p = std::make_shared<EVM::protocol<testing_full_var>>(path, for_send);
+  auto p = std::make_shared<EVM::Protocol<testing_full_var>>(path, for_send);
   if (!make_error) {p->LINK_VAR(p->GetData()->bool_var);}
   p->LINK_VAR(p->GetData()->double_var);
   p->LINK_VAR(p->GetData()->double_32bit);
@@ -197,8 +197,8 @@ std::shared_ptr<EVM::protocol<testing_full_var>> CreatDevice(
   return p;
 }
 
-TEST(CommonProtocolTest_CAN, state_collector) {
-  EVM::state_collector clct;
+TEST(CommonProtocolTest_CAN, StateCollector) {
+  EVM::StateCollector clct;
   clct.LogState(0);
   clct.LogState(234);
   auto clct_1 = clct.CreatChild();
@@ -451,7 +451,7 @@ void testing_var_callback(std::shared_ptr<testing_var> data)
 // Testing Operate data get
 TEST(CommonProtocolTest_CAN, initTest_failed_7) {
   std::string path = std::string(PASER_PATH) + "/can/initTest_failed_7.toml";
-  auto dv = EVM::protocol<testing_var>(path);
+  auto dv = EVM::Protocol<testing_var>(path);
   dv.LINK_VAR(dv.GetData()->u64_var);
   dv.LINK_VAR(dv.GetData()->u8_array);
   dv.SetDataCallback(testing_var_callback);

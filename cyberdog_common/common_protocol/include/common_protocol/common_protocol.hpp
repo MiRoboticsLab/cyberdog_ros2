@@ -26,18 +26,18 @@
 #define XNAME(x) (#x)
 #define LINK_VAR(var) LinkVar( \
     XNAME(var), \
-    cyberdog::common::protocol_data(sizeof((var)), static_cast<void *>(&(var))))
+    cyberdog::common::ProtocolData(sizeof((var)), static_cast<void *>(&(var))))
 
 namespace cyberdog
 {
 namespace common
 {
 template<typename TDataClass>
-class protocol
+class Protocol
 {
 public:
-  protocol(const protocol &) = delete;
-  explicit protocol(const std::string & protocol_toml_path, bool for_send = false)
+  Protocol(const Protocol &) = delete;
+  explicit Protocol(const std::string & protocol_toml_path, bool for_send = false)
   {
     toml::value toml_config;
     if (toml_parse(toml_config, protocol_toml_path) == false) {
@@ -66,7 +66,7 @@ public:
   }
 
   // please use "#define LINK_VAR(var)" instead
-  void LinkVar(const std::string & origin_name, const protocol_data & var)
+  void LinkVar(const std::string & origin_name, const ProtocolData & var)
   {
     if (base_ != nullptr) {base_->LinkVar(get_var_name(origin_name, error_clct_), var);}
   }
@@ -106,15 +106,15 @@ public:
     return true;
   }
 
-  state_collector & GetErrorCollector()
+  StateCollector & GetErrorCollector()
   {
     return error_clct_;
   }
 
 private:
-  std::shared_ptr<protocol_base<TDataClass>> base_;
+  std::shared_ptr<ProtocolBase<TDataClass>> base_;
   std::shared_ptr<TDataClass> tmp_data_;
-  state_collector error_clct_ = state_collector();
+  StateCollector error_clct_ = StateCollector();
 
   void Init(toml::value & toml_config, bool for_send, const std::string & protocol_toml_path = "")
   {
@@ -127,9 +127,8 @@ private:
     }
 
     if (protocol == "can") {
-      auto can_interface = toml::find_or<std::string>(toml_config, "can_interface", "can0");
-      base_ = std::make_shared<can_protocol<TDataClass>>(
-        error_clct_.CreatChild(), can_interface, name, toml_config, for_send);
+      base_ = std::make_shared<CanProtocol<TDataClass>>(
+        error_clct_.CreatChild(), name, toml_config, for_send);
     } else if (protocol == "spi") {
       // todo when need
       error_clct_.LogState(ErrorCode::ILLEGAL_PROTOCOL);
@@ -145,7 +144,7 @@ private:
         name.c_str(), protocol.c_str(), protocol_toml_path.c_str());
     }
   }
-};  // class protocol
+};  // class Protocol
 }  // namespace common
 }  // namespace cyberdog
 

@@ -25,152 +25,32 @@
 
 #include "toml11/toml.hpp"
 
-#include "common_protocol/common.hpp"
 #include "protocol/can/can_utils.hpp"
+#include "common_parser/parser_base.hpp"
 
 namespace cyberdog
 {
 namespace common
 {
-class can_parser
+class CanParser
 {
-  class var_rule
+  class RuleVar : public RuleVarBase
   {
 public:
-    explicit var_rule(
+    explicit RuleVar(
       CHILD_STATE_CLCT clct,
       const toml::table & table,
       const std::string & name,
       int can_len,
       bool extended)
-    {
-      error_clct = clct;
-      warn_flag = false;
-      var_name = toml_at<std::string>(table, "var_name", error_clct);
-      var_type = toml_at<std::string>(table, "var_type", error_clct);
-      can_id = HEXtoUINT(toml_at<std::string>(table, "can_id", error_clct), error_clct);
-      CanidRangeCheck(can_id, extended, var_name, name, error_clct);
-      if (var_name == "") {
-        error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_VARNAME);
-        printf(
-          C_RED "[CAN_PARSER][ERROR][%s] var_name error, not support empty string\n" C_END,
-          name.c_str());
-      }
-      if (common_type.find(var_type) == common_type.end()) {
-        error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_VARTYPE);
-        printf(
-          C_RED "[CAN_PARSER][ERROR][%s][var:%s] var_type error, type:\"%s\" not support; "
-          "only support:[", name.c_str(), var_name.c_str(), var_type.c_str());
-        for (auto & t : common_type) {
-          printf("%s, ", t.c_str());
-        }
-        printf("]\n" C_END);
-      }
-      if (table.find("var_zoom") == table.end()) {var_zoom = 1.0;} else {
-        if (var_type != "float" && var_type != "double") {
-          warn_flag = true;
-          printf(
-            C_YELLOW "[CAN_PARSER][WARN][%s][var:%s] Only double/float need var_zoom\n" C_END,
-            name.c_str(), var_name.c_str());
-        }
-        var_zoom = toml_at<float>(table, "var_zoom", error_clct);
-      }
-      parser_type = toml_at<std::string>(table, "parser_type", "auto");
-      auto tmp_parser_param = toml_at<std::vector<uint8_t>>(table, "parser_param", error_clct);
-      size_t param_size = tmp_parser_param.size();
-      if (parser_type == "auto") {
-        if (param_size == 3) {
-          parser_type = "bit";
-        } else if (param_size == 2) {
-          parser_type = "var";
-        } else {
-          error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_SIZE);
-          printf(
-            C_RED "[CAN_PARSER][ERROR][%s][var:%s] Can't get parser_type via parser_param, "
-            "only param_size == 2 or 3, but get param_size = %ld\n" C_END,
-            name.c_str(), var_name.c_str(), param_size);
-        }
-      }
-      if (parser_type == "bit") {
-        if (param_size == 3) {
-          parser_param[0] = tmp_parser_param[0];
-          parser_param[1] = tmp_parser_param[1];
-          parser_param[2] = tmp_parser_param[2];
-          if (parser_param[0] >= can_len) {
-            error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_VALUE);
-            printf(
-              C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"bit\" type parser_param error, "
-              "parser_param[0] value need between 0-%d\n" C_END,
-              name.c_str(), var_name.c_str(), can_len - 1);
-          }
-          if (parser_param[1] < parser_param[2]) {
-            error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_VALUE);
-            printf(
-              C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"bit\" type parser_param error, "
-              "parser_param[1] need >= parser_param[2]\n" C_END,
-              name.c_str(), var_name.c_str());
-          }
-          if (parser_param[1] >= 8 || parser_param[2] >= 8) {
-            error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_VALUE);
-            printf(
-              C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"bit\" type parser_param error, "
-              "parser_param[1] and parser_param[2] value need between 0-7\n" C_END,
-              name.c_str(), var_name.c_str());
-          }
-        } else {
-          error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_SIZE);
-          printf(
-            C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"bit\" type parser error, "
-            "parser[bit] need 3 parser_param, but get %d\n" C_END,
-            name.c_str(), var_name.c_str(), static_cast<uint8_t>(param_size));
-        }
-      } else if (parser_type == "var") {
-        if (param_size == 2) {
-          parser_param[0] = tmp_parser_param[0];
-          parser_param[1] = tmp_parser_param[1];
-          if (parser_param[0] > parser_param[1]) {
-            error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_VALUE);
-            printf(
-              C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"var\" type parser_param error, "
-              "parser_param[0] need <= parser_param[1]\n" C_END,
-              name.c_str(), var_name.c_str());
-          }
-          if (parser_param[0] >= can_len || parser_param[1] >= can_len) {
-            error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_VALUE);
-            printf(
-              C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"var\" type parser_param error, "
-              "parser_param[0] and parser_param[1] value need between 0-%d\n" C_END,
-              name.c_str(), var_name.c_str(), can_len - 1);
-          }
-        } else {
-          error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERPARAM_SIZE);
-          printf(
-            C_RED "[CAN_PARSER][ERROR][%s][var:%s] \"var\" type parser error, "
-            "parser[var] need 2 parser_param, but get %d\n" C_END,
-            name.c_str(), var_name.c_str(), static_cast<uint8_t>(param_size));
-        }
-      } else if (parser_type != "auto") {
-        error_clct->LogState(ErrorCode::RULEVAR_ILLEGAL_PARSERTYPE);
-        printf(
-          C_RED "[CAN_PARSER][ERROR][%s][var:%s] var can parser error, "
-          "only support \"bit/var\", but get %s\n" C_END,
-          name.c_str(), var_name.c_str(), parser_type.c_str());
-      }
-    }
-    CHILD_STATE_CLCT error_clct;
-    bool warn_flag;
-    canid_t can_id;
-    std::string var_name;
-    std::string var_type;
-    float var_zoom;
-    std::string parser_type;
-    uint8_t parser_param[3];
-  };  // class var_rule
+    : RuleVarBase(clct, table, name, can_len, extended)
+    {}
+  };
 
-  class array_rule
+  class ArrayRule
   {
 public:
-    explicit array_rule(
+    explicit ArrayRule(
       CHILD_STATE_CLCT clct,
       const toml::table & table,
       const std::string & name,
@@ -257,12 +137,12 @@ public:
       }
       return -1;
     }
-  };  // class array_rule
+  };  // class ArrayRule
 
-  class cmd_rule
+  class CmdRule
   {
 public:
-    explicit cmd_rule(
+    explicit CmdRule(
       CHILD_STATE_CLCT clct,
       const toml::table & table,
       const std::string & name,
@@ -308,10 +188,10 @@ public:
     canid_t can_id;
     uint8_t ctrl_len;
     std::vector<uint8_t> ctrl_data;
-  };  // class cmd_rule
+  };  // class CmdRule
 
 public:
-  can_parser(
+  CanParser(
     CHILD_STATE_CLCT error_clct,
     const toml::value & toml_config,
     const std::string & name)
@@ -319,7 +199,7 @@ public:
     name_ = name;
     canfd_ = toml::find_or<bool>(toml_config, "canfd_enable", false);
     extended_ = toml::find_or<bool>(toml_config, "extended_frame", false);
-    error_clct_ = (error_clct == nullptr) ? std::make_shared<state_collector>() : error_clct;
+    error_clct_ = (error_clct == nullptr) ? std::make_shared<StateCollector>() : error_clct;
 
     auto var_list = toml::find_or<std::vector<toml::table>>(
       toml_config, "var",
@@ -335,13 +215,13 @@ public:
     std::map<canid_t, std::vector<uint8_t>> data_check = std::map<canid_t, std::vector<uint8_t>>();
     // get var rule
     for (auto & var : var_list) {
-      auto single_var = var_rule(error_clct_->CreatChild(), var, name_, CAN_LEN(), extended_);
+      auto single_var = RuleVar(error_clct_->CreatChild(), var, name_, CAN_LEN(), extended_);
       if (single_var.warn_flag) {warn_num_++;}
       if (single_var.error_clct->GetSelfStateTimesNum() == 0) {
         canid_t canid = single_var.can_id;
         if (parser_var_map_.find(canid) == parser_var_map_.end()) {
           parser_var_map_.insert(
-            std::pair<canid_t, std::vector<var_rule>>(canid, std::vector<var_rule>()));
+            std::pair<canid_t, std::vector<RuleVar>>(canid, std::vector<RuleVar>()));
         }
         // check error and warning
         if (same_var_error(single_var.var_name, var_name_check)) {continue;}
@@ -351,7 +231,7 @@ public:
     }
     // get array rule
     for (auto & array : array_list) {
-      auto single_array = array_rule(error_clct_->CreatChild(), array, name_, extended_);
+      auto single_array = ArrayRule(error_clct_->CreatChild(), array, name_, extended_);
       if (single_array.warn_flag) {warn_num_++;}
       if (single_array.error_clct->GetSelfStateTimesNum() == 0) {
         // check error and warning
@@ -362,7 +242,7 @@ public:
     }
     // get cmd rule
     for (auto & cmd : cmd_list) {
-      auto single_cmd = cmd_rule(error_clct_->CreatChild(), cmd, name_, extended_);
+      auto single_cmd = CmdRule(error_clct_->CreatChild(), cmd, name_, extended_);
       if (single_cmd.warn_flag) {warn_num_++;}
       if (single_cmd.error_clct->GetSelfStateTimesNum() == 0) {
         if (single_cmd.ctrl_len > CAN_LEN()) {
@@ -374,7 +254,7 @@ public:
         }
         std::string cmd_name = single_cmd.cmd_name;
         if (parser_cmd_map_.find(cmd_name) == parser_cmd_map_.end()) {
-          parser_cmd_map_.insert(std::pair<std::string, cmd_rule>(cmd_name, single_cmd));
+          parser_cmd_map_.insert(std::pair<std::string, CmdRule>(cmd_name, single_cmd));
         } else {
           error_clct_->LogState(ErrorCode::RULECMD_SAMECMD_ERROR);
           printf(
@@ -400,7 +280,7 @@ public:
 
   // return true when finish all package
   bool Decode(
-    std::map<std::string, protocol_data> & protocol_data_map,
+    PROTOCOL_DATA_MAP & protocol_data_map,
     std::shared_ptr<canfd_frame> rx_frame,
     bool & error_flag)
   {
@@ -408,7 +288,7 @@ public:
   }
   // return true when finish all package
   bool Decode(
-    std::map<std::string, protocol_data> & protocol_data_map,
+    PROTOCOL_DATA_MAP & protocol_data_map,
     std::shared_ptr<can_frame> rx_frame,
     bool & error_flag)
   {
@@ -442,8 +322,8 @@ public:
   }
 
   bool Encode(
-    const std::map<std::string, protocol_data> & protocol_data_map,
-    std::shared_ptr<can_dev> can_op)
+    const PROTOCOL_DATA_MAP & protocol_data_map,
+    std::shared_ptr<CanDev> can_op)
   {
     bool no_error = true;
     canid_t * can_id;
@@ -477,7 +357,7 @@ public:
             name_.c_str(), var_name.c_str());
           continue;
         }
-        const protocol_data * const var = &protocol_data_map.at(var_name);
+        const ProtocolData * const var = &protocol_data_map.at(var_name);
         if (rule.var_type == "double") {
           uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
           if (u8_num == 2) {
@@ -556,7 +436,7 @@ public:
           name_.c_str(), array_name.c_str());
         continue;
       }
-      const protocol_data * const var = &protocol_data_map.at(array_name);
+      const ProtocolData * const var = &protocol_data_map.at(array_name);
       int frame_num = static_cast<int>(rule.can_id.size());
       if (frame_num * CAN_LEN() != var->len) {
         no_error = false;
@@ -603,15 +483,15 @@ private:
 
   std::string name_;
   CHILD_STATE_CLCT error_clct_;
-  std::map<canid_t, std::vector<var_rule>> parser_var_map_ =
-    std::map<canid_t, std::vector<var_rule>>();
-  std::vector<array_rule> parser_array_ = std::vector<array_rule>();
-  std::map<std::string, cmd_rule> parser_cmd_map_ =
-    std::map<std::string, cmd_rule>();
+  std::map<canid_t, std::vector<RuleVar>> parser_var_map_ =
+    std::map<canid_t, std::vector<RuleVar>>();
+  std::vector<ArrayRule> parser_array_ = std::vector<ArrayRule>();
+  std::map<std::string, CmdRule> parser_cmd_map_ =
+    std::map<std::string, CmdRule>();
 
   // return true when finish all package
   bool Decode(
-    std::map<std::string, protocol_data> & protocol_data_map,
+    PROTOCOL_DATA_MAP & protocol_data_map,
     canid_t can_id,
     uint8_t * data,
     bool & error_flag)
@@ -620,7 +500,7 @@ private:
     if (parser_var_map_.find(can_id) != parser_var_map_.end()) {
       for (auto & rule : parser_var_map_.at(can_id)) {
         if (protocol_data_map.find(rule.var_name) != protocol_data_map.end()) {
-          protocol_data * var = &protocol_data_map.at(rule.var_name);
+          ProtocolData * var = &protocol_data_map.at(rule.var_name);
           // main decode begin
           if (rule.var_type == "double") {
             uint8_t u8_num = rule.parser_param[1] - rule.parser_param[0] + 1;
@@ -686,7 +566,7 @@ private:
       auto offset = rule.get_offset(can_id);
       if (offset == -1) {continue;}
       if (protocol_data_map.find(rule.array_name) != protocol_data_map.end()) {
-        protocol_data * var = &protocol_data_map.at(rule.array_name);
+        ProtocolData * var = &protocol_data_map.at(rule.array_name);
         if (var->len < rule.can_package_num * CAN_LEN()) {
           error_flag = true;
           error_clct_->LogState(ErrorCode::RULEARRAY_ILLEGAL_PARSERPARAM_VALUE);
@@ -748,7 +628,7 @@ private:
     const std::vector<uint8_t> & data)
   {
     if (parser_cmd_map_.find(CMD) != parser_cmd_map_.end()) {
-      cmd_rule * cmd = &parser_cmd_map_.at(CMD);
+      CmdRule * cmd = &parser_cmd_map_.at(CMD);
       can_id = cmd->can_id;
       uint8_t ctrl_len = cmd->ctrl_len;
       bool no_warn = true;
@@ -778,9 +658,9 @@ private:
 
   template<typename Target, typename Source>
   void get_var(
-    protocol_data * var,
+    ProtocolData * var,
     const uint8_t * const can_data,
-    const var_rule & rule,
+    const RuleVar & rule,
     const std::string & parser_name,
     bool & error_flag)
   {
@@ -813,9 +693,9 @@ private:
 
   template<typename Target>
   inline void get_var(
-    protocol_data * var,
+    ProtocolData * var,
     const uint8_t * const can_data,
-    const var_rule & rule,
+    const RuleVar & rule,
     const std::string & parser_name,
     bool & error_flag)
   {
@@ -824,9 +704,9 @@ private:
 
   template<typename Target, typename Source>
   void put_var(
-    const protocol_data * const var,
+    const ProtocolData * const var,
     uint8_t * can_data,
-    const var_rule & rule,
+    const RuleVar & rule,
     const std::string & parser_name,
     bool & no_error_flag)
   {
@@ -862,9 +742,9 @@ private:
 
   template<typename Target>
   inline void put_var(
-    const protocol_data * const var,
+    const ProtocolData * const var,
     uint8_t * can_data,
-    const var_rule & rule,
+    const RuleVar & rule,
     const std::string & parser_name,
     bool & no_error_flag)
   {
@@ -872,7 +752,7 @@ private:
   }
 
   template<typename T>
-  inline void zoom_var(protocol_data * var, float kp)
+  inline void zoom_var(ProtocolData * var, float kp)
   {
     *static_cast<T *>(var->addr) *= kp;
   }
@@ -941,7 +821,7 @@ private:
     }
   }
 
-  void check_data_area_error(var_rule & rule, std::map<canid_t, std::vector<uint8_t>> & checker)
+  void check_data_area_error(RuleVar & rule, std::map<canid_t, std::vector<uint8_t>> & checker)
   {
     if (checker.find(rule.can_id) == checker.end()) {
       checker.insert(
@@ -966,7 +846,7 @@ private:
     }
   }
 
-  void check_data_area_error(array_rule & rule, std::map<canid_t, std::vector<uint8_t>> & checker)
+  void check_data_area_error(ArrayRule & rule, std::map<canid_t, std::vector<uint8_t>> & checker)
   {
     for (auto & can_id : rule.can_id) {
       if (checker.find(can_id.first) == checker.end()) {
@@ -977,7 +857,7 @@ private:
       var_area_error(can_id.first, 0, CAN_LEN() - 1, checker);
     }
   }
-};  // class can_parser
+};  // class CanParser
 }  // namespace common
 }  // namespace cyberdog
 

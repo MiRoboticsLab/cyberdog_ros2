@@ -31,7 +31,7 @@ include
 
 The description file storage directory see : [`cyberdog_bridges/README.md`](TBD)
 
-### class protocol
+### Class Protocol
 
 This class is used for the main external interface:
 
@@ -39,20 +39,20 @@ This class is used for the main external interface:
 #define XNAME(x) (#x)
 #define LINK_VAR(var) LinkVar( \
     XNAME(var), \
-    cyberdog::common::protocol_data(sizeof((var)), static_cast<void *>(&(var))))
+    cyberdog::common::ProtocolData(sizeof((var)), static_cast<void *>(&(var))))
 
 namespace common
 {
 template<typename TDataClass>
-class protocol
+class Protocol
 {
 public:
-  explicit protocol(const std::string & protocol_toml_path);
+  explicit Protocol(const std::string & protocol_toml_path);
 
   std::shared_ptr<TDataClass> GetData();
 
   // please use "#define LINK_VAR(var)" instead
-  void LinkVar(const std::string origin_name, const protocol_data & var);
+  void LinkVar(const std::string origin_name, const ProtocolData & var);
 
   bool Operate(const std::string & CMD, const std::vector<uint8_t> & data = std::vector<uint8_t>());
 
@@ -60,14 +60,14 @@ public:
 
   void SetDataCallback(std::function<void(std::shared_ptr<TDataClass>)> callback);
 
-  state_collector & GetErrorCollector();
-};  // class protocol
+  StateCollector & GetErrorCollector();
+};  // class Protocol
 }  // namespace common
 ```
 
 > Constructor, create instance object through external description file
 > ```cpp
-> explicit protocol(const std::string & protocol_toml_path, bool for_send = false);
+> explicit Protocol(const std::string & protocol_toml_path, bool for_send = false);
 > ```
 > - `protocol_toml_path` : Description file address
 > - `for_send` : Send via toml description file, or receive via toml description file (receive by default)
@@ -80,7 +80,7 @@ public:
 
 > Link TDataClass data so that variables can be parsed into TDataClass through various transmission protocols
 > ```cpp
-> void LinkVar(const std::string origin_name, const protocol_data & var);
+> void LinkVar(const std::string origin_name, const ProtocolData & var);
 > ```
 > Note : Generally use the macro `LINK_VAR(var)` instead, see the example below for detailed usage
 
@@ -123,13 +123,13 @@ public:
 
 > Get error collector: return is the collector reference
 > ```cpp
-> state_collector & GetErrorCollector()
+> StateCollector & GetErrorCollector()
 > ```
 > Note : The specific error code is in `common.hpp`
 
 Usage example:
 ```cpp
-class acc
+class Acc
 {
 public:
   float x;
@@ -137,9 +137,9 @@ public:
   float z;
 };
 
-void callback(std::shared_ptr<acc> data)
+void callback(std::shared_ptr<Acc> data)
 {
-  printf("callback, acc.x=%f, acc.y=%f, acc.z=%f\n", data->x, data->y, data->z);
+  printf("callback, Acc.x=%f, Acc.y=%f, Acc.z=%f\n", data->x, data->y, data->z);
 }
 
 int main(int argc, char ** argv)
@@ -148,7 +148,7 @@ int main(int argc, char ** argv)
   UNUSED_VAR(argv);
 
   // receive-operate mode
-  cyberdog::common::protocol<acc> protocol_1("parser/can/acc_protocol/acc_1.toml");
+  cyberdog::common::Protocol<Acc> protocol_1("parser/can/acc_protocol/acc_1.toml");
   protocol_1.LINK_VAR(protocol_1.GetData()->x);
   protocol_1.LINK_VAR(protocol_1.GetData()->y);
   protocol_1.LINK_VAR(protocol_1.GetData()->z);
@@ -158,7 +158,7 @@ int main(int argc, char ** argv)
   protocol_1.Operate("start", data);
   
   // for_send mode
-  cyberdog::common::protocol<acc> protocol_2("parser/can/acc_protocol/acc_2.toml");
+  cyberdog::common::Protocol<Acc> protocol_2("parser/can/acc_protocol/acc_2.toml");
   protocol_2.LINK_VAR(protocol_2.GetData()->x);
   protocol_2.LINK_VAR(protocol_2.GetData()->y);
   protocol_2.LINK_VAR(protocol_2.GetData()->z);

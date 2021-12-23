@@ -31,7 +31,7 @@ include
 
 描述文件存放目录见 : [`cyberdog_bridges/README.md`](TBD)规定
 
-### class protocol
+### Class Protocol
 
 该类用于对外的主要接口:
 
@@ -39,20 +39,20 @@ include
 #define XNAME(x) (#x)
 #define LINK_VAR(var) LinkVar( \
     XNAME(var), \
-    cyberdog::common::protocol_data(sizeof((var)), static_cast<void *>(&(var))))
+    cyberdog::common::ProtocolData(sizeof((var)), static_cast<void *>(&(var))))
 
 namespace common
 {
 template<typename TDataClass>
-class protocol
+class Protocol
 {
 public:
-  explicit protocol(const std::string & protocol_toml_path);
+  explicit Protocol(const std::string & protocol_toml_path);
 
   std::shared_ptr<TDataClass> GetData();
 
   // please use "#define LINK_VAR(var)" instead
-  void LinkVar(const std::string origin_name, const protocol_data & var);
+  void LinkVar(const std::string origin_name, const ProtocolData & var);
 
   bool Operate(const std::string & CMD, const std::vector<uint8_t> & data = std::vector<uint8_t>());
 
@@ -60,14 +60,14 @@ public:
 
   void SetDataCallback(std::function<void(std::shared_ptr<TDataClass>)> callback);
 
-  state_collector & GetErrorCollector();
-};  // class protocol
+  StateCollector & GetErrorCollector();
+};  // class Protocol
 }  // namespace common
 ```
 
 > 构造函数，通过外部描述文件创建实例对象
 > ```cpp
-> explicit protocol(const std::string & protocol_toml_path, bool for_send = false);
+> explicit Protocol(const std::string & protocol_toml_path, bool for_send = false);
 > ```
 > - `protocol_toml_path` : 描述文件地址
 > - `for_send` : 通过toml描述文件发送，或通过toml描述文件接收(默认为接收)
@@ -80,7 +80,7 @@ public:
 
 > 链接TDataClass数据，以便通过各种传输协议解析出变量到TDataClass中
 > ```cpp
-> void LinkVar(const std::string origin_name, const protocol_data & var);
+> void LinkVar(const std::string origin_name, const ProtocolData & var);
 > ```
 > Note : 一般使用宏`LINK_VAR(var)`代替，详细用法见下方example
 
@@ -123,13 +123,13 @@ public:
 
 > 获取错误收集器 : 返回是搜集器引用
 > ```cpp
-> state_collector & GetErrorCollector()
+> StateCollector & GetErrorCollector()
 > ```
 > Note : 具体错误代码在`common.hpp中`
 
 使用示例:
 ```cpp
-class acc
+class Acc
 {
 public:
   float x;
@@ -137,9 +137,9 @@ public:
   float z;
 };
 
-void callback(std::shared_ptr<acc> data)
+void callback(std::shared_ptr<Acc> data)
 {
-  printf("callback, acc.x=%f, acc.y=%f, acc.z=%f\n", data->x, data->y, data->z);
+  printf("callback, Acc.x=%f, Acc.y=%f, Acc.z=%f\n", data->x, data->y, data->z);
 }
 
 int main(int argc, char ** argv)
@@ -148,7 +148,7 @@ int main(int argc, char ** argv)
   UNUSED_VAR(argv);
 
   // receive-operate mode
-  cyberdog::common::protocol<acc> protocol_1("parser/can/acc_protocol/acc_1.toml");
+  cyberdog::common::Protocol<Acc> protocol_1("parser/can/acc_protocol/acc_1.toml");
   protocol_1.LINK_VAR(protocol_1.GetData()->x);
   protocol_1.LINK_VAR(protocol_1.GetData()->y);
   protocol_1.LINK_VAR(protocol_1.GetData()->z);
@@ -158,7 +158,7 @@ int main(int argc, char ** argv)
   protocol_1.Operate("start", data);
   
   // for_send mode
-  cyberdog::common::protocol<acc> protocol_2("parser/can/acc_protocol/acc_2.toml");
+  cyberdog::common::Protocol<Acc> protocol_2("parser/can/acc_protocol/acc_2.toml");
   protocol_2.LINK_VAR(protocol_2.GetData()->x);
   protocol_2.LINK_VAR(protocol_2.GetData()->y);
   protocol_2.LINK_VAR(protocol_2.GetData()->z);

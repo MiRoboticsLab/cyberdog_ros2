@@ -39,27 +39,27 @@ namespace common
 using can_std_callback = std::function<void (std::shared_ptr<struct can_frame> recv_frame)>;
 using can_fd_callback = std::function<void (std::shared_ptr<struct canfd_frame> recv_frame)>;
 
-// can_rx_dev ////////////////////////////////////////////////////////////////////////////////////
-class can_rx_dev
+// CanRxDev //////////////////////////////////////////////////////////////////////////////////////
+class CanRxDev
 {
 public:
-  explicit can_rx_dev(
+  explicit CanRxDev(
     const std::string & interface,
     const std::string & name,
     can_std_callback recv_callback,
-    int64_t timeout = -1)
+    int64_t nano_timeout = -1)
   {
-    init(interface, name, false, recv_callback, nullptr, timeout);
+    init(interface, name, false, recv_callback, nullptr, nano_timeout);
   }
-  explicit can_rx_dev(
+  explicit CanRxDev(
     const std::string & interface,
     const std::string & name,
     can_fd_callback recv_callback,
-    int64_t timeout = -1)
+    int64_t nano_timeout = -1)
   {
-    init(interface, name, true, nullptr, recv_callback, timeout);
+    init(interface, name, true, nullptr, recv_callback, nano_timeout);
   }
-  ~can_rx_dev()
+  ~CanRxDev()
   {
     ready_ = false;
     isthreadrunning_ = false;
@@ -100,7 +100,7 @@ private:
   bool is_timeout_;
   bool extended_frame_;
   bool isthreadrunning_;
-  int64_t timeout_;
+  int64_t nano_timeout_;
   std::string name_;
   std::string interface_;
   can_std_callback can_std_callback_;
@@ -116,12 +116,12 @@ private:
     bool canfd_on,
     can_std_callback std_callback,
     can_fd_callback fd_callback,
-    int64_t timeout)
+    int64_t nano_timeout)
   {
     name_ = name;
     ready_ = false;
     canfd_ = canfd_on;
-    timeout_ = timeout;
+    nano_timeout_ = nano_timeout;
     is_timeout_ = false;
     interface_ = interface;
     can_std_callback_ = std_callback;
@@ -130,7 +130,7 @@ private:
       receiver_ = std::make_unique<cyberdog::common::SocketCanReceiver>(interface_);
       receiver_->enable_canfd(canfd_);
       isthreadrunning_ = true;
-      main_T_ = std::make_unique<std::thread>(std::bind(&can_rx_dev::main_recv_func, this));
+      main_T_ = std::make_unique<std::thread>(std::bind(&CanRxDev::main_recv_func, this));
     } catch (const std::exception & ex) {
       printf(
         C_RED "[CAN_RX][ERROR][%s] %s receiver creat error! %s\n" C_END,
@@ -154,8 +154,8 @@ private:
     if (receiver_ != nullptr) {
       try {
         bool result =
-          canfd_ ? receiver_->receive(rx_fd_frame_, std::chrono::nanoseconds(timeout_)) :
-          receiver_->receive(rx_std_frame_, std::chrono::nanoseconds(timeout_));
+          canfd_ ? receiver_->receive(rx_fd_frame_, std::chrono::nanoseconds(nano_timeout_)) :
+          receiver_->receive(rx_std_frame_, std::chrono::nanoseconds(nano_timeout_));
         if (result) {is_timeout_ = false;}
         return result;
       } catch (const std::exception & ex) {
@@ -188,22 +188,22 @@ private:
     }
     printf("[CAN_RX][INFO][%s] Exit recv thread: %s\n", interface_.c_str(), name_.c_str());
   }
-};
+};  // class CanRxDev
 
-// can_tx_dev ////////////////////////////////////////////////////////////////////////////////////
-class can_tx_dev
+// CanTxDev //////////////////////////////////////////////////////////////////////////////////////
+class CanTxDev
 {
 public:
-  explicit can_tx_dev(
+  explicit CanTxDev(
     const std::string & interface,
     const std::string & name,
     bool extended_frame,
     bool canfd_on,
-    int64_t timeout = -1)
+    int64_t nano_timeout = -1)
   {
     ready_ = false;
     name_ = name;
-    timeout_ = timeout;
+    nano_timeout_ = nano_timeout;
     is_timeout_ = false;
     canfd_on_ = canfd_on;
     interface_ = interface;
@@ -219,7 +219,7 @@ public:
     }
     ready_ = true;
   }
-  ~can_tx_dev()
+  ~CanTxDev()
   {
     ready_ = false;
     sender_ = nullptr;
@@ -241,7 +241,7 @@ private:
   bool canfd_on_;
   bool is_timeout_;
   bool extended_frame_;
-  int64_t timeout_;
+  int64_t nano_timeout_;
   std::string name_;
   std::string interface_;
   std::unique_ptr<cyberdog::common::SocketCanSender> sender_;
@@ -275,12 +275,12 @@ private:
         if (self_fd) {
           sender_->send_fd(
             fd_frame->data, (fd_frame->len == 0) ? 64 : fd_frame->len, send_id,
-            std::chrono::nanoseconds(timeout_));
+            std::chrono::nanoseconds(nano_timeout_));
           is_timeout_ = false;
         } else {
           sender_->send(
             std_frame->data, (std_frame->can_dlc == 0) ? 8 : std_frame->can_dlc, send_id,
-            std::chrono::nanoseconds(timeout_));
+            std::chrono::nanoseconds(nano_timeout_));
           is_timeout_ = false;
         }
       } catch (const std::exception & ex) {
@@ -296,53 +296,53 @@ private:
     } else {
       result = false;
       printf(
-        C_RED "[CAN_TX %s][ERROR][%s] Error sending CAN message: %s - No protocol\n" C_END,
+        C_RED "[CAN_TX %s][ERROR][%s] Error sending CAN message: %s - No device\n" C_END,
         can_type.c_str(), name_.c_str(), interface_.c_str());
     }
     return result;
   }
-};
+};  // class CanTxDev
 
-// can_dev ///////////////////////////////////////////////////////////////////////////////////////
-class can_dev
+// CanDev ////////////////////////////////////////////////////////////////////////////////////////
+class CanDev
 {
 public:
-  explicit can_dev(
+  explicit CanDev(
     const std::string & interface,
     const std::string & name,
     bool extended_frame,
     can_std_callback recv_callback,
-    int64_t timeout = -1)
+    int64_t nano_timeout = -1)
   {
     name_ = name;
     send_only_ = false;
-    tx_op_ = std::make_unique<can_tx_dev>(interface, name_, extended_frame, false, timeout);
-    rx_op_ = std::make_unique<can_rx_dev>(interface, name_, recv_callback, timeout);
+    tx_op_ = std::make_unique<CanTxDev>(interface, name_, extended_frame, false, nano_timeout);
+    rx_op_ = std::make_unique<CanRxDev>(interface, name_, recv_callback, nano_timeout);
   }
-  explicit can_dev(
+  explicit CanDev(
     const std::string & interface,
     const std::string & name,
     bool extended_frame,
     can_fd_callback recv_callback,
-    int64_t timeout = -1)
+    int64_t nano_timeout = -1)
   {
     name_ = name;
     send_only_ = false;
-    tx_op_ = std::make_unique<can_tx_dev>(interface, name_, extended_frame, true, timeout);
-    rx_op_ = std::make_unique<can_rx_dev>(interface, name_, recv_callback, timeout);
+    tx_op_ = std::make_unique<CanTxDev>(interface, name_, extended_frame, true, nano_timeout);
+    rx_op_ = std::make_unique<CanRxDev>(interface, name_, recv_callback, nano_timeout);
   }
-  explicit can_dev(
+  explicit CanDev(
     const std::string & interface,
     const std::string & name,
     bool extended_frame,
     bool canfd_on,
-    int64_t timeout = -1)
+    int64_t nano_timeout = -1)
   {
     name_ = name;
     send_only_ = true;
-    tx_op_ = std::make_unique<can_tx_dev>(interface, name_, extended_frame, canfd_on, timeout);
+    tx_op_ = std::make_unique<CanTxDev>(interface, name_, extended_frame, canfd_on, nano_timeout);
   }
-  ~can_dev()
+  ~CanDev()
   {
     rx_op_ = nullptr;
     tx_op_ = nullptr;
@@ -389,9 +389,9 @@ public:
 private:
   bool send_only_;
   std::string name_;
-  std::unique_ptr<can_rx_dev> rx_op_;
-  std::unique_ptr<can_tx_dev> tx_op_;
-};
+  std::unique_ptr<CanRxDev> rx_op_;
+  std::unique_ptr<CanTxDev> tx_op_;
+};  // class CanDev
 
 }  // namespace common
 }  // namespace cyberdog

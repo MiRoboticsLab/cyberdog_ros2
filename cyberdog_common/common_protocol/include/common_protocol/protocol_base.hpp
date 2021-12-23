@@ -34,7 +34,7 @@ namespace common
 #define MAX_TIME_OUT_US 3'000'000L  // 3s
 
 template<typename TDataClass>
-class protocol_base
+class ProtocolBase
 {
 public:
   std::shared_ptr<TDataClass> GetData() {return protocol_data_;}
@@ -46,10 +46,10 @@ public:
         C_YELLOW "[PROTOCOL][WARN][%s] for_send protocol not need callback function, "
         "please check the code\n" C_END, name_.c_str());
     }
-    if (callback != nullptr) {devicedata_callback_ = callback;}
+    if (callback != nullptr) {protocol_data_callback_ = callback;}
   }
 
-  void LinkVar(const std::string & name, const protocol_data & var)
+  void LinkVar(const std::string & name, const ProtocolData & var)
   {
     if (protocol_data_map_.find(name) != protocol_data_map_.end()) {
       error_clct_->LogState(ErrorCode::RUNTIME_SAMELINK_ERROR);
@@ -58,7 +58,7 @@ public:
         name_.c_str(), name.c_str());
       return;
     }
-    protocol_data_map_.insert(std::pair<std::string, protocol_data>(name, var));
+    protocol_data_map_.insert(std::pair<std::string, ProtocolData>(name, var));
   }
 
   virtual bool Operate(
@@ -74,21 +74,21 @@ public:
   bool IsRxError() {return rx_error_;}
 
 protected:
-  protocol_base()
+  ProtocolBase()
   {
     protocol_data_ = std::make_shared<TDataClass>();
-    protocol_data_map_ = std::map<std::string, protocol_data>();
+    protocol_data_map_ = PROTOCOL_DATA_MAP();
   }
-  ~protocol_base() {}
+  ~ProtocolBase() {}
 
   bool for_send_;
   bool rx_error_;
   std::string name_;
   CHILD_STATE_CLCT error_clct_;
+  PROTOCOL_DATA_MAP protocol_data_map_;
   std::shared_ptr<TDataClass> protocol_data_;
-  std::map<std::string, protocol_data> protocol_data_map_;
-  std::function<void(std::shared_ptr<TDataClass>)> devicedata_callback_;
-};  // class protocol_base
+  std::function<void(std::shared_ptr<TDataClass>)> protocol_data_callback_;
+};  // class ProtocolBase
 }  // namespace common
 }  // namespace cyberdog
 
