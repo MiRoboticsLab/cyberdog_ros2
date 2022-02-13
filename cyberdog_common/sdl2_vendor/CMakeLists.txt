@@ -13,7 +13,7 @@ option(BUILD_INSIDE_GFW "Build this package in PRC" OFF)
 
 if(BUILD_INSIDE_GFW)
   message(">>> Replace github.com into hub.fastgit.org for PRC users!")
-  set(GITHUB_URL "hub.fastgit.org")
+  set(GITHUB_URL "hub.fastgit.xyz")
 endif()
 
 set(MAIN_NAME sdl2main)
