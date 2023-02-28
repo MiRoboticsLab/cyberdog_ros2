@@ -35,6 +35,7 @@ public:
 
     while (true) {
       printf("Input buzze status\n");
+      printf("Input buzze status\n");
       cin >> mode;
       printf("buzze  mode:%d\n", mode);
       msg.buzze = mode;
