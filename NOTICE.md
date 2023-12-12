@@ -190,7 +190,7 @@ open_vins (2.3)
 - Source: https://github.com/rpng/open_vins/releases/tag/v2.3
 - Usage: modified, standalone
 
-opensssl (1.1.1k)
+openssl (1.1.1k)
 - License: Apache-2.0
 - Project: https://github.com/openssl/openssl
 - Source: https://github.com/openssl/openssl/releases/tag/OpenSSL_1_1_1k

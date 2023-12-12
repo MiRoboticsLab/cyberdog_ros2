@@ -35,7 +35,7 @@ The cascade manager distinguishes its own function types by identifying external
 - Single list management mode: When the node is configured, the external parameter (YAML) list will be read through the cascading node list name, and the corresponding node name will be added in turn according to the list, and the status will be synchronized. And during the activation and suspension operations, it will check whether each node in the list has reached the corresponding state, and update the `chainnodes_state_` variable in time.
 - Multi-list management mode: similar to single-list, when the node is configured, it will be read through the external parameter list, but it can be read by entering a different parameter list during configuration. The use of this management mode needs to be leveled when instantiating Copy the name of the associated node list to `multi` to activate the multi-list management mode, and pass the correct string of the list name to the `manager_configure` function during configuration.
 
-All nodes that inherit the cascade manager can use `message_info`, `message_warn` and `message_error` for ROS-related record output, and input the content in the format of `std::string` (use `+` to combile strings if multiple strings are needed).
+All nodes that inherit the cascade manager can use `message_info`, `message_warn` and `message_error` for ROS-related record output, and input the content in the format of `std::string` (use `+` to combine strings if multiple strings are needed).
 
 ### **Automation Management**
 
