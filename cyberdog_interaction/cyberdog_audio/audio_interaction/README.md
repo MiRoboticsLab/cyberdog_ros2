@@ -112,7 +112,7 @@ APP发出的请求主要包括以下几个部分：
 3、请求发送token。
 4、请求获取语音助手当前运行状态。
 
-对语音助手模块(audio assistant)的请求目前通过一个topic实现，本模块实现一个topic发布来发布相关请求，audio asistant模块实现订阅来进行接收处理。
+对语音助手模块(audio assistant)的请求目前通过一个topic实现，本模块实现一个topic发布来发布相关请求，audio assistant模块实现订阅来进行接收处理。
 
 目前本模块发布的内容包括以下几个部分，重点实现的方法可通过查询该主题发布的方法**PublishAiSwitch**来查询。
 1、通知开启语音助手在线功能

@@ -24,7 +24,7 @@
 
 ## 代码审查
 
-所有递交都按照合入请求（Merge Requst）的方式进行，并只接收GitHub的拉取请求（Pull Request）的流程方式。
+所有递交都按照合入请求（Merge Request）的方式进行，并只接收GitHub的拉取请求（Pull Request）的流程方式。
 
 ### 代码格式
 

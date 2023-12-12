@@ -93,7 +93,7 @@ launch_nodes:
 launch_groups:
   target_launch_group: default
   groups:
-    # example_group_whitlist:
+    # example_group_whitelist:
     #   launch:   #only launch:
     #     - example_node_def_name1
     #     - example_node_def_name2
